@@ -1,3 +1,4 @@
+import 'package:ai_music/themes/theme_color.dart';
 import 'package:flutter/material.dart';
 
 class AccountPage extends StatelessWidget {
@@ -6,8 +7,12 @@ class AccountPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: Colors.amber.withAlpha(40),
-      child: const Center(child: Text("UserPage")),
+      color: defaultBgColor,
+      child: const Center(
+          child: Text(
+        "UserPage",
+        style: TextStyle(color: Colors.white),
+      )),
     );
   }
 }
