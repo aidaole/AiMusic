@@ -36,7 +36,6 @@ class AccountPage extends StatelessWidget {
       builder: (BuildContext context, ScrollController scrollController) {
         // 获取底部导航栏高度，如果没有设置可以使用默认值
         final bottomPadding = MediaQuery.of(context).padding.bottom + kBottomNavigationBarHeight;
-
         return Stack(
           clipBehavior: Clip.none,
           children: [
