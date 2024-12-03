@@ -19,8 +19,8 @@ class AccountPage extends StatelessWidget {
           // 顶部固定操作栏
           Column(
             children: [
-              _buildStatusBar(),
-              _buildActionBar(),
+              _buildStatusBar(context),
+              _buildActionBar(context),
             ],
           ),
         ],
@@ -35,7 +35,8 @@ class AccountPage extends StatelessWidget {
       maxChildSize: 0.8,
       builder: (BuildContext context, ScrollController scrollController) {
         // 获取底部导航栏高度，如果没有设置可以使用默认值
-        final bottomPadding = MediaQuery.of(context).padding.bottom + kBottomNavigationBarHeight;
+        final bottomPadding =
+            MediaQuery.of(context).padding.bottom + kBottomNavigationBarHeight;
         return Stack(
           clipBehavior: Clip.none,
           children: [
@@ -67,7 +68,9 @@ class AccountPage extends StatelessWidget {
                         // 计算列表区域的高度
                         // 总高度减去上方内容高度(约110)和底部导航栏高度
                         final availableHeight =
-                            MediaQuery.of(context).size.height * 0.8 - 130 - bottomPadding;
+                            MediaQuery.of(context).size.height * 0.8 -
+                                130 -
+                                bottomPadding;
                         return SizedBox(
                           height: availableHeight,
                           child: _buildSongsListWidget(),
@@ -195,7 +198,7 @@ class AccountPage extends StatelessWidget {
     );
   }
 
-  _buildActionBar() {
+  _buildActionBar(BuildContext context) {
     double iconSize = 25.0;
     double padding = 10.0;
     return Row(
@@ -226,7 +229,7 @@ class AccountPage extends StatelessWidget {
     );
   }
 
-  _buildStatusBar() {
+  _buildStatusBar(BuildContext context) {
     return SizedBox(
       height: defaultActionBarHeight.toDouble(),
     );

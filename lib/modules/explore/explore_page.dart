@@ -19,6 +19,9 @@ class ExplorePage extends StatelessWidget {
             child: Column(
               children: [
                 _buildStatusBar(),
+                const SizedBox(
+                  height: 10,
+                ),
                 _buildSearchBar(context),
               ],
             ),
@@ -26,7 +29,8 @@ class ExplorePage extends StatelessWidget {
           // 可滚动的内容部分
           Expanded(
             child: NestedScrollView(
-              headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
+              headerSliverBuilder:
+                  (BuildContext context, bool innerBoxIsScrolled) {
                 return [
                   SliverPadding(
                     padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -58,7 +62,7 @@ class ExplorePage extends StatelessWidget {
 
   _buildStatusBar() {
     return SizedBox(
-      height: defaultActionBarHeight.toDouble(),
+      height: defaultStatusBarHeight.toDouble(),
     );
   }
 
@@ -68,7 +72,7 @@ class ExplorePage extends StatelessWidget {
     return SizedBox(
       height: defaultActionBarHeight.toDouble(),
       child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 5),
+        padding: const EdgeInsets.symmetric(vertical: 8),
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 20),
           decoration: BoxDecoration(
@@ -279,7 +283,8 @@ class ExplorePage extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               ClipRRect(
-                borderRadius: const BorderRadius.vertical(top: Radius.circular(10)),
+                borderRadius:
+                    const BorderRadius.vertical(top: Radius.circular(10)),
                 child: Image.network(
                   // 使用不同高度的图片来模拟瀑布流效果
                   'https://picsum.photos/400/${heights[index].toInt()}',
