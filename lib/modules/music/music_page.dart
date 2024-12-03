@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 
-import '../../themes/theme_color.dart';
-
 class MusicPage extends StatelessWidget {
   const MusicPage({super.key});
 

@@ -11,10 +11,6 @@ class AccountPage extends StatelessWidget {
       color: defaultBgColor,
       child: Column(
         children: [
-          SizedBox(
-            height: 100,
-            child: Container(color: Colors.red.withAlpha(50)),
-          ),
           const Center(
               child: Text(
             "UserPage",
