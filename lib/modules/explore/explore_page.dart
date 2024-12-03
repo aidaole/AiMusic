@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 
 import '../../themes/theme_color.dart';
 import '../../themes/theme_size.dart';
@@ -220,14 +221,14 @@ class ExplorePage extends StatelessWidget {
       length: 6,
       child: Column(
         children: [
-          TabBar(
+          const TabBar(
             isScrollable: true,
             labelColor: Colors.white,
             unselectedLabelColor: Colors.grey,
             indicatorColor: Colors.white,
             dividerColor: Colors.transparent,
             tabAlignment: TabAlignment.start,
-            tabs: const [
+            tabs: [
               Tab(text: "歌单漫游"),
               Tab(text: "流行"),
               Tab(text: "华语"),
@@ -236,20 +237,78 @@ class ExplorePage extends StatelessWidget {
               Tab(text: "民谣"),
             ],
           ),
-          const Expanded(
+          Expanded(
             child: TabBarView(
               children: [
-                SingleChildScrollView(child: Center(child: Text("歌单漫游"))),
-                SingleChildScrollView(child: Center(child: Text("流行"))),
-                SingleChildScrollView(child: Center(child: Text("华语"))),
-                SingleChildScrollView(child: Center(child: Text("欧美"))),
-                SingleChildScrollView(child: Center(child: Text("摇滚"))),
-                SingleChildScrollView(child: Center(child: Text("民谣"))),
+                _buildGridView("歌单漫游"),
+                _buildGridView("流行"),
+                _buildGridView("华语"),
+                _buildGridView("欧美"),
+                _buildGridView("摇滚"),
+                _buildGridView("民谣"),
               ],
             ),
           ),
         ],
       ),
+    );
+  }
+
+  Widget _buildGridView(String category) {
+    // 生成随机高度列表，实际项目中应该根据实际内容高度来设置
+    final List<double> heights = List.generate(
+      20,
+      (index) => (index % 3 + 2) * 100.0, // 200-400之间的高度
+    );
+
+    return MasonryGridView.builder(
+      padding: const EdgeInsets.all(10),
+      itemCount: 20,
+      gridDelegate: const SliverSimpleGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 2,
+      ),
+      mainAxisSpacing: 10,
+      crossAxisSpacing: 10,
+      itemBuilder: (context, index) {
+        return Container(
+          decoration: BoxDecoration(
+            color: Colors.white.withOpacity(0.1),
+            borderRadius: BorderRadius.circular(10),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              ClipRRect(
+                borderRadius: const BorderRadius.vertical(top: Radius.circular(10)),
+                child: Image.network(
+                  // 使用不同高度的图片来模拟瀑布流效果
+                  'https://picsum.photos/400/${heights[index].toInt()}',
+                  fit: BoxFit.cover,
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      '$category 项目 $index',
+                      style: Theme.of(context).textTheme.bodyMedium,
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      '副标题描述文本',
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                            color: Colors.white.withOpacity(0.6),
+                          ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        );
+      },
     );
   }
 }
