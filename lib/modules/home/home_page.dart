@@ -55,7 +55,7 @@ class _HomePageState extends State<HomePage> {
           left: 16,
           right: 16,
         ),
-        height: MediaQuery.of(context).padding.top + themeActionBarHeight,
+        height: MediaQuery.of(context).padding.top + defaultActionBarHeight,
         child: Row(
           children: [
             Align(
