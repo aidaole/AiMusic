@@ -43,7 +43,7 @@ class AccountPage extends StatelessWidget {
             Container(
               height: double.infinity,
               decoration: const BoxDecoration(
-                color: Color.fromARGB(255, 49, 49, 49),
+                color: defaultBgColor,
                 borderRadius: BorderRadius.only(
                   topLeft: Radius.circular(20),
                   topRight: Radius.circular(20),
@@ -199,7 +199,7 @@ class AccountPage extends StatelessWidget {
   }
 
   _buildActionBar(BuildContext context) {
-    double iconSize = 25.0;
+    double iconSize = 30.0;
     double padding = 10.0;
     return Row(
       mainAxisAlignment: MainAxisAlignment.end,
@@ -231,13 +231,13 @@ class AccountPage extends StatelessWidget {
 
   _buildStatusBar(BuildContext context) {
     return SizedBox(
-      height: defaultActionBarHeight.toDouble(),
+      height: defaultStatusBarHeight.toDouble(),
     );
   }
 
   _buildMusicWall() {
     return Container(
-      color: Colors.black54,
+      color: Colors.blue.withAlpha(20),
     );
   }
 }
