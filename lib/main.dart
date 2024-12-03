@@ -1,7 +1,8 @@
-import 'package:ai_music/app.dart';
-import 'package:ai_music/themes/theme_color.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+
+import 'app.dart';
+import 'themes/theme_color.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();

@@ -1,6 +1,6 @@
-import 'package:ai_music/themes/theme_color.dart';
 import 'package:flutter/material.dart';
 
+import '../../themes/theme_color.dart';
 import '../../themes/theme_size.dart';
 import '../account/account_page.dart';
 import '../explore/explore_page.dart';

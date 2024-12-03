@@ -1,6 +1,6 @@
-import 'package:ai_music/themes/theme_color.dart';
 import 'package:flutter/material.dart';
 
+import '../../themes/theme_color.dart';
 import "../../themes/theme_size.dart";
 
 class AccountPage extends StatelessWidget {
