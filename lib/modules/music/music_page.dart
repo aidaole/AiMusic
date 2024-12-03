@@ -8,9 +8,19 @@ class MusicPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: defaultBgColor,
-      child: const Center(
-          child: Text("MusicPage", style: TextStyle(color: Colors.white))),
+      color: Colors.amber,
+      child: ListView.builder(
+        padding: EdgeInsets.zero,
+        itemCount: 50,
+        itemBuilder: (context, index) {
+          return ListTile(
+            title: Text(
+              "Item $index",
+              style: const TextStyle(color: Colors.white),
+            ),
+          );
+        },
+      ),
     );
   }
 }
