@@ -236,7 +236,7 @@ class AccountPage extends StatelessWidget {
           child: IconButton(
             onPressed: () {
               Navigator.push(
-                  context, MaterialPageRoute(builder: (context) => const PhoneCodeLoginPage()));
+                  context, MaterialPageRoute(builder: (context) => PhoneCodeLoginPage()));
             },
             icon: Icon(
               Icons.settings,

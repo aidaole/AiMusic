@@ -2,10 +2,13 @@ import 'package:ai_music/themes/theme_color.dart';
 import 'package:ai_music/widgets/StatusBarPlaceHolder.dart';
 import 'package:flutter/material.dart';
 
+import '../../network/dio_utils.dart';
 import '../../themes/theme_size.dart';
 
 class PhoneCodeLoginPage extends StatelessWidget {
-  const PhoneCodeLoginPage({super.key});
+  PhoneCodeLoginPage({super.key});
+
+  final TextEditingController _phoneInputController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -76,6 +79,7 @@ class PhoneCodeLoginPage extends StatelessWidget {
 
   _buildPhoneInputWidget() {
     return TextField(
+      controller: _phoneInputController,
       style: const TextStyle(color: Colors.white, fontSize: 20),
       keyboardType: TextInputType.phone,
       decoration: InputDecoration(
@@ -96,7 +100,11 @@ class PhoneCodeLoginPage extends StatelessWidget {
       width: double.infinity, // 按钮宽度占满父容器
       height: 50, // 设置按钮高度
       child: ElevatedButton(
-        onPressed: () {},
+        onPressed: () {
+          // 获取短信验证码
+          final phone = _phoneInputController.text;
+          DioUtils.post(path: '/captcha/sent?phone=$phone');
+        },
         style: ElevatedButton.styleFrom(
           backgroundColor: Colors.white, // 按钮背景色为白色
           shape: RoundedRectangleBorder(
