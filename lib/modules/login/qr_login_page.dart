@@ -1,5 +1,7 @@
 import 'dart:async';
 import 'package:ai_music/network/dio_utils.dart';
+import 'package:ai_music/routes/app_routes.dart';
+import 'package:ai_music/routes/route_helper.dart';
 import 'package:ai_music/themes/theme_color.dart';
 import 'package:ai_music/widgets/status_bar_playce_holder.dart';
 import 'package:flutter/material.dart';
@@ -92,7 +94,7 @@ class _QrLoginPageState extends State<QrLoginPage> {
               _showMessage('登录成功');
               timer.cancel();
               if (mounted) {
-                Navigator.of(context).pop();
+                RouteHelper.popUntil(context, AppRoutes.home);
               }
               break;
           }
@@ -138,7 +140,9 @@ class _QrLoginPageState extends State<QrLoginPage> {
           Text(
             "请使用登录了网易账号的网易云音乐App扫码",
             style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white.withAlpha(80)),
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+                color: Colors.white.withAlpha(80)),
           ),
           const SizedBox(height: 40),
           // 二维码显示区域

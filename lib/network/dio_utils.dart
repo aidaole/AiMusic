@@ -21,7 +21,7 @@ class DioUtils {
   static const int _connectTimeout = 15000; // 15秒
   static const int _receiveTimeout = 15000;
   static const int _sendTimeout = 10000;
-  static const String _baseUrl = 'http://10.22.81.173:3000/'; // 替换为你的基础URL
+  static const String _baseUrl = 'http://192.168.31.175:3000/'; // 替换为你的基础URL
 
   // 初始化 Dio
   static Future<void> init() async {
@@ -213,7 +213,8 @@ class DioUtils {
   }
 
   // 获取指定 Cookie 的值
-  static Future<String?> getCookieValue(String domain, String cookieName) async {
+  static Future<String?> getCookieValue(
+      String domain, String cookieName) async {
     final cookies = await getCookiesForDomain(domain);
     // 查找指定名称的 cookie
     final cookie = cookies.firstWhere(

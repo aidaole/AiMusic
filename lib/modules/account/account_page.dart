@@ -15,6 +15,11 @@ class AccountPage extends StatefulWidget {
 }
 
 class _AccountPageState extends State<AccountPage> {
+  // 添加状态变量
+  String _nickname = "Nickname";
+  String _avatarUrl = "";
+  String _backgroundUrl = "";
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -65,7 +70,8 @@ class _AccountPageState extends State<AccountPage> {
       maxChildSize: 0.8,
       builder: (BuildContext context, ScrollController scrollController) {
         // 获取底部导航栏高度，如果没有设置可以使用默认值
-        final bottomPadding = MediaQuery.of(context).padding.bottom + kBottomNavigationBarHeight;
+        final bottomPadding =
+            MediaQuery.of(context).padding.bottom + kBottomNavigationBarHeight;
         return Stack(
           clipBehavior: Clip.none,
           children: [
@@ -85,7 +91,7 @@ class _AccountPageState extends State<AccountPage> {
                   children: [
                     const SizedBox(height: 50), // 为头像留出空间
                     Text(
-                      "MGONE",
+                      _nickname,
                       style: Theme.of(context).textTheme.titleLarge,
                     ),
                     const SizedBox(height: 20),
@@ -97,7 +103,9 @@ class _AccountPageState extends State<AccountPage> {
                         // 计算列表区域的高度
                         // 总高度减去上方内容高度(约110)和底部导航栏高度
                         final availableHeight =
-                            MediaQuery.of(context).size.height * 0.8 - 130 - bottomPadding;
+                            MediaQuery.of(context).size.height * 0.8 -
+                                130 -
+                                bottomPadding;
                         return SizedBox(
                           height: availableHeight,
                           child: _buildSongsListWidget(),
@@ -109,17 +117,7 @@ class _AccountPageState extends State<AccountPage> {
               ),
             ),
             // 使用 Positioned 将头像放置在顶部并超出容器
-            const Positioned(
-              top: -50, // 负值使头像向上偏移
-              left: 0,
-              right: 0,
-              child: Center(
-                child: Icon(
-                  Icons.account_circle_rounded,
-                  size: 100,
-                ),
-              ),
-            ),
+            _buildAvatarWidget(),
           ],
         );
       },
@@ -269,7 +267,34 @@ class _AccountPageState extends State<AccountPage> {
 
   _buildMusicWall() {
     return Container(
-      color: Colors.blue.withAlpha(20),
+      decoration: BoxDecoration(
+        color: Colors.blue.withAlpha(20),
+        image: _backgroundUrl.isNotEmpty
+            ? DecorationImage(
+                image: NetworkImage(_backgroundUrl),
+                fit: BoxFit.cover,
+              )
+            : null,
+      ),
+    );
+  }
+
+  Positioned _buildAvatarWidget() {
+    return Positioned(
+      top: -50,
+      left: 0,
+      right: 0,
+      child: Center(
+        child: _avatarUrl.isNotEmpty
+            ? CircleAvatar(
+                radius: 50,
+                backgroundImage: NetworkImage(_avatarUrl),
+              )
+            : const Icon(
+                Icons.account_circle_rounded,
+                size: 100,
+              ),
+      ),
     );
   }
 
@@ -277,6 +302,15 @@ class _AccountPageState extends State<AccountPage> {
     try {
       final resp = await DioUtils.get(path: "/login/status");
       LogUtil.d('获取账号信息成功: $resp');
+
+      if (resp != null && resp['data']['code'] == 200) {
+        final profile = resp['data']['profile'];
+        setState(() {
+          _nickname = profile['nickname'] ?? "Nickname";
+          _avatarUrl = profile['avatarUrl'] ?? "";
+          _backgroundUrl = profile['backgroundUrl'] ?? "";
+        });
+      }
     } catch (e) {
       LogUtil.e('获取账号信息失败: $e');
     }
