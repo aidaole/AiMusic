@@ -23,14 +23,14 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
         body: Stack(
-      children: [
-        Expanded(child: _pages[_selectedIndex]),
-        Align(
-          alignment: Alignment.bottomCenter,
-          child: _buildBottomNavigationBar(),
-        ),
-      ],
-    ));
+          children: [
+            _pages[_selectedIndex],
+            Align(
+              alignment: Alignment.bottomCenter,
+              child: _buildBottomNavigationBar(),
+            ),
+          ],
+        ));
   }
 
   Widget _buildBottomNavigationBar() {
