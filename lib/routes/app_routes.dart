@@ -4,7 +4,8 @@ abstract class AppRoutes {
   static const login = '/login';
   static const smsLogin = '/login/sms_login';
   static const smsVerifyCode = '/login/sms_verify_code';
-
+  static const phonePasswordLogin = '/login/phone_password_login';
+  static const qrLogin = '/login/qr_login';
   // 主页相关
   static const home = '/home';
   static const discover = '/home/discover';

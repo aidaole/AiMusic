@@ -236,7 +236,7 @@ class AccountPage extends StatelessWidget {
           padding: EdgeInsets.all(padding),
           child: IconButton(
             onPressed: () {
-              RouteHelper.push(context, AppRoutes.smsLogin);
+              RouteHelper.push(context, AppRoutes.phonePasswordLogin);
             },
             icon: Icon(
               Icons.settings,

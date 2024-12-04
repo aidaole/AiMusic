@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
 import '../modules/home/home_page.dart';
+import '../modules/login/phone_password_login_page.dart';
+import '../modules/login/qr_login_page.dart';
 import '../modules/login/sms_code_login_page.dart';
 import '../modules/login/sms_verify_phone_code_page.dart';
 import 'app_routes.dart';
@@ -23,6 +25,8 @@ class AppPages {
       final phone = arguments as String?;
       return SmsVerifyPhoneCodePage(phone: phone ?? '');
     },
+    AppRoutes.phonePasswordLogin: (context) => PhonePasswordLoginPage(),
+    AppRoutes.qrLogin: (context) => const QrLoginPage(),
   };
 
   /// 404页面
