@@ -1,46 +1,66 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../common/log_util.dart';
-import '../../network/dio_utils.dart';
+import '../../modules/account/bloc/account_bloc.dart';
+import '../../modules/account/bloc/account_event.dart';
+import '../../modules/account/bloc/account_state.dart';
+import '../../modules/account/models/account_model.dart';
+import '../../modules/account/repositories/account_repository.dart';
 import '../../routes/app_routes.dart';
 import '../../routes/route_helper.dart';
 import '../../themes/theme_color.dart';
 import "../../themes/theme_size.dart";
 
-class AccountPage extends StatefulWidget {
+class AccountPage extends StatelessWidget {
   const AccountPage({super.key});
 
   @override
-  State<AccountPage> createState() => _AccountPageState();
+  Widget build(BuildContext context) {
+    return BlocProvider(
+      create: (context) => AccountBloc(
+        repository: AccountRepository(),
+      )..add(FetchAccountInfo()),
+      child: const AccountView(),
+    );
+  }
 }
 
-class _AccountPageState extends State<AccountPage> {
-  // 添加状态变量
-  String _nickname = "Nickname";
-  String _avatarUrl = "";
-  String _backgroundUrl = "";
+class AccountView extends StatelessWidget {
+  const AccountView({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: defaultBgColor,
-      body: _buildBody(context),
+      body: BlocBuilder<AccountBloc, AccountState>(
+        builder: (context, state) {
+          if (state is AccountLoading) {
+            return const Center(child: CircularProgressIndicator());
+          }
+          if (state is AccountError) {
+            return Center(child: Text(state.message));
+          }
+          if (state is AccountLoaded) {
+            return _AccountContent(account: state.account);
+          }
+          return const SizedBox();
+        },
+      ),
     );
   }
+}
+
+class _AccountContent extends StatelessWidget {
+  final AccountModel account;
+
+  const _AccountContent({required this.account});
 
   @override
-  void initState() {
-    super.initState();
-    _fetchAccountInfo();
-  }
-
-  Column _buildBody(BuildContext context) {
+  Widget build(BuildContext context) {
     return Column(
       children: [
         Expanded(child: _buildMainContent(context)),
-        SizedBox(
-          height: defaultBottomNavigationBarHeight,
-        )
+        SizedBox(height: defaultBottomNavigationBarHeight)
       ],
     );
   }
@@ -91,7 +111,7 @@ class _AccountPageState extends State<AccountPage> {
                   children: [
                     const SizedBox(height: 50), // 为头像留出空间
                     Text(
-                      _nickname,
+                      account.nickname,
                       style: Theme.of(context).textTheme.titleLarge,
                     ),
                     const SizedBox(height: 20),
@@ -210,15 +230,18 @@ class _AccountPageState extends State<AccountPage> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        Text("48 关注", style: Theme.of(context).textTheme.titleSmall),
+        Text("${account.follows} 关注",
+            style: Theme.of(context).textTheme.titleSmall),
         const SizedBox(
           width: 15,
         ),
-        Text("2 粉丝", style: Theme.of(context).textTheme.titleSmall),
+        Text("${account.fans} 粉丝",
+            style: Theme.of(context).textTheme.titleSmall),
         const SizedBox(
           width: 15,
         ),
-        Text("0 获得", style: Theme.of(context).textTheme.titleSmall),
+        Text("${account.gained} 获得",
+            style: Theme.of(context).textTheme.titleSmall),
       ],
     );
   }
@@ -269,9 +292,9 @@ class _AccountPageState extends State<AccountPage> {
     return Container(
       decoration: BoxDecoration(
         color: Colors.blue.withAlpha(20),
-        image: _backgroundUrl.isNotEmpty
+        image: account.backgroundUrl.isNotEmpty
             ? DecorationImage(
-                image: NetworkImage(_backgroundUrl),
+                image: NetworkImage(account.backgroundUrl),
                 fit: BoxFit.cover,
               )
             : null,
@@ -285,10 +308,10 @@ class _AccountPageState extends State<AccountPage> {
       left: 0,
       right: 0,
       child: Center(
-        child: _avatarUrl.isNotEmpty
+        child: account.avatarUrl.isNotEmpty
             ? CircleAvatar(
                 radius: 50,
-                backgroundImage: NetworkImage(_avatarUrl),
+                backgroundImage: NetworkImage(account.avatarUrl),
               )
             : const Icon(
                 Icons.account_circle_rounded,
@@ -296,23 +319,5 @@ class _AccountPageState extends State<AccountPage> {
               ),
       ),
     );
-  }
-
-  void _fetchAccountInfo() async {
-    try {
-      final resp = await DioUtils.get(path: "/login/status");
-      LogUtil.d('获取账号信息成功: $resp');
-
-      if (resp != null && resp['data']['code'] == 200) {
-        final profile = resp['data']['profile'];
-        setState(() {
-          _nickname = profile['nickname'] ?? "Nickname";
-          _avatarUrl = profile['avatarUrl'] ?? "";
-          _backgroundUrl = profile['backgroundUrl'] ?? "";
-        });
-      }
-    } catch (e) {
-      LogUtil.e('获取账号信息失败: $e');
-    }
   }
 }

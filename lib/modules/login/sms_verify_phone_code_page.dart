@@ -3,8 +3,6 @@ import 'package:ai_music/widgets/common_button.dart';
 import 'package:flutter/material.dart';
 
 import '../../network/dio_utils.dart';
-import '../../routes/app_routes.dart';
-import '../../routes/route_helper.dart';
 import '../../widgets/status_bar_playce_holder.dart';
 
 class SmsVerifyPhoneCodePage extends StatelessWidget {
@@ -47,8 +45,10 @@ class SmsVerifyPhoneCodePage extends StatelessWidget {
           ),
           Text(
             "验证码已经发送到: ${phone.replaceRange(3, 7, '****')}",
-            style:
-                Theme.of(context).textTheme.bodyLarge?.copyWith(color: Colors.white.withAlpha(90)),
+            style: Theme.of(context)
+                .textTheme
+                .bodyLarge
+                ?.copyWith(color: Colors.white.withAlpha(90)),
           ),
           const SizedBox(
             height: 40,
@@ -58,30 +58,6 @@ class SmsVerifyPhoneCodePage extends StatelessWidget {
             height: 60,
           ),
           _buildLoginButton(context),
-          const SizedBox(
-            height: 20,
-          ),
-          CommonButton(
-            text: "登陆状态",
-            onPressed: () async {
-              final response = await DioUtils.get(path: "/login/status");
-              // // 打印登录状态响应和cookie信息
-              // if (response != null) {
-              //   debugPrint('登录状态响应: $response');
-              //   // 获取dio实例中的cookie信息
-              //   final cookies = await DioUtils.getCookiesForDomain("");
-              //   debugPrint('当前Cookie: $cookies');
-              // }
-            },
-          ),
-          const SizedBox(
-            height: 20,
-          ),
-          CommonButton(
-              text: "退出登陆",
-              onPressed: () async {
-                final response = await DioUtils.get(path: "/logout");
-              }),
         ],
       ),
     );
@@ -119,7 +95,8 @@ class SmsVerifyPhoneCodePage extends StatelessWidget {
             textAlign: TextAlign.center,
             keyboardType: TextInputType.number,
             maxLength: 1,
-            style: const TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.bold),
+            style: const TextStyle(
+                color: Colors.white, fontSize: 24, fontWeight: FontWeight.bold),
             decoration: InputDecoration(
               counterText: "", // 隐藏字符计数器
               enabledBorder: const UnderlineInputBorder(
@@ -152,8 +129,8 @@ class SmsVerifyPhoneCodePage extends StatelessWidget {
         // 获取所有输入框的验证码并拼接
         final code = controllers.map((c) => c.text).join();
 
-        final phoneLoginResponse =
-            await DioUtils.get(path: "/login/cellphone?phone=$phone&captcha=$code");
+        final phoneLoginResponse = await DioUtils.get(
+            path: "/login/cellphone?phone=$phone&captcha=$code");
         debugPrint('手机号登录响应: $phoneLoginResponse');
 
         // 发送验证码验证请求
