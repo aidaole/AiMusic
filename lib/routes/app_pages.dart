@@ -17,7 +17,12 @@ class AppPages {
     AppRoutes.home: (context) => const HomePage(),
     // 登录模块
     AppRoutes.smsLogin: (context) => SmsCodeLoginPage(),
-    AppRoutes.smsVerifyCode: (context) => const SmsVerifyPhoneCodePage(),
+    AppRoutes.smsVerifyCode: (context) {
+      // 从路由参数中获取手机号
+      final arguments = ModalRoute.of(context)?.settings.arguments;
+      final phone = arguments as String?;
+      return SmsVerifyPhoneCodePage(phone: phone ?? '');
+    },
   };
 
   /// 404页面

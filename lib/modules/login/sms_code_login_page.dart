@@ -116,7 +116,11 @@ class SmsCodeLoginPage extends StatelessWidget {
 
           // 如果请求成功且状态码为200,跳转到验证码输入页面
           if (response != null && response['code'] == 200) {
-            RouteHelper.push(context, AppRoutes.smsVerifyCode, arguments: phone);
+            RouteHelper.push(
+              context,
+              AppRoutes.smsVerifyCode,
+              arguments: phone,
+            );
           }
         },
       ),
@@ -136,7 +140,12 @@ class SmsCodeLoginPage extends StatelessWidget {
     return CommonButton(
       text: '验证短信验证码(测试)',
       onPressed: () {
-        RouteHelper.push(context, AppRoutes.smsVerifyCode);
+        final phone = _phoneInputController.text;
+        RouteHelper.push(
+          context,
+          AppRoutes.smsVerifyCode,
+          arguments: phone,
+        );
       },
     );
   }

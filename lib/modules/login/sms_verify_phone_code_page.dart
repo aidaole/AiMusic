@@ -2,10 +2,19 @@ import 'package:ai_music/themes/theme_color.dart';
 import 'package:ai_music/widgets/common_button.dart';
 import 'package:flutter/material.dart';
 
+import '../../network/dio_utils.dart';
+import '../../routes/app_routes.dart';
+import '../../routes/route_helper.dart';
 import '../../widgets/status_bar_playce_holder.dart';
 
 class SmsVerifyPhoneCodePage extends StatelessWidget {
-  const SmsVerifyPhoneCodePage({super.key});
+  SmsVerifyPhoneCodePage({super.key, required this.phone});
+  final String phone;
+  // 创建4个验证码输入框的控制器
+  final List<TextEditingController> controllers = List.generate(
+    4,
+    (index) => TextEditingController(),
+  );
 
   @override
   Widget build(BuildContext context) {
@@ -37,7 +46,7 @@ class SmsVerifyPhoneCodePage extends StatelessWidget {
             height: 10,
           ),
           Text(
-            "验证码已经发送到+86 xxx",
+            "验证码已经发送到: ${phone.replaceRange(3, 7, '****')}",
             style:
                 Theme.of(context).textTheme.bodyLarge?.copyWith(color: Colors.white.withAlpha(90)),
           ),
@@ -49,6 +58,30 @@ class SmsVerifyPhoneCodePage extends StatelessWidget {
             height: 60,
           ),
           _buildLoginButton(context),
+          const SizedBox(
+            height: 20,
+          ),
+          CommonButton(
+            text: "登陆状态",
+            onPressed: () async {
+              final response = await DioUtils.get(path: "/login/status");
+              // // 打印登录状态响应和cookie信息
+              // if (response != null) {
+              //   debugPrint('登录状态响应: $response');
+              //   // 获取dio实例中的cookie信息
+              //   final cookies = await DioUtils.getCookiesForDomain("");
+              //   debugPrint('当前Cookie: $cookies');
+              // }
+            },
+          ),
+          const SizedBox(
+            height: 20,
+          ),
+          CommonButton(
+              text: "退出登陆",
+              onPressed: () async {
+                final response = await DioUtils.get(path: "/logout");
+              }),
         ],
       ),
     );
@@ -68,12 +101,6 @@ class SmsVerifyPhoneCodePage extends StatelessWidget {
   }
 
   _buildInputCodeWidget() {
-    // 创建4个验证码输入框的控制器
-    final List<TextEditingController> controllers = List.generate(
-      4,
-      (index) => TextEditingController(),
-    );
-
     // 创建4个FocusNode用于控制焦点
     final List<FocusNode> focusNodes = List.generate(
       4,
@@ -121,20 +148,22 @@ class SmsVerifyPhoneCodePage extends StatelessWidget {
   _buildLoginButton(BuildContext context) {
     return CommonButton(
       text: '登陆',
-      onPressed: () {
-        // // 获取所有输入框的验证码并拼接
-        // final code = controllers.map((c) => c.text).join();
+      onPressed: () async {
+        // 获取所有输入框的验证码并拼接
+        final code = controllers.map((c) => c.text).join();
 
-        // // 发送验证码验证请求
-        // final response = await DioUtils.get(
-        //   path: '/captcha/verify?phone=$phone&captcha=$code'
-        // );
+        final phoneLoginResponse =
+            await DioUtils.get(path: "/login/cellphone?phone=$phone&captcha=$code");
+        debugPrint('手机号登录响应: $phoneLoginResponse');
+
+        // 发送验证码验证请求
+        // final response = await DioUtils.get(path: '/captcha/verify?phone=$phone&captcha=$code');
 
         // if (response != null && response['code'] == 200) {
         //   // 验证成功,返回首页
-        //   RouteHelper.popUntil(context, AppRoutes.home);
+        //   // RouteHelper.popUntil(context, AppRoutes.home);
         // } else {
-        //   // 验证失败,显示错误提示
+        //   // 其他错误,显示错误提示
         //   ScaffoldMessenger.of(context).showSnackBar(
         //     SnackBar(
         //       content: Text('验证失败: ${response?['message'] ?? '未知错误'}'),

@@ -202,4 +202,30 @@ class DioUtils {
   static Future<List<Cookie>> loadCookies(Uri uri) async {
     return _cookieJar.loadForRequest(uri);
   }
+
+  // 获取指定域名的所有 Cookie
+  static Future<List<Cookie>> getCookiesForDomain(String domain) async {
+    // 构建 Uri 对象
+    final uri = Uri.parse('$_baseUrl$domain');
+    // 从 cookie jar 中加载指定域名的 cookies
+    final cookies = await _cookieJar.loadForRequest(uri);
+    return cookies;
+  }
+
+  // 获取指定 Cookie 的值
+  static Future<String?> getCookieValue(String domain, String cookieName) async {
+    final cookies = await getCookiesForDomain(domain);
+    // 查找指定名称的 cookie
+    final cookie = cookies.firstWhere(
+      (cookie) => cookie.name == cookieName,
+      orElse: () => Cookie('', ''), // 如果找不到返回空 cookie
+    );
+    return cookie.value.isEmpty ? null : cookie.value;
+  }
+
+  // 保存 Cookie
+  static Future<void> saveCookie(String domain, Cookie cookie) async {
+    final uri = Uri.parse('$_baseUrl$domain');
+    await _cookieJar.saveFromResponse(uri, [cookie]);
+  }
 }
