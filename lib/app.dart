@@ -1,7 +1,9 @@
+import 'package:ai_music/routes/app_routes.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import 'modules/home/home_page.dart';
+import 'routes/app_pages.dart';
 
 class App extends StatelessWidget {
   const App({super.key});
@@ -50,6 +52,9 @@ class App extends StatelessWidget {
           ),
           iconTheme: const IconThemeData(color: Colors.white)),
       home: const HomePage(),
+      initialRoute: AppRoutes.home,
+      routes: AppPages.routes,
+      onUnknownRoute: (settings) => AppPages.unknownRoute,
     );
   }
 }

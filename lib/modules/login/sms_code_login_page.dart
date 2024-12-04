@@ -1,12 +1,15 @@
+import 'package:ai_music/routes/route_helper.dart';
 import 'package:ai_music/themes/theme_color.dart';
-import 'package:ai_music/widgets/StatusBarPlaceHolder.dart';
+import 'package:ai_music/widgets/status_bar_playce_holder.dart';
 import 'package:flutter/material.dart';
 
 import '../../network/dio_utils.dart';
+import '../../routes/app_routes.dart';
 import '../../themes/theme_size.dart';
+import '../../widgets/common_button.dart';
 
-class PhoneCodeLoginPage extends StatelessWidget {
-  PhoneCodeLoginPage({super.key});
+class SmsCodeLoginPage extends StatelessWidget {
+  SmsCodeLoginPage({super.key});
 
   final TextEditingController _phoneInputController = TextEditingController();
 
@@ -51,7 +54,12 @@ class PhoneCodeLoginPage extends StatelessWidget {
           const SizedBox(
             height: 40,
           ),
-          _buildGetSmsCodeButton(),
+          _buildGetSmsCodeButton(context),
+          const SizedBox(
+            height: 20,
+          ),
+          // 临时测试按钮,用于跳转到验证码页面
+          _buildJumpVerifyCodePage(context),
           const SizedBox(
             height: 20,
           ),
@@ -79,7 +87,7 @@ class PhoneCodeLoginPage extends StatelessWidget {
 
   _buildPhoneInputWidget() {
     return TextField(
-      controller: _phoneInputController,
+      controller: _phoneInputController..text = '13880553414',
       style: const TextStyle(color: Colors.white, fontSize: 20),
       keyboardType: TextInputType.phone,
       decoration: InputDecoration(
@@ -95,30 +103,22 @@ class PhoneCodeLoginPage extends StatelessWidget {
     );
   }
 
-  _buildGetSmsCodeButton() {
+  _buildGetSmsCodeButton(BuildContext context) {
     return SizedBox(
       width: double.infinity, // 按钮宽度占满父容器
       height: 50, // 设置按钮高度
-      child: ElevatedButton(
-        onPressed: () {
+      child: CommonButton(
+        text: '获取短信验证码',
+        onPressed: () async {
           // 获取短信验证码
           final phone = _phoneInputController.text;
-          DioUtils.post(path: '/captcha/sent?phone=$phone');
+          final response = await DioUtils.get(path: '/captcha/sent?phone=$phone');
+
+          // 如果请求成功且状态码为200,跳转到验证码输入页面
+          if (response != null && response['code'] == 200) {
+            RouteHelper.push(context, AppRoutes.smsVerifyCode, arguments: phone);
+          }
         },
-        style: ElevatedButton.styleFrom(
-          backgroundColor: Colors.white, // 按钮背景色为白色
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(10), // 设置圆角半径
-          ),
-        ),
-        child: const Text(
-          '获取短信验证码',
-          style: TextStyle(
-            fontSize: 18,
-            color: defaultBgColor, // 使用主题中定义的背景色作为文字颜色
-            fontWeight: FontWeight.w500,
-          ),
-        ),
       ),
     );
   }
@@ -129,6 +129,15 @@ class PhoneCodeLoginPage extends StatelessWidget {
         Checkbox(value: false, onChanged: (value) {}),
         const Text("我已阅读并同意用户协议, 并授权获取短信验证码"),
       ],
+    );
+  }
+
+  _buildJumpVerifyCodePage(BuildContext context) {
+    return CommonButton(
+      text: '验证短信验证码(测试)',
+      onPressed: () {
+        RouteHelper.push(context, AppRoutes.smsVerifyCode);
+      },
     );
   }
 }

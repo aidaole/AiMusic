@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 
+import '../../routes/app_routes.dart';
+import '../../routes/route_helper.dart';
 import '../../themes/theme_color.dart';
 import "../../themes/theme_size.dart";
-import '../login/phone_code_login_page.dart';
 
 class AccountPage extends StatelessWidget {
   const AccountPage({super.key});
@@ -235,8 +236,7 @@ class AccountPage extends StatelessWidget {
           padding: EdgeInsets.all(padding),
           child: IconButton(
             onPressed: () {
-              Navigator.push(
-                  context, MaterialPageRoute(builder: (context) => PhoneCodeLoginPage()));
+              RouteHelper.push(context, AppRoutes.smsLogin);
             },
             icon: Icon(
               Icons.settings,

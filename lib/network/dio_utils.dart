@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:ai_music/common/log_util.dart';
 import 'package:dio/dio.dart';
 import 'package:dio_cookie_manager/dio_cookie_manager.dart';
 import 'package:cookie_jar/cookie_jar.dart';
@@ -20,7 +21,7 @@ class DioUtils {
   static const int _connectTimeout = 15000; // 15秒
   static const int _receiveTimeout = 15000;
   static const int _sendTimeout = 10000;
-  static const String _baseUrl = 'http://localhost:3000/'; // 替换为你的基础URL
+  static const String _baseUrl = 'http://10.22.81.173:3000/'; // 替换为你的基础URL
 
   // 初始化 Dio
   static Future<void> init() async {
@@ -189,7 +190,7 @@ class DioUtils {
   static void _handleError(DioException error) {
     // 这里可以添加统一的错误处理逻辑
     // 比如显示错误提示、日志记录等
-    print('请求错误: ${error.message}');
+    LogUtil.e('请求错误: ${error.message}');
   }
 
   // 清除所有 Cookie
