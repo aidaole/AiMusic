@@ -15,6 +15,10 @@ class MusicPage extends StatelessWidget {
   }
 
   _buildBody(BuildContext context) {
+    return _buildMainContent(context);
+  }
+
+  _buildMainContent(BuildContext context) {
     return Stack(
       children: [
         _buildMusicListWidget(),
@@ -40,13 +44,7 @@ class MusicPage extends StatelessWidget {
   }
 
   Container _buildMusicInfoItemWidget(BuildContext context, int index) {
-    final colors = [
-      Colors.amber,
-      Colors.blue,
-      Colors.green,
-      Colors.purple,
-      Colors.red
-    ];
+    final colors = [Colors.amber, Colors.blue, Colors.green, Colors.purple, Colors.red];
     return Container(
       color: colors[index % colors.length],
       width: double.infinity,
@@ -63,6 +61,9 @@ class MusicPage extends StatelessWidget {
           _buildMusicLyricWidget(context),
           const Spacer(),
           _buildMusicControlWidget(context),
+          SizedBox(
+            height: defaultBottomNavigationBarHeight,
+          )
         ],
       ),
     );
@@ -192,8 +193,7 @@ class MusicPage extends StatelessWidget {
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            IconButton(
-                onPressed: () {}, icon: const Icon(Icons.menu, size: iconSize)),
+            IconButton(onPressed: () {}, icon: const Icon(Icons.menu, size: iconSize)),
             Text(
               "模式选择",
               style: Theme.of(context).textTheme.titleLarge,

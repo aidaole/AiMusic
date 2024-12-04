@@ -9,54 +9,70 @@ class ExplorePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    return _buildBody(context);
+  }
+
+  Scaffold _buildBody(BuildContext context) {
     return Scaffold(
       backgroundColor: defaultBgColor,
       body: Column(
         children: [
-          // 固定在顶部的部分
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20),
-            child: Column(
-              children: [
-                _buildStatusBar(),
-                const SizedBox(
-                  height: 10,
-                ),
-                _buildSearchBar(context),
-              ],
-            ),
-          ),
-          // 可滚动的内容部分
           Expanded(
-            child: NestedScrollView(
-              headerSliverBuilder:
-                  (BuildContext context, bool innerBoxIsScrolled) {
-                return [
-                  SliverPadding(
-                    padding: const EdgeInsets.symmetric(horizontal: 20),
-                    sliver: SliverToBoxAdapter(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const SizedBox(height: 20),
-                          _buildHotSongList(context),
-                          const SizedBox(height: 20),
-                          _buildLiveMusicList(context),
-                          const SizedBox(height: 20),
-                        ],
-                      ),
-                    ),
-                  ),
-                ];
-              },
-              body: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
-                child: _buildCategoryList(context),
-              ),
-            ),
+            child: _buidMainContent(context),
           ),
+          SizedBox(
+            height: defaultBottomNavigationBarHeight,
+          )
         ],
       ),
+    );
+  }
+
+  Column _buidMainContent(BuildContext context) {
+    return Column(
+      children: [
+        // 固定在顶部的部分
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20),
+          child: Column(
+            children: [
+              _buildStatusBar(),
+              const SizedBox(
+                height: 10,
+              ),
+              _buildSearchBar(context),
+            ],
+          ),
+        ),
+        // 可滚动的内容部分
+        Expanded(
+          child: NestedScrollView(
+            headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
+              return [
+                SliverPadding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  sliver: SliverToBoxAdapter(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const SizedBox(height: 20),
+                        _buildHotSongList(context),
+                        const SizedBox(height: 20),
+                        _buildLiveMusicList(context),
+                        const SizedBox(height: 20),
+                      ],
+                    ),
+                  ),
+                ),
+              ];
+            },
+            body: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: _buildCategoryList(context),
+            ),
+          ),
+        ),
+      ],
     );
   }
 
@@ -283,8 +299,7 @@ class ExplorePage extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               ClipRRect(
-                borderRadius:
-                    const BorderRadius.vertical(top: Radius.circular(10)),
+                borderRadius: const BorderRadius.vertical(top: Radius.circular(10)),
                 child: Image.network(
                   // 使用不同高度的图片来模拟瀑布流效果
                   'https://picsum.photos/400/${heights[index].toInt()}',
