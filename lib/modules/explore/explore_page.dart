@@ -47,7 +47,8 @@ class ExplorePage extends StatelessWidget {
         // 可滚动的内容部分
         Expanded(
           child: NestedScrollView(
-            headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
+            headerSliverBuilder:
+                (BuildContext context, bool innerBoxIsScrolled) {
               return [
                 SliverPadding(
                   padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -258,15 +259,19 @@ class ExplorePage extends StatelessWidget {
             ],
           ),
           Expanded(
-            child: TabBarView(
-              children: [
-                _buildGridView("歌单漫游"),
-                _buildGridView("流行"),
-                _buildGridView("华语"),
-                _buildGridView("欧美"),
-                _buildGridView("摇滚"),
-                _buildGridView("民谣"),
-              ],
+            child: Builder(
+              builder: (context) {
+                return TabBarView(
+                  children: [
+                    _buildGridView(context, "歌单漫游"),
+                    _buildGridView(context, "流行"),
+                    _buildGridView(context, "华语"),
+                    _buildGridView(context, "欧美"),
+                    _buildGridView(context, "摇滚"),
+                    _buildGridView(context, "民谣"),
+                  ],
+                );
+              },
             ),
           ),
         ],
@@ -274,7 +279,7 @@ class ExplorePage extends StatelessWidget {
     );
   }
 
-  Widget _buildGridView(String category) {
+  Widget _buildGridView(BuildContext context, String category) {
     // 生成随机高度列表，实际项目中应该根据实际内容高度来设置
     final List<double> heights = List.generate(
       20,
@@ -299,7 +304,8 @@ class ExplorePage extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               ClipRRect(
-                borderRadius: const BorderRadius.vertical(top: Radius.circular(10)),
+                borderRadius:
+                    const BorderRadius.vertical(top: Radius.circular(10)),
                 child: Image.network(
                   // 使用不同高度的图片来模拟瀑布流效果
                   'https://picsum.photos/400/${heights[index].toInt()}',
