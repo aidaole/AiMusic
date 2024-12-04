@@ -1,19 +1,32 @@
 import 'package:flutter/material.dart';
 
+import '../../common/log_util.dart';
+import '../../network/dio_utils.dart';
 import '../../routes/app_routes.dart';
 import '../../routes/route_helper.dart';
 import '../../themes/theme_color.dart';
 import "../../themes/theme_size.dart";
 
-class AccountPage extends StatelessWidget {
+class AccountPage extends StatefulWidget {
   const AccountPage({super.key});
 
+  @override
+  State<AccountPage> createState() => _AccountPageState();
+}
+
+class _AccountPageState extends State<AccountPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: defaultBgColor,
       body: _buildBody(context),
     );
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchAccountInfo();
   }
 
   Column _buildBody(BuildContext context) {
@@ -258,5 +271,14 @@ class AccountPage extends StatelessWidget {
     return Container(
       color: Colors.blue.withAlpha(20),
     );
+  }
+
+  void _fetchAccountInfo() async {
+    try {
+      final resp = await DioUtils.get(path: "/login/status");
+      LogUtil.d('获取账号信息成功: $resp');
+    } catch (e) {
+      LogUtil.e('获取账号信息失败: $e');
+    }
   }
 }
