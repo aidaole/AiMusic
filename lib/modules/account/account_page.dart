@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../themes/theme_color.dart';
 import "../../themes/theme_size.dart";
+import '../login/phone_code_login_page.dart';
 
 class AccountPage extends StatelessWidget {
   const AccountPage({super.key});
@@ -232,9 +233,15 @@ class AccountPage extends StatelessWidget {
         ),
         Padding(
           padding: EdgeInsets.all(padding),
-          child: Icon(
-            Icons.settings,
-            size: iconSize,
+          child: IconButton(
+            onPressed: () {
+              Navigator.push(
+                  context, MaterialPageRoute(builder: (context) => const PhoneCodeLoginPage()));
+            },
+            icon: Icon(
+              Icons.settings,
+              size: iconSize,
+            ),
           ),
         )
       ],
