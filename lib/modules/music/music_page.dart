@@ -32,15 +32,13 @@ class MusicPage extends StatelessWidget {
     );
   }
 
-  Expanded _buildMusicListWidget() {
-    return Expanded(
-      child: PageView.builder(
+  _buildMusicListWidget() {
+    return PageView.builder(
         scrollDirection: Axis.vertical,
         itemBuilder: (context, index) {
           return _buildMusicInfoItemWidget(context, index);
         },
-      ),
-    );
+      );
   }
 
   Container _buildMusicInfoItemWidget(BuildContext context, int index) {
