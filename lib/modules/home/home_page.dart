@@ -14,23 +14,27 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   int _selectedIndex = 0;
   final List<Widget> _pages = [
-    const ExplorePage(),
-    const MusicPage(),
-    const AccountPage(),
+    const KeepAlivePage(child: ExplorePage()),
+    const KeepAlivePage(child: MusicPage()),
+    const KeepAlivePage(child: AccountPage()),
   ];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        body: Stack(
-          children: [
-            _pages[_selectedIndex],
-            Align(
-              alignment: Alignment.bottomCenter,
-              child: _buildBottomNavigationBar(),
-            ),
-          ],
-        ));
+      body: Stack(
+        children: [
+          IndexedStack(
+            index: _selectedIndex,
+            children: _pages,
+          ),
+          Align(
+            alignment: Alignment.bottomCenter,
+            child: _buildBottomNavigationBar(),
+          ),
+        ],
+      ),
+    );
   }
 
   Widget _buildBottomNavigationBar() {
@@ -53,5 +57,29 @@ class _HomePageState extends State<HomePage> {
         ],
       ),
     );
+  }
+}
+
+class KeepAlivePage extends StatefulWidget {
+  final Widget child;
+
+  const KeepAlivePage({
+    super.key,
+    required this.child,
+  });
+
+  @override
+  State<KeepAlivePage> createState() => _KeepAlivePageState();
+}
+
+class _KeepAlivePageState extends State<KeepAlivePage>
+    with AutomaticKeepAliveClientMixin {
+  @override
+  bool get wantKeepAlive => true;
+
+  @override
+  Widget build(BuildContext context) {
+    super.build(context);
+    return widget.child;
   }
 }
