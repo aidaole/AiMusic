@@ -29,6 +29,16 @@ class AccountRepository {
     }
   }
 
+  Future<void> logout() async {
+    final resp = await DioUtils.get(path: "/logout");
+    if (resp['code'] == 200) {
+      LogUtil.d('退出登录成功');
+      await _clearCachedAccount();
+    } else {
+      LogUtil.e('退出登录失败: ${resp['message']}');
+    }
+  }
+
   Future<AccountModel?> _getCachedAccount() async {
     final prefs = await SharedPreferences.getInstance();
     final jsonString = prefs.getString(_cacheKey);
@@ -44,4 +54,9 @@ class AccountRepository {
     final jsonString = jsonEncode(json);
     await prefs.setString(_cacheKey, jsonString);
   }
-} 
+
+  Future<void> _clearCachedAccount() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove(_cacheKey);
+  }
+}

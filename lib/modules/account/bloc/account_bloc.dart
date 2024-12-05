@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../repositories/account_repository.dart';
@@ -9,6 +11,7 @@ class AccountBloc extends Bloc<AccountEvent, AccountState> {
 
   AccountBloc({required this.repository}) : super(AccountInitial()) {
     on<FetchAccountInfo>(_onFetchAccountInfo);
+    on<LogoutEvent>(_onLogout);
   }
 
   Future<void> _onFetchAccountInfo(
@@ -23,4 +26,9 @@ class AccountBloc extends Bloc<AccountEvent, AccountState> {
       emit(AccountError(e.toString()));
     }
   }
-} 
+
+  FutureOr<void> _onLogout(LogoutEvent event, Emitter<AccountState> emit) async {
+    await repository.logout();
+    emit(AccountError("退出登录成功"));
+  }
+}

@@ -6,6 +6,10 @@ import 'package:ai_music/themes/theme_color.dart';
 import 'package:ai_music/widgets/status_bar_playce_holder.dart';
 import 'package:flutter/material.dart';
 import 'package:qr_flutter/qr_flutter.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../common/log_util.dart';
+import '../../modules/account/bloc/account_bloc.dart';
+import '../../modules/account/bloc/account_event.dart';
 
 class QrLoginPage extends StatefulWidget {
   const QrLoginPage({super.key});
@@ -84,10 +88,10 @@ class _QrLoginPageState extends State<QrLoginPage> {
               break;
             case 801:
               // 等待扫码
+              LogUtil.d('等待扫码');
               break;
             case 802:
-              // 待确认
-              _showMessage('请在手机上确认登录');
+              LogUtil.d('请在手机上确认登录');
               break;
             case 803:
               // 登录成功
@@ -95,6 +99,7 @@ class _QrLoginPageState extends State<QrLoginPage> {
               timer.cancel();
               if (mounted) {
                 RouteHelper.popUntil(context, AppRoutes.home);
+                context.read<AccountBloc>().add(FetchAccountInfo());
               }
               break;
           }
@@ -140,9 +145,7 @@ class _QrLoginPageState extends State<QrLoginPage> {
           Text(
             "请使用登录了网易账号的网易云音乐App扫码",
             style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-                color: Colors.white.withAlpha(80)),
+                fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white.withAlpha(80)),
           ),
           const SizedBox(height: 40),
           // 二维码显示区域

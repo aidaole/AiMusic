@@ -1,7 +1,10 @@
+import 'package:ai_music/modules/account/bloc/account_bloc.dart';
 import 'package:ai_music/routes/app_routes.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
+import 'modules/account/repositories/account_repository.dart';
 import 'modules/home/home_page.dart';
 import 'routes/app_pages.dart';
 
@@ -10,6 +13,19 @@ class App extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider(
+          create: (context) => AccountBloc(
+            repository: AccountRepository(),
+          ),
+        ),
+      ],
+      child: _buildMaterialApp(),
+    );
+  }
+
+  MaterialApp _buildMaterialApp() {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       theme: ThemeData(

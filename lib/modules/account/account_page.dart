@@ -1,32 +1,26 @@
+import 'package:ai_music/modules/account/account_info_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../modules/account/bloc/account_bloc.dart';
-import '../../modules/account/bloc/account_event.dart';
 import '../../modules/account/bloc/account_state.dart';
-import '../../modules/account/models/account_model.dart';
-import '../../modules/account/repositories/account_repository.dart';
-import '../../routes/app_routes.dart';
-import '../../routes/route_helper.dart';
 import '../../themes/theme_color.dart';
-import "../../themes/theme_size.dart";
+import 'account_not_login_page.dart';
+import 'bloc/account_event.dart';
 
-class AccountPage extends StatelessWidget {
+class AccountPage extends StatefulWidget {
   const AccountPage({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => AccountBloc(
-        repository: AccountRepository(),
-      )..add(FetchAccountInfo()),
-      child: const AccountView(),
-    );
-  }
+  State<AccountPage> createState() => _AccountPageState();
 }
 
-class AccountView extends StatelessWidget {
-  const AccountView({super.key});
+class _AccountPageState extends State<AccountPage> {
+  @override
+  void initState() {
+    super.initState();
+    context.read<AccountBloc>().add(FetchAccountInfo());
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -38,285 +32,13 @@ class AccountView extends StatelessWidget {
             return const Center(child: CircularProgressIndicator());
           }
           if (state is AccountError) {
-            return Center(child: Text(state.message));
+            return const AccountNotLoginPage();
           }
           if (state is AccountLoaded) {
-            return _AccountContent(account: state.account);
+            return AccountInfoPage(account: state.account);
           }
           return const SizedBox();
         },
-      ),
-    );
-  }
-}
-
-class _AccountContent extends StatelessWidget {
-  final AccountModel account;
-
-  const _AccountContent({required this.account});
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Expanded(child: _buildMainContent(context)),
-        SizedBox(height: defaultBottomNavigationBarHeight)
-      ],
-    );
-  }
-
-  Stack _buildMainContent(BuildContext context) {
-    return Stack(
-      children: [
-        // 底层音乐墙
-        _buildMusicWall(),
-        // 可滑动的内容区域
-        _buildAccountInfoWidget(),
-        // 顶部固定操作栏
-        Column(
-          children: [
-            _buildStatusBar(context),
-            _buildActionBar(context),
-          ],
-        ),
-      ],
-    );
-  }
-
-  DraggableScrollableSheet _buildAccountInfoWidget() {
-    return DraggableScrollableSheet(
-      initialChildSize: 0.8,
-      minChildSize: 0.2,
-      maxChildSize: 0.8,
-      builder: (BuildContext context, ScrollController scrollController) {
-        // 获取底部导航栏高度，如果没有设置可以使用默认值
-        final bottomPadding =
-            MediaQuery.of(context).padding.bottom + kBottomNavigationBarHeight;
-        return Stack(
-          clipBehavior: Clip.none,
-          children: [
-            Container(
-              height: double.infinity,
-              decoration: const BoxDecoration(
-                color: defaultBgColor,
-                borderRadius: BorderRadius.only(
-                  topLeft: Radius.circular(20),
-                  topRight: Radius.circular(20),
-                ),
-              ),
-              child: SingleChildScrollView(
-                controller: scrollController,
-                physics: const ClampingScrollPhysics(),
-                child: Column(
-                  children: [
-                    const SizedBox(height: 50), // 为头像留出空间
-                    Text(
-                      account.nickname,
-                      style: Theme.of(context).textTheme.titleLarge,
-                    ),
-                    const SizedBox(height: 20),
-                    _buildFansInfoWidget(context),
-                    const SizedBox(height: 20),
-                    // 使用 LayoutBuilder 来获取剩余可用空间
-                    LayoutBuilder(
-                      builder: (context, constraints) {
-                        // 计算列表区域的高度
-                        // 总高度减去上方内容高度(约110)和底部导航栏高度
-                        final availableHeight =
-                            MediaQuery.of(context).size.height * 0.8 -
-                                130 -
-                                bottomPadding;
-                        return SizedBox(
-                          height: availableHeight,
-                          child: _buildSongsListWidget(),
-                        );
-                      },
-                    ),
-                  ],
-                ),
-              ),
-            ),
-            // 使用 Positioned 将头像放置在顶部并超出容器
-            _buildAvatarWidget(),
-          ],
-        );
-      },
-    );
-  }
-
-  DefaultTabController _buildSongsListWidget() {
-    return DefaultTabController(
-      length: 4,
-      child: Column(
-        children: [
-          // Tab栏
-          const TabBar(
-            labelColor: Colors.white, // 选中的标签颜色
-            unselectedLabelColor: Colors.grey, // 未选中的标签颜色
-            indicatorColor: Colors.white, // 指示器颜色
-            dividerColor: Colors.transparent, // 去掉分隔线
-            tabs: [
-              Tab(text: "歌单"),
-              Tab(text: "下载"),
-              Tab(text: "历史播放"),
-              Tab(text: "视频"),
-            ],
-          ),
-          // Tab页面内容区域
-          Expanded(
-            child: TabBarView(
-              children: [
-                // 歌单页面
-                ListView.builder(
-                  itemCount: 10,
-                  itemBuilder: (context, index) {
-                    return ListTile(
-                      leading: const Icon(Icons.music_note),
-                      title: Text(
-                        "歌单 ${index + 1}",
-                        style: Theme.of(context).textTheme.bodyMedium,
-                      ),
-                    );
-                  },
-                ),
-                // 下载页面
-                ListView.builder(
-                  itemCount: 10,
-                  itemBuilder: (context, index) {
-                    return ListTile(
-                      leading: const Icon(Icons.download_done),
-                      title: Text(
-                        "已下载歌曲 ${index + 1}",
-                        style: Theme.of(context).textTheme.bodyMedium,
-                      ),
-                    );
-                  },
-                ),
-                // 历史播放页面
-                ListView.builder(
-                  itemCount: 10,
-                  itemBuilder: (context, index) {
-                    return ListTile(
-                      leading: const Icon(Icons.history),
-                      title: Text(
-                        "最近播放 ${index + 1}",
-                        style: Theme.of(context).textTheme.bodyMedium,
-                      ),
-                    );
-                  },
-                ),
-                // 视频页面
-                ListView.builder(
-                  itemCount: 10,
-                  itemBuilder: (context, index) {
-                    return ListTile(
-                      leading: const Icon(Icons.video_library),
-                      title: Text(
-                        "视频 ${index + 1}",
-                        style: Theme.of(context).textTheme.bodyMedium,
-                      ),
-                    );
-                  },
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Row _buildFansInfoWidget(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Text("${account.follows} 关注",
-            style: Theme.of(context).textTheme.titleSmall),
-        const SizedBox(
-          width: 15,
-        ),
-        Text("${account.fans} 粉丝",
-            style: Theme.of(context).textTheme.titleSmall),
-        const SizedBox(
-          width: 15,
-        ),
-        Text("${account.gained} 获得",
-            style: Theme.of(context).textTheme.titleSmall),
-      ],
-    );
-  }
-
-  _buildActionBar(BuildContext context) {
-    double iconSize = 30.0;
-    double padding = 10.0;
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.end,
-      children: [
-        Padding(
-          padding: EdgeInsets.all(padding),
-          child: Icon(
-            Icons.alarm,
-            size: iconSize,
-          ),
-        ),
-        Padding(
-          padding: EdgeInsets.all(padding),
-          child: Icon(
-            Icons.shopping_bag,
-            size: iconSize,
-          ),
-        ),
-        Padding(
-          padding: EdgeInsets.all(padding),
-          child: IconButton(
-            onPressed: () {
-              RouteHelper.push(context, AppRoutes.phonePasswordLogin);
-            },
-            icon: Icon(
-              Icons.settings,
-              size: iconSize,
-            ),
-          ),
-        )
-      ],
-    );
-  }
-
-  _buildStatusBar(BuildContext context) {
-    return SizedBox(
-      height: defaultStatusBarHeight.toDouble(),
-    );
-  }
-
-  _buildMusicWall() {
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.blue.withAlpha(20),
-        image: account.backgroundUrl.isNotEmpty
-            ? DecorationImage(
-                image: NetworkImage(account.backgroundUrl),
-                fit: BoxFit.cover,
-              )
-            : null,
-      ),
-    );
-  }
-
-  Positioned _buildAvatarWidget() {
-    return Positioned(
-      top: -50,
-      left: 0,
-      right: 0,
-      child: Center(
-        child: account.avatarUrl.isNotEmpty
-            ? CircleAvatar(
-                radius: 50,
-                backgroundImage: NetworkImage(account.avatarUrl),
-              )
-            : const Icon(
-                Icons.account_circle_rounded,
-                size: 100,
-              ),
       ),
     );
   }
