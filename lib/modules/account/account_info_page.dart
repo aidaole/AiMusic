@@ -72,6 +72,10 @@ class AccountInfoPage extends StatelessWidget {
                       account.nickname,
                       style: Theme.of(context).textTheme.titleLarge,
                     ),
+                    Text(
+                      account.signature,
+                      style: Theme.of(context).textTheme.bodyMedium,
+                    ),
                     const SizedBox(height: 20),
                     _buildFansInfoWidget(context),
                     const SizedBox(height: 20),
