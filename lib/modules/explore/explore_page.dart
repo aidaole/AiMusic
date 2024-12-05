@@ -1,15 +1,25 @@
+import 'package:ai_music/modules/explore/repos/play_list_repo.dart';
+import 'package:ai_music/widgets/status_bar_playce_holder.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 
+import '../../common/log_util.dart';
 import '../../themes/theme_color.dart';
 import '../../themes/theme_size.dart';
+import 'bloc/play_list_bloc.dart';
+import 'bloc/play_list_event.dart';
+import 'bloc/play_list_state.dart';
 
 class ExplorePage extends StatelessWidget {
   const ExplorePage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return _buildBody(context);
+    return BlocProvider(
+      create: (context) => PlayListBloc(PlayListRepo())..add(RequestHotPlayListEvent()),
+      child: _buildBody(context),
+    );
   }
 
   Scaffold _buildBody(BuildContext context) {
@@ -17,6 +27,7 @@ class ExplorePage extends StatelessWidget {
       backgroundColor: defaultBgColor,
       body: Column(
         children: [
+          const StatusBarPlaceHolder(),
           Expanded(
             child: _buidMainContent(context),
           ),
@@ -28,31 +39,21 @@ class ExplorePage extends StatelessWidget {
     );
   }
 
-  Column _buidMainContent(BuildContext context) {
-    return Column(
-      children: [
-        // 固定在顶部的部分
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20),
-          child: Column(
-            children: [
-              _buildStatusBar(),
-              const SizedBox(
-                height: 10,
-              ),
-              _buildSearchBar(context),
-            ],
+  _buidMainContent(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      child: Column(
+        children: [
+          const SizedBox(
+            height: 20,
           ),
-        ),
-        // 可滚动的内容部分
-        Expanded(
-          child: NestedScrollView(
-            headerSliverBuilder:
-                (BuildContext context, bool innerBoxIsScrolled) {
-              return [
-                SliverPadding(
-                  padding: const EdgeInsets.symmetric(horizontal: 20),
-                  sliver: SliverToBoxAdapter(
+          _buildSearchBar(context),
+          // 可滚动的内容部分
+          Expanded(
+            child: NestedScrollView(
+              headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
+                return [
+                  SliverToBoxAdapter(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -64,22 +65,13 @@ class ExplorePage extends StatelessWidget {
                       ],
                     ),
                   ),
-                ),
-              ];
-            },
-            body: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: _buildCategoryList(context),
+                ];
+              },
+              body: _buildCategoryList(context),
             ),
           ),
-        ),
-      ],
-    );
-  }
-
-  _buildStatusBar() {
-    return SizedBox(
-      height: defaultStatusBarHeight.toDouble(),
+        ],
+      ),
     );
   }
 
@@ -140,9 +132,26 @@ class ExplorePage extends StatelessWidget {
         const SizedBox(height: 20),
         SizedBox(
           height: 180,
-          child: ListView.builder(
+          child: _buildHostSongListBloc(),
+        ),
+      ],
+    );
+  }
+
+  BlocBuilder<PlayListBloc, PlayListState> _buildHostSongListBloc() {
+    return BlocBuilder<PlayListBloc, PlayListState>(
+      builder: (context, state) {
+        LogUtil.i(state);
+        if (state is RequestHotPlayListLoading) {
+          return const Center(child: CircularProgressIndicator());
+        }
+        if (state is RequestHotPlayListError) {
+          return Center(child: Text(state.error));
+        }
+        if (state is RequestHotPlayListSuccess) {
+          return ListView.builder(
             scrollDirection: Axis.horizontal, // 设置为水平滚动
-            itemCount: 10, // 测试数据,显示10个项目
+            itemCount: state.playList.tags.length, // 测试数据,显示10个项目
             itemBuilder: (context, index) {
               return Padding(
                 padding: const EdgeInsets.only(right: 15),
@@ -160,12 +169,21 @@ class ExplorePage extends StatelessWidget {
                       fit: BoxFit.cover,
                     ),
                   ),
+                  child: Column(
+                    children: [
+                      Text(
+                        state.playList.tags[index].name,
+                        style: Theme.of(context).textTheme.bodyMedium,
+                      ),
+                    ],
+                  ),
                 ),
               );
             },
-          ),
-        ),
-      ],
+          );
+        }
+        return const SizedBox();
+      },
     );
   }
 
@@ -287,7 +305,6 @@ class ExplorePage extends StatelessWidget {
     );
 
     return MasonryGridView.builder(
-      padding: const EdgeInsets.all(10),
       itemCount: 20,
       gridDelegate: const SliverSimpleGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 2,
@@ -304,8 +321,7 @@ class ExplorePage extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               ClipRRect(
-                borderRadius:
-                    const BorderRadius.vertical(top: Radius.circular(10)),
+                borderRadius: const BorderRadius.vertical(top: Radius.circular(10)),
                 child: Image.network(
                   // 使用不同高度的图片来模拟瀑布流效果
                   'https://picsum.photos/400/${heights[index].toInt()}',
