@@ -223,22 +223,10 @@ class AccountInfoPage extends StatelessWidget {
           padding: EdgeInsets.all(padding),
           child: IconButton(
             onPressed: () {
-              RouteHelper.push(context, AppRoutes.phonePasswordLogin);
+              RouteHelper.push(context, AppRoutes.appSettings);
             },
             icon: Icon(
               Icons.settings,
-              size: iconSize,
-            ),
-          ),
-        ),
-        Padding(
-          padding: EdgeInsets.all(padding),
-          child: IconButton(
-            onPressed: () {
-              context.read<AccountBloc>().add(LogoutEvent());
-            },
-            icon: Icon(
-              Icons.logout,
               size: iconSize,
             ),
           ),

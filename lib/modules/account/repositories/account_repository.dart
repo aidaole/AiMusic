@@ -29,13 +29,15 @@ class AccountRepository {
     }
   }
 
-  Future<void> logout() async {
+  Future<bool> logout() async {
     final resp = await DioUtils.get(path: "/logout");
     if (resp['code'] == 200) {
       LogUtil.d('退出登录成功');
       await _clearCachedAccount();
+      return true;
     } else {
       LogUtil.e('退出登录失败: ${resp['message']}');
+      return false;
     }
   }
 

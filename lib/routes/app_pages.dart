@@ -5,6 +5,7 @@ import '../modules/login/phone_password_login_page.dart';
 import '../modules/login/qr_login_page.dart';
 import '../modules/login/sms_code_login_page.dart';
 import '../modules/login/sms_verify_phone_code_page.dart';
+import '../modules/settings/app_settings_page.dart';
 import 'app_routes.dart';
 // 导入其他页面
 
@@ -27,6 +28,7 @@ class AppPages {
     },
     AppRoutes.phonePasswordLogin: (context) => PhonePasswordLoginPage(),
     AppRoutes.qrLogin: (context) => const QrLoginPage(),
+    AppRoutes.appSettings: (context) => const AppSettingsPage(),
   };
 
   /// 404页面

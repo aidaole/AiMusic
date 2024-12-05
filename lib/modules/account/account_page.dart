@@ -34,7 +34,7 @@ class _AccountPageState extends State<AccountPage> {
           if (state is AccountError) {
             return const AccountNotLoginPage();
           }
-          if (state is AccountLoaded) {
+          if (state is AccountSuccess) {
             return AccountInfoPage(account: state.account);
           }
           return const SizedBox();

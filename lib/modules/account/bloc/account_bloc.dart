@@ -21,14 +21,18 @@ class AccountBloc extends Bloc<AccountEvent, AccountState> {
     emit(AccountLoading());
     try {
       final account = await repository.getAccountInfo();
-      emit(AccountLoaded(account));
+      emit(AccountSuccess(account));
     } catch (e) {
       emit(AccountError(e.toString()));
     }
   }
 
   FutureOr<void> _onLogout(LogoutEvent event, Emitter<AccountState> emit) async {
-    await repository.logout();
-    emit(AccountError("退出登录成功"));
+    final succ = await repository.logout();
+    if (succ) {
+      emit(LogoutSuccess());
+    } else {
+      emit(LogoutFailed());
+    }
   }
 }
