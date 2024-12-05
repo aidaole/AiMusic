@@ -5,6 +5,8 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'modules/account/repositories/account_repository.dart';
+import 'modules/explore/bloc/play_list_bloc.dart';
+import 'modules/explore/repos/play_list_repo.dart';
 import 'modules/home/home_page.dart';
 import 'routes/app_pages.dart';
 
@@ -20,6 +22,9 @@ class App extends StatelessWidget {
             repository: AccountRepository(),
           ),
         ),
+        BlocProvider(
+          create: (context) => PlayListBloc(playListRepo: PlayListRepo()),
+        )
       ],
       child: _buildMaterialApp(),
     );

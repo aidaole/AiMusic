@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:ai_music/modules/explore/repos/play_list_repo.dart';
 import 'package:ai_music/widgets/status_bar_playce_holder.dart';
 import 'package:flutter/material.dart';
@@ -11,15 +13,30 @@ import 'bloc/play_list_bloc.dart';
 import 'bloc/play_list_event.dart';
 import 'bloc/play_list_state.dart';
 
-class ExplorePage extends StatelessWidget {
+class ExplorePage extends StatefulWidget {
   const ExplorePage({super.key});
 
   @override
+  State<ExplorePage> createState() => _ExplorePageState();
+}
+
+class _ExplorePageState extends State<ExplorePage> {
+  static const String _tag = "ExplorePage";
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        LogUtil.i("ExplorePage initState called", tag: _tag);
+        context.read<PlayListBloc>().add(RequestHotPlayListEvent());
+      }
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => PlayListBloc(PlayListRepo())..add(RequestHotPlayListEvent()),
-      child: _buildBody(context),
-    );
+    return _buildBody(context);
   }
 
   Scaffold _buildBody(BuildContext context) {
@@ -51,14 +68,15 @@ class ExplorePage extends StatelessWidget {
           // 可滚动的内容部分
           Expanded(
             child: NestedScrollView(
-              headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
+              headerSliverBuilder:
+                  (BuildContext context, bool innerBoxIsScrolled) {
                 return [
                   SliverToBoxAdapter(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         const SizedBox(height: 20),
-                        _buildHotSongList(context),
+                        _buildHotCategoryList(context),
                         const SizedBox(height: 20),
                         _buildLiveMusicList(context),
                         const SizedBox(height: 20),
@@ -121,7 +139,7 @@ class ExplorePage extends StatelessWidget {
     );
   }
 
-  _buildHotSongList(BuildContext context) {
+  _buildHotCategoryList(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -132,58 +150,72 @@ class ExplorePage extends StatelessWidget {
         const SizedBox(height: 20),
         SizedBox(
           height: 180,
-          child: _buildHostSongListBloc(),
+          child: BlocBuilder<PlayListBloc, PlayListState>(
+            builder: (context, state) {
+              LogUtil.i(state, tag: _tag);
+              if (state is RequestHotPlayListLoading) {
+                return const Center(child: CircularProgressIndicator());
+              }
+              if (state is RequestHotPlayListError) {
+                return Center(child: Text(state.error));
+              }
+              if (state is RequestHotPlayListSuccess) {
+                return ListView.builder(
+                  scrollDirection: Axis.horizontal,
+                  itemCount: state.playList.tags.length,
+                  itemBuilder: (context, index) {
+                    return _buildHotCategoryItem(state, index, context);
+                  },
+                );
+              }
+              return const SizedBox();
+            },
+          ),
         ),
       ],
     );
   }
 
-  BlocBuilder<PlayListBloc, PlayListState> _buildHostSongListBloc() {
-    return BlocBuilder<PlayListBloc, PlayListState>(
-      builder: (context, state) {
-        LogUtil.i(state);
-        if (state is RequestHotPlayListLoading) {
-          return const Center(child: CircularProgressIndicator());
-        }
-        if (state is RequestHotPlayListError) {
-          return Center(child: Text(state.error));
-        }
-        if (state is RequestHotPlayListSuccess) {
-          return ListView.builder(
-            scrollDirection: Axis.horizontal, // 设置为水平滚动
-            itemCount: state.playList.tags.length, // 测试数据,显示10个项目
-            itemBuilder: (context, index) {
-              return Padding(
-                padding: const EdgeInsets.only(right: 15),
-                child: Container(
-                  height: 180, // 宽高比1:1
-                  width: 130,
-                  decoration: BoxDecoration(
-                    color: Colors.white.withAlpha(20),
-                    borderRadius: BorderRadius.circular(10),
-                    image: const DecorationImage(
-                      image: NetworkImage(
-                        // 使用测试图片
-                        'https://picsum.photos/180/180',
-                      ),
-                      fit: BoxFit.cover,
-                    ),
-                  ),
-                  child: Column(
-                    children: [
-                      Text(
-                        state.playList.tags[index].name,
-                        style: Theme.of(context).textTheme.bodyMedium,
-                      ),
-                    ],
-                  ),
+  Padding _buildHotCategoryItem(
+      RequestHotPlayListSuccess state, int index, BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(right: 15),
+      child: Container(
+        height: 180, // 宽高比1:1
+        width: 130,
+        decoration: BoxDecoration(
+          color: Color((0xFF000000 + ((index * 3 * 0x0F0F0F - 25) % 0xFFFFFF)))
+              .withOpacity(0.8),
+          borderRadius: BorderRadius.circular(10),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const SizedBox(
+              height: 20,
+            ),
+            Padding(
+              padding: const EdgeInsets.all(10.0),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(10),
+                child: Image.network(
+                  "https://picsum.photos/80/80?random=$index", // 添加random参数使每个图片不同
+                  width: 80,
+                  height: 80,
+                  fit: BoxFit.cover,
                 ),
-              );
-            },
-          );
-        }
-        return const SizedBox();
-      },
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(10.0),
+              child: Text(
+                state.playList.tags[index].name,
+                style: Theme.of(context).textTheme.bodyLarge,
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 
@@ -321,7 +353,8 @@ class ExplorePage extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               ClipRRect(
-                borderRadius: const BorderRadius.vertical(top: Radius.circular(10)),
+                borderRadius:
+                    const BorderRadius.vertical(top: Radius.circular(10)),
                 child: Image.network(
                   // 使用不同高度的图片来模拟瀑布流效果
                   'https://picsum.photos/400/${heights[index].toInt()}',

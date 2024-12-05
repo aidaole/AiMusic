@@ -6,24 +6,27 @@ import 'play_list_event.dart';
 import 'play_list_state.dart';
 
 class PlayListBloc extends Bloc<PlayListEvent, PlayListState> {
+  static const String _tag = "PlayListBloc";
+
   final PlayListRepo playListRepo;
 
-  PlayListBloc(this.playListRepo) : super(PlayListInitial()) {
-    on<RequestHotPlayListEvent>((event, emit) {
-      _onRequestHotPlayListEvent(event, emit);
-    });
+  PlayListBloc({required this.playListRepo}) : super(PlayListInitial()) {
+    on<RequestHotPlayListEvent>(
+      _onRequestHotPlayListEvent
+    );
   }
 
   void _onRequestHotPlayListEvent(
       RequestHotPlayListEvent event, Emitter<PlayListState> emit) async {
+    LogUtil.i("requestHotPlayListEvent", tag: _tag);
     try {
+      emit(RequestHotPlayListLoading());
       final playListCatagories = await playListRepo.requestHotPlayList();
-      LogUtil.i("playListCatagories: ${playListCatagories.tags.length}");
-      if (!emit.isDone) {
-        emit(RequestHotPlayListSuccess(playListCatagories));
-      }
-    } catch (e) {
-      LogUtil.e(e);
+      LogUtil.i("playListCatagories: ${playListCatagories.tags.length}",
+          tag: _tag);
+      emit(RequestHotPlayListSuccess(playListCatagories));
+    } catch (e, stackTrace) {
+      LogUtil.e("错误详情: $e\n$stackTrace", tag: _tag);
       emit(RequestHotPlayListError(e.toString()));
     }
   }
