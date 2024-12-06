@@ -22,7 +22,7 @@ class DioUtils {
   static const int _connectTimeout = 15000; // 15秒
   static const int _receiveTimeout = 15000;
   static const int _sendTimeout = 10000;
-  static const String _baseUrl = 'http://192.168.31.175:3000/'; // 替换为你的基础URL
+  static const String _baseUrl = 'http://115.120.245.31:3000/'; // 替换为你的基础URL
 
   // 初始化 Dio
   static Future<void> init() async {

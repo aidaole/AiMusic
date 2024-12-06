@@ -23,12 +23,9 @@ class AppSettingsPage extends StatelessWidget {
         child: Column(
           children: [
             const StatusBarPlaceHolder(),
-            Column(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                _buildLogoutBtn(),
-              ],
-            )
+            _buildActionBar(context),
+            const Spacer(),
+            _buildLogoutBtn(),
           ],
         ),
       ),
@@ -57,6 +54,18 @@ class AppSettingsPage extends StatelessWidget {
         }
         return Container();
       },
+    );
+  }
+
+  _buildActionBar(BuildContext context) {
+    return Row(
+      children: [
+        IconButton(
+            onPressed: () {
+              RouteHelper.pop(context);
+            },
+            icon: const Icon(Icons.arrow_back)),
+      ],
     );
   }
 }

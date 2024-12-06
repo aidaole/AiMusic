@@ -1,6 +1,3 @@
-import 'dart:math';
-
-import 'package:ai_music/modules/explore/repos/play_list_repo.dart';
 import 'package:ai_music/widgets/status_bar_playce_holder.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
