@@ -9,7 +9,9 @@ class PlayListCatagories {
 
   factory PlayListCatagories.fromJson(Map<String, dynamic> json) {
     return PlayListCatagories(
-      tags: (json['tags'] as List).map((tag) => PlayListTag.fromJson(tag)).toList(),
+      tags: (json['tags'] as List)
+          .map((tag) => PlayListTag.fromJson(tag))
+          .toList(),
       code: json['code'],
     );
   }

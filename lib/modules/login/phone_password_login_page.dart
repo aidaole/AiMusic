@@ -12,7 +12,8 @@ class PhonePasswordLoginPage extends StatelessWidget {
   PhonePasswordLoginPage({super.key});
 
   final TextEditingController _phoneInputController = TextEditingController();
-  final TextEditingController _passwordInputController = TextEditingController();
+  final TextEditingController _passwordInputController =
+      TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -46,7 +47,9 @@ class PhonePasswordLoginPage extends StatelessWidget {
           Text(
             "未注册的手机号验证通过后将自动创建账号",
             style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white.withAlpha(80)),
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+                color: Colors.white.withAlpha(80)),
           ),
           const SizedBox(
             height: 40,
@@ -143,7 +146,8 @@ class PhonePasswordLoginPage extends StatelessWidget {
       onPressed: () async {
         var phone = _phoneInputController.text;
         var password = _passwordInputController.text;
-        final resp = await DioUtils.get(path: "/login/cellphone?&phone=$phone&password=$password");
+        final resp = await DioUtils.get(
+            path: "/login/cellphone?&phone=$phone&password=$password");
         if (resp.statusCode == 200) {
           final data = resp.data;
           print(data);

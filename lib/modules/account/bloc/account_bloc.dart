@@ -27,7 +27,8 @@ class AccountBloc extends Bloc<AccountEvent, AccountState> {
     }
   }
 
-  FutureOr<void> _onLogout(LogoutEvent event, Emitter<AccountState> emit) async {
+  FutureOr<void> _onLogout(
+      LogoutEvent event, Emitter<AccountState> emit) async {
     final succ = await repository.logout();
     if (succ) {
       emit(LogoutSuccess());

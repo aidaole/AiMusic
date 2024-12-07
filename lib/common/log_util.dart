@@ -74,7 +74,9 @@ class LogUtil {
     Trace trace = Trace.current();
     // 跳过前3帧（当前方法、_printLog方法和具体的日志方法）
     var frames = trace.frames.skip(3).take(3);
-    return frames.map((frame) => '  at ${frame.member} (${frame.location})').join('\n');
+    return frames
+        .map((frame) => '  at ${frame.member} (${frame.location})')
+        .join('\n');
   }
 
   /// 打印分割线

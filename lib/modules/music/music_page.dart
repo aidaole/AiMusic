@@ -34,15 +34,21 @@ class MusicPage extends StatelessWidget {
 
   _buildMusicListWidget() {
     return PageView.builder(
-        scrollDirection: Axis.vertical,
-        itemBuilder: (context, index) {
-          return _buildMusicInfoItemWidget(context, index);
-        },
-      );
+      scrollDirection: Axis.vertical,
+      itemBuilder: (context, index) {
+        return _buildMusicInfoItemWidget(context, index);
+      },
+    );
   }
 
   Container _buildMusicInfoItemWidget(BuildContext context, int index) {
-    final colors = [Colors.amber, Colors.blue, Colors.green, Colors.purple, Colors.red];
+    final colors = [
+      Colors.amber,
+      Colors.blue,
+      Colors.green,
+      Colors.purple,
+      Colors.red
+    ];
     return Container(
       color: colors[index % colors.length],
       width: double.infinity,
@@ -191,7 +197,8 @@ class MusicPage extends StatelessWidget {
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            IconButton(onPressed: () {}, icon: const Icon(Icons.menu, size: iconSize)),
+            IconButton(
+                onPressed: () {}, icon: const Icon(Icons.menu, size: iconSize)),
             Text(
               "模式选择",
               style: Theme.of(context).textTheme.titleLarge,

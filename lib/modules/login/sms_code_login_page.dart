@@ -45,7 +45,9 @@ class SmsCodeLoginPage extends StatelessWidget {
           Text(
             "未注册的手机号验证通过后将自动创建账号",
             style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white.withAlpha(80)),
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+                color: Colors.white.withAlpha(80)),
           ),
           const SizedBox(
             height: 40,
@@ -112,7 +114,8 @@ class SmsCodeLoginPage extends StatelessWidget {
         onPressed: () async {
           // 获取短信验证码
           final phone = _phoneInputController.text;
-          final response = await DioUtils.get(path: '/captcha/sent?phone=$phone');
+          final response =
+              await DioUtils.get(path: '/captcha/sent?phone=$phone');
 
           // 如果请求成功且状态码为200,跳转到验证码输入页面
           if (response != null && response['code'] == 200) {

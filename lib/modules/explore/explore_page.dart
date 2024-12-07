@@ -26,6 +26,7 @@ class _ExplorePageState extends State<ExplorePage> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted) {
         LogUtil.i("ExplorePage initState called", tag: _tag);
+        context.read<PlayListBloc>().add(RequestHighQualityPlayListEvent());
         context.read<PlayListBloc>().add(RequestHotPlayListEvent());
       }
     });
@@ -82,7 +83,7 @@ class _ExplorePageState extends State<ExplorePage> {
                   ),
                 ];
               },
-              body: _buildCategoryList(context),
+              body: _buildCategoryListBloc(context),
             ),
           ),
         ],
@@ -148,18 +149,22 @@ class _ExplorePageState extends State<ExplorePage> {
         SizedBox(
           height: 180,
           child: BlocBuilder<PlayListBloc, PlayListState>(
+            buildWhen: (previous, current) =>
+                current is RequestHighQualityPlayListLoading ||
+                current is RequestHighQualityPlayListError ||
+                current is RequestHighQualityPlayListSuccess,
             builder: (context, state) {
               LogUtil.i(state, tag: _tag);
-              if (state is RequestHotPlayListLoading) {
+              if (state is RequestHighQualityPlayListLoading) {
                 return const Center(child: CircularProgressIndicator());
               }
-              if (state is RequestHotPlayListError) {
+              if (state is RequestHighQualityPlayListError) {
                 return Center(child: Text(state.error));
               }
-              if (state is RequestHotPlayListSuccess) {
+              if (state is RequestHighQualityPlayListSuccess) {
                 return ListView.builder(
                   scrollDirection: Axis.horizontal,
-                  itemCount: state.playList.tags.length,
+                  itemCount: state.playList.playlists?.length ?? 0,
                   itemBuilder: (context, index) {
                     return _buildHotCategoryItem(state, index, context);
                   },
@@ -173,41 +178,40 @@ class _ExplorePageState extends State<ExplorePage> {
     );
   }
 
-  Padding _buildHotCategoryItem(
-      RequestHotPlayListSuccess state, int index, BuildContext context) {
+  Padding _buildHotCategoryItem(RequestHighQualityPlayListSuccess state,
+      int index, BuildContext context) {
     return Padding(
       padding: const EdgeInsets.only(right: 15),
       child: Container(
         height: 180, // 宽高比1:1
         width: 130,
         decoration: BoxDecoration(
-          color: Color((0xFF000000 + ((index * 3 * 0x0F0F0F - 25) % 0xFFFFFF)))
-              .withOpacity(0.8),
+          image: DecorationImage(
+            image: NetworkImage(
+                state.playList.playlists?[index].coverImgUrl ?? ""),
+            fit: BoxFit.cover,
+          ),
           borderRadius: BorderRadius.circular(10),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.end,
           children: [
-            const SizedBox(
-              height: 20,
-            ),
-            Padding(
-              padding: const EdgeInsets.all(10.0),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(10),
-                child: Image.network(
-                  "https://picsum.photos/80/80?random=$index", // 添加random参数使每个图片不同
-                  width: 80,
-                  height: 80,
-                  fit: BoxFit.cover,
-                ),
-              ),
-            ),
             Padding(
               padding: const EdgeInsets.all(10.0),
               child: Text(
-                state.playList.tags[index].name,
-                style: Theme.of(context).textTheme.bodyLarge,
+                state.playList.playlists?[index].name ?? "",
+                style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white.withOpacity(0.8),
+                  shadows: [
+                    Shadow(
+                      color: Colors.black.withOpacity(0.5),
+                      offset: const Offset(1, 1),
+                      blurRadius: 3,
+                    ),
+                  ],
+                ),
               ),
             ),
           ],
@@ -284,39 +288,51 @@ class _ExplorePageState extends State<ExplorePage> {
     );
   }
 
-  Widget _buildCategoryList(BuildContext context) {
+  _buildCategoryListBloc(BuildContext context) {
+    return BlocBuilder<PlayListBloc, PlayListState>(
+      buildWhen: (previous, current) =>
+          current is RequestHotPlayListLoading ||
+          current is RequestHotPlayListError ||
+          current is RequestHotPlayListSuccess,
+      builder: (context, state) {
+        LogUtil.i(state, tag: _tag);
+        if (state is RequestHotPlayListLoading) {
+          return const Center(child: CircularProgressIndicator());
+        }
+        if (state is RequestHotPlayListError) {
+          return Center(child: Text(state.error));
+        }
+        if (state is RequestHotPlayListSuccess) {
+          return _buildCategoryList(context, state);
+        }
+        return const SizedBox();
+      },
+    );
+  }
+
+  Widget _buildCategoryList(
+      BuildContext context, RequestHotPlayListSuccess state) {
     return DefaultTabController(
-      length: 6,
+      length: state.playList.tags.length,
       child: Column(
         children: [
-          const TabBar(
+          TabBar(
             isScrollable: true,
             labelColor: Colors.white,
             unselectedLabelColor: Colors.grey,
             indicatorColor: Colors.white,
             dividerColor: Colors.transparent,
             tabAlignment: TabAlignment.start,
-            tabs: [
-              Tab(text: "歌单漫游"),
-              Tab(text: "流行"),
-              Tab(text: "华语"),
-              Tab(text: "欧美"),
-              Tab(text: "摇滚"),
-              Tab(text: "民谣"),
-            ],
+            tabs:
+                state.playList.tags.map((tag) => Tab(text: tag.name)).toList(),
           ),
           Expanded(
             child: Builder(
               builder: (context) {
                 return TabBarView(
-                  children: [
-                    _buildGridView(context, "歌单漫游"),
-                    _buildGridView(context, "流行"),
-                    _buildGridView(context, "华语"),
-                    _buildGridView(context, "欧美"),
-                    _buildGridView(context, "摇滚"),
-                    _buildGridView(context, "民谣"),
-                  ],
+                  children: state.playList.tags
+                      .map((tag) => _buildGridView(context, tag.name))
+                      .toList(),
                 );
               },
             ),

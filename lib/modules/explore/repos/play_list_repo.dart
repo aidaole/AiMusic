@@ -1,4 +1,5 @@
 import 'package:ai_music/modules/explore/models/play_list_categories.dart';
+import 'package:ai_music/modules/explore/models/play_list_high_qulity.dart';
 import 'package:ai_music/network/dio_utils.dart';
 
 class PlayListRepo {
@@ -15,5 +16,14 @@ class PlayListRepo {
       }
     }
     return PlayListCatagories(tags: [], code: 0);
+  }
+
+  Future<PlayListHighQulity> requestHighQualityPlayList() async {
+    final resp = await DioUtils.get(path: "/top/playlist/highquality");
+    if (resp != null) {
+      final result = PlayListHighQulity.fromJson(resp);
+      return result;
+    }
+    return PlayListHighQulity(playlists: [], code: 0);
   }
 }
