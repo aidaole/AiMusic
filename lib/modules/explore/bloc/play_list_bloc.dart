@@ -15,6 +15,7 @@ class PlayListBloc extends Bloc<PlayListEvent, PlayListState> {
   PlayListBloc({required this.playListRepo}) : super(PlayListInitial()) {
     on<RequestHotPlayListEvent>(_onRequestHotPlayListEvent);
     on<RequestHighQualityPlayListEvent>(_onRequestHighQualityPlayListEvent);
+    on<RequestPlayListRecommendEvent>(_onRequestPlayListRecommendEvent);
   }
 
   void _onRequestHotPlayListEvent(
@@ -45,6 +46,21 @@ class PlayListBloc extends Bloc<PlayListEvent, PlayListState> {
     } catch (e, stackTrace) {
       LogUtil.e("错误详情: $e\n$stackTrace", tag: _tag);
       emit(RequestHighQualityPlayListError(e.toString()));
+    }
+  }
+
+  void _onRequestPlayListRecommendEvent(
+      RequestPlayListRecommendEvent event, Emitter<PlayListState> emit) async {
+    LogUtil.i("requestPlayListRecommendEvent", tag: _tag);
+    try {
+      emit(RequestPlayListRecommendLoading());
+      final playListRecommend = await playListRepo.requestPlayListRecommend();
+      LogUtil.i("playListRecommend: ${playListRecommend.recommend?.length}",
+          tag: _tag);
+      emit(RequestPlayListRecommendSuccess(playListRecommend));
+    } catch (e, stackTrace) {
+      LogUtil.e("错误详情: $e\n$stackTrace", tag: _tag);
+      emit(RequestPlayListRecommendError(e.toString()));
     }
   }
 }

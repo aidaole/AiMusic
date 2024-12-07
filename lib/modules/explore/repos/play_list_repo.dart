@@ -2,6 +2,8 @@ import 'package:ai_music/modules/explore/models/play_list_categories.dart';
 import 'package:ai_music/modules/explore/models/play_list_high_qulity.dart';
 import 'package:ai_music/network/dio_utils.dart';
 
+import '../models/play_list_recommend.dart';
+
 class PlayListRepo {
   Future<PlayListCatagories> requestHotPlayList() async {
     final resp = await DioUtils.get(path: "/playlist/hot");
@@ -25,5 +27,14 @@ class PlayListRepo {
       return result;
     }
     return PlayListHighQulity(playlists: [], code: 0);
+  }
+
+  Future<PlayListRecommend> requestPlayListRecommend() async {
+    final resp = await DioUtils.get(path: "/recommend/resource");
+    if (resp != null) {
+      final result = PlayListRecommend.fromJson(resp);
+      return result;
+    }
+    return PlayListRecommend(code: 0, recommend: []);
   }
 }

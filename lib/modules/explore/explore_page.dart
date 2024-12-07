@@ -26,7 +26,8 @@ class _ExplorePageState extends State<ExplorePage> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted) {
         LogUtil.i("ExplorePage initState called", tag: _tag);
-        context.read<PlayListBloc>().add(RequestHighQualityPlayListEvent());
+        context.read<PlayListBloc>().add(RequestPlayListRecommendEvent());
+        // context.read<PlayListBloc>().add(RequestHighQualityPlayListEvent());
         context.read<PlayListBloc>().add(RequestHotPlayListEvent());
       }
     });
@@ -74,7 +75,7 @@ class _ExplorePageState extends State<ExplorePage> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         const SizedBox(height: 20),
-                        _buildHotCategoryList(context),
+                        _buildRecommendPlayListBloc(context),
                         const SizedBox(height: 20),
                         _buildLiveMusicList(context),
                         const SizedBox(height: 20),
@@ -137,7 +138,7 @@ class _ExplorePageState extends State<ExplorePage> {
     );
   }
 
-  _buildHotCategoryList(BuildContext context) {
+  _buildRecommendPlayListBloc(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -150,23 +151,23 @@ class _ExplorePageState extends State<ExplorePage> {
           height: 180,
           child: BlocBuilder<PlayListBloc, PlayListState>(
             buildWhen: (previous, current) =>
-                current is RequestHighQualityPlayListLoading ||
-                current is RequestHighQualityPlayListError ||
-                current is RequestHighQualityPlayListSuccess,
+                current is RequestPlayListRecommendSuccess ||
+                current is RequestPlayListRecommendLoading ||
+                current is RequestPlayListRecommendError,
             builder: (context, state) {
               LogUtil.i(state, tag: _tag);
-              if (state is RequestHighQualityPlayListLoading) {
+              if (state is RequestPlayListRecommendLoading) {
                 return const Center(child: CircularProgressIndicator());
               }
-              if (state is RequestHighQualityPlayListError) {
+              if (state is RequestPlayListRecommendError) {
                 return Center(child: Text(state.error));
               }
-              if (state is RequestHighQualityPlayListSuccess) {
+              if (state is RequestPlayListRecommendSuccess) {
                 return ListView.builder(
                   scrollDirection: Axis.horizontal,
-                  itemCount: state.playList.playlists?.length ?? 0,
+                  itemCount: state.playList.recommend?.length ?? 0,
                   itemBuilder: (context, index) {
-                    return _buildHotCategoryItem(state, index, context);
+                    return _buildRecommendPlayList(state, index, context);
                   },
                 );
               }
@@ -178,7 +179,7 @@ class _ExplorePageState extends State<ExplorePage> {
     );
   }
 
-  Padding _buildHotCategoryItem(RequestHighQualityPlayListSuccess state,
+  Padding _buildRecommendPlayList(RequestPlayListRecommendSuccess state,
       int index, BuildContext context) {
     return Padding(
       padding: const EdgeInsets.only(right: 15),
@@ -188,7 +189,7 @@ class _ExplorePageState extends State<ExplorePage> {
         decoration: BoxDecoration(
           image: DecorationImage(
             image: NetworkImage(
-                state.playList.playlists?[index].coverImgUrl ?? ""),
+                state.playList.recommend?[index].picUrl ?? ""),
             fit: BoxFit.cover,
           ),
           borderRadius: BorderRadius.circular(10),
@@ -200,7 +201,7 @@ class _ExplorePageState extends State<ExplorePage> {
             Padding(
               padding: const EdgeInsets.all(10.0),
               child: Text(
-                state.playList.playlists?[index].name ?? "",
+                state.playList.recommend?[index].name ?? "",
                 style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                   fontWeight: FontWeight.bold,
                   color: Colors.white.withOpacity(0.8),

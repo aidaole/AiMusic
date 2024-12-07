@@ -1,5 +1,6 @@
 import '../models/play_list_categories.dart';
 import '../models/play_list_high_qulity.dart';
+import '../models/play_list_recommend.dart';
 
 class PlayListState {}
 
@@ -31,4 +32,18 @@ final class RequestHighQualityPlayListError extends PlayListState {
   final String error;
 
   RequestHighQualityPlayListError(this.error);
+}
+
+final class RequestPlayListRecommendLoading extends PlayListState {}
+
+final class RequestPlayListRecommendSuccess extends PlayListState {
+  final PlayListRecommend playList;
+
+  RequestPlayListRecommendSuccess(this.playList);
+}
+
+final class RequestPlayListRecommendError extends PlayListState {
+  final String error;
+
+  RequestPlayListRecommendError(this.error);
 }
