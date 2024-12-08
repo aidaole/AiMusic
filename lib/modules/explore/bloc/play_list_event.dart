@@ -12,3 +12,5 @@ class RequestHighQualityPlayListEvent extends PlayListEvent {
 class RequestPlayListRecommendEvent extends PlayListEvent {}
 
 class RequestHighQualityTagsEvent extends PlayListEvent {}
+
+class RequestTopArtistsEvent extends PlayListEvent {}

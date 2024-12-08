@@ -2,6 +2,7 @@ import '../models/high_qulity_tags.dart';
 import '../models/play_list_categories.dart';
 import '../models/play_list_high_qulity.dart';
 import '../models/play_list_recommend.dart';
+import '../models/top_artists.dart';
 
 class PlayListState {}
 
@@ -64,4 +65,18 @@ final class RequestHighQualityTagsError extends PlayListState {
   final String error;
 
   RequestHighQualityTagsError(this.error);
+}
+
+final class RequestTopArtistsLoading extends PlayListState {}
+
+final class RequestTopArtistsSuccess extends PlayListState {
+  final TopArtists topArtists;
+
+  RequestTopArtistsSuccess(this.topArtists);
+}
+
+final class RequestTopArtistsError extends PlayListState {
+  final String error;
+
+  RequestTopArtistsError(this.error);
 }

@@ -29,6 +29,7 @@ class _ExplorePageState extends State<ExplorePage> {
         LogUtil.i("ExplorePage initState called", tag: _tag);
         context.read<PlayListBloc>().add(RequestPlayListRecommendEvent());
         context.read<PlayListBloc>().add(RequestHighQualityTagsEvent());
+        context.read<PlayListBloc>().add(RequestTopArtistsEvent());
       }
     });
   }
@@ -77,7 +78,7 @@ class _ExplorePageState extends State<ExplorePage> {
                         const SizedBox(height: 20),
                         _buildRecommendPlayListBloc(context),
                         const SizedBox(height: 20),
-                        _buildLiveMusicList(context),
+                        _buildTopArtistListBloc(context),
                         const SizedBox(height: 20),
                       ],
                     ),
@@ -230,65 +231,87 @@ class _ExplorePageState extends State<ExplorePage> {
     );
   }
 
-  _buildLiveMusicList(BuildContext context) {
+  _buildTopArtistListBloc(BuildContext context) {
     const borderColor = Color(0xFFE80063);
-    const double totalHeight = 80 + 5;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          "正在直播 >",
+          "推荐歌手",
           style: Theme.of(context).textTheme.titleMedium,
         ),
         const SizedBox(
           height: 20,
         ),
-        SizedBox(
-          height: totalHeight,
-          child: ListView.builder(
-            scrollDirection: Axis.horizontal,
-            itemCount: 10,
-            itemBuilder: (BuildContext context, int index) {
-              return Padding(
-                padding: const EdgeInsets.only(right: 10),
-                child: Stack(
-                  children: [
-                    SizedBox(
-                      width: 80,
-                      height: 80,
-                      child: CommonNetworkImage(
-                        imageUrl: "https://picsum.photos/180/180",
-                        width: 80,
-                        height: 80,
-                        borderRadius: BorderRadius.circular(50),
-                      ),
-                    ),
-                    Positioned(
-                      bottom: 0,
-                      left: 0,
-                      right: 0,
-                      child: Container(
-                        width: 45,
-                        margin: const EdgeInsets.symmetric(horizontal: 17),
-                        alignment: Alignment.center,
-                        decoration: BoxDecoration(
-                          color: borderColor,
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        child: Text(
-                          "直播中",
-                          style: Theme.of(context).textTheme.bodySmall,
-                        ),
-                      ),
-                    )
-                  ],
-                ),
-              );
-            },
-          ),
+        BlocBuilder<PlayListBloc, PlayListState>(
+          buildWhen: (previous, current) =>
+              current is RequestTopArtistsSuccess ||
+              current is RequestTopArtistsLoading ||
+              current is RequestTopArtistsError,
+          builder: (context, state) {
+            LogUtil.i(state, tag: _tag);
+            if (state is RequestTopArtistsLoading) {
+              return const Center(child: CircularProgressIndicator());
+            }
+            if (state is RequestTopArtistsError) {
+              return Center(child: Text(state.error));
+            }
+            if (state is RequestTopArtistsSuccess) {
+              return _buildTopArtistList(state, borderColor);
+            }
+            return const SizedBox();
+          },
         ),
       ],
+    );
+  }
+
+  SizedBox _buildTopArtistList(
+      RequestTopArtistsSuccess state, Color borderColor) {
+    return SizedBox(
+      height: 85,
+      child: ListView.builder(
+        scrollDirection: Axis.horizontal,
+        itemCount: 10,
+        itemBuilder: (BuildContext context, int index) {
+          return Padding(
+            padding: const EdgeInsets.only(right: 10),
+            child: Stack(
+              children: [
+                SizedBox(
+                  width: 80,
+                  height: 80,
+                  child: CommonNetworkImage(
+                    imageUrl: "${state.topArtists.artists?[index].img1v1Url}",
+                    width: 80,
+                    height: 80,
+                    borderRadius: BorderRadius.circular(50),
+                  ),
+                ),
+                Positioned(
+                  bottom: 0,
+                  left: 0,
+                  right: 0,
+                  child: Container(
+                    width: 45,
+                    margin: const EdgeInsets.symmetric(horizontal: 17),
+                    alignment: Alignment.center,
+                    decoration: BoxDecoration(
+                      color: borderColor,
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: Text(
+                      "${state.topArtists.artists?[index].name}",
+                      style: Theme.of(context).textTheme.bodySmall,
+                    ),
+                  ),
+                )
+              ],
+            ),
+          );
+        },
+      ),
     );
   }
 

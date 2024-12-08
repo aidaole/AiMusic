@@ -4,6 +4,7 @@ import 'package:ai_music/modules/explore/models/play_list_high_qulity.dart';
 import 'package:ai_music/network/dio_utils.dart';
 
 import '../models/play_list_recommend.dart';
+import '../models/top_artists.dart';
 
 class PlayListRepo {
   Future<PlayListCatagories> requestHotPlayList() async {
@@ -48,5 +49,14 @@ class PlayListRepo {
       return result;
     }
     return PlayListRecommend(code: 0, recommend: []);
+  }
+
+  Future<TopArtists> requestTopArtists() async {
+    final resp = await DioUtils.get(path: "/top/artists");
+    if (resp != null) {
+      final result = TopArtists.fromJson(resp);
+      return result;
+    }
+    return TopArtists(artists: [], code: 0);
   }
 }
