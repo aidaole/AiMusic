@@ -28,8 +28,6 @@ class _ExplorePageState extends State<ExplorePage> {
       if (mounted) {
         LogUtil.i("ExplorePage initState called", tag: _tag);
         context.read<PlayListBloc>().add(RequestPlayListRecommendEvent());
-        // context.read<PlayListBloc>().add(RequestHighQualityPlayListEvent());
-        // context.read<PlayListBloc>().add(RequestHotPlayListEvent());
         context.read<PlayListBloc>().add(RequestHighQualityTagsEvent());
       }
     });
@@ -314,92 +312,151 @@ class _ExplorePageState extends State<ExplorePage> {
 
   Widget _buildHighQulityTabs(
       BuildContext context, RequestHighQualityTagsSuccess state) {
+    LogUtil.i("${state.tags.tags?.length}", tag: _tag);
     return DefaultTabController(
       length: state.tags.tags?.length ?? 0,
-      child: Column(
-        children: [
-          TabBar(
-            isScrollable: true,
-            labelColor: Colors.white,
-            unselectedLabelColor: Colors.grey,
-            indicatorColor: Colors.white,
-            dividerColor: Colors.transparent,
-            tabAlignment: TabAlignment.start,
-            tabs: state.tags.tags?.map((tag) => Tab(text: tag.name)).toList() ??
-                [],
-          ),
-          Expanded(
-            child: Builder(
-              builder: (context) {
-                return TabBarView(
-                  children: state.tags.tags
-                          ?.map((tag) => _buildGridView(context, tag))
-                          .toList() ??
+      child: Builder(builder: (context) {
+        final TabController tabController = DefaultTabController.of(context);
+
+        if (!tabController.hasListeners) {
+          tabController.addListener(() {
+            LogUtil.i("tab index changed: ${tabController.index}", tag: _tag);
+            if (!tabController.indexIsChanging && tabController.index >= 0) {
+              final currentTag = state.tags.tags?[tabController.index];
+              LogUtil.i("currentTag: ${currentTag?.name}", tag: _tag);
+              if (currentTag != null) {
+                context.read<PlayListBloc>().add(
+                    RequestHighQualityPlayListEvent(
+                        cat: currentTag.name ?? ""));
+              }
+            }
+          });
+        }
+
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          final firstTag = state.tags.tags?.first;
+          if (firstTag != null) {
+            context.read<PlayListBloc>().add(
+                RequestHighQualityPlayListEvent(cat: firstTag.name ?? ""));
+          }
+        });
+
+        return Column(
+          children: [
+            TabBar(
+              isScrollable: true,
+              labelColor: Colors.white,
+              unselectedLabelColor: Colors.grey,
+              indicatorColor: Colors.white,
+              dividerColor: Colors.transparent,
+              tabAlignment: TabAlignment.start,
+              tabs:
+                  state.tags.tags?.map((tag) => Tab(text: tag.name)).toList() ??
                       [],
-                );
-              },
             ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildGridView(BuildContext context, Tag tag) {
-    // 生成随机高度列表，实际项目中应该根据实际内容高度来设置
-    final List<double> heights = List.generate(
-      20,
-      (index) => (index % 3 + 2) * 100.0, // 200-400之间的高度
-    );
-
-    return MasonryGridView.builder(
-      itemCount: 20,
-      gridDelegate: const SliverSimpleGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 2,
-      ),
-      mainAxisSpacing: 10,
-      crossAxisSpacing: 10,
-      itemBuilder: (context, index) {
-        return Container(
-          decoration: BoxDecoration(
-            color: Colors.white.withOpacity(0.1),
-            borderRadius: BorderRadius.circular(10),
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              ClipRRect(
-                borderRadius:
-                    const BorderRadius.vertical(top: Radius.circular(10)),
-                child: Image.network(
-                  // 使用不同高度的图片来模拟瀑布流效果
-                  'https://picsum.photos/400/${heights[index].toInt()}',
-                  fit: BoxFit.cover,
-                ),
+            Expanded(
+              child: Builder(
+                builder: (context) {
+                  return TabBarView(
+                    children: state.tags.tags
+                            ?.map(
+                                (tag) => _buildHighQulityTabList(context, tag))
+                            .toList() ??
+                        [],
+                  );
+                },
               ),
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      '${tag.name} 项目 $index',
-                      style: Theme.of(context).textTheme.bodyMedium,
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      '副标题描述文本',
-                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                            color: Colors.white.withOpacity(0.6),
-                          ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
+            ),
+          ],
         );
-      },
+      }),
     );
   }
+
+  Widget _buildHighQulityTabList(BuildContext context, Tag tag) {
+    return BlocBuilder<PlayListBloc, PlayListState>(
+        buildWhen: (previous, current) =>
+            (current is RequestHighQualityPlayListSuccess &&
+                current.cat == tag.name) ||
+            (current is RequestHighQualityPlayListLoading &&
+                current.cat == tag.name) ||
+            (current is RequestHighQualityPlayListError &&
+                current.cat == tag.name),
+        builder: (context, state) {
+          LogUtil.i("${tag.name} state: $state", tag: _tag);
+          if (state is RequestHighQualityPlayListLoading) {
+            return const Center(child: CircularProgressIndicator());
+          }
+          if (state is RequestHighQualityPlayListError) {
+            return Center(child: Text(state.error));
+          }
+          if (state is RequestHighQualityPlayListSuccess) {
+            LogUtil.i("${tag.name} state: ${state.playList.playlists?.length}",
+                tag: _tag);
+            return ListView.builder(
+              itemCount: state.playList.playlists?.length ?? 0,
+              itemBuilder: (BuildContext context, int index) {
+                return Text(state.playList.playlists?[index].name ?? "");
+              },
+            );
+          }
+          return const Center(child: CircularProgressIndicator());
+        });
+  }
+
+  // // 生成随机高度列表，实际项目中应该根据实际内容高度来设置
+  // final List<double> heights = List.generate(
+  //   20,
+  //   (index) => (index % 3 + 2) * 100.0, // 200-400之间的高度
+  // );
+
+  // return MasonryGridView.builder(
+  //   itemCount: 20,
+  //   gridDelegate: const SliverSimpleGridDelegateWithFixedCrossAxisCount(
+  //     crossAxisCount: 2,
+  //   ),
+  //   mainAxisSpacing: 10,
+  //   crossAxisSpacing: 10,
+  //   itemBuilder: (context, index) {
+  //     return Container(
+  //       decoration: BoxDecoration(
+  //         color: Colors.white.withOpacity(0.1),
+  //         borderRadius: BorderRadius.circular(10),
+  //       ),
+  //       child: Column(
+  //         crossAxisAlignment: CrossAxisAlignment.start,
+  //         children: [
+  //           ClipRRect(
+  //             borderRadius:
+  //                 const BorderRadius.vertical(top: Radius.circular(10)),
+  //             child: Image.network(
+  //               // 使用不同高度的图片来模拟瀑布流效果
+  //               'https://picsum.photos/400/${heights[index].toInt()}',
+  //               fit: BoxFit.cover,
+  //             ),
+  //           ),
+  //           Padding(
+  //             padding: const EdgeInsets.all(8.0),
+  //             child: Column(
+  //               crossAxisAlignment: CrossAxisAlignment.start,
+  //               children: [
+  //                 Text(
+  //                   '${tag.name} 项目 $index',
+  //                   style: Theme.of(context).textTheme.bodyMedium,
+  //                 ),
+  //                 const SizedBox(height: 4),
+  //                 Text(
+  //                   '副标题描述文本',
+  //                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
+  //                         color: Colors.white.withOpacity(0.6),
+  //                       ),
+  //                 ),
+  //               ],
+  //             ),
+  //           ),
+  //         ],
+  //       ),
+  //     );
+  //   },
+  // );
 }

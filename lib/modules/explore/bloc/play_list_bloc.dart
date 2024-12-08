@@ -1,4 +1,5 @@
 import 'package:ai_music/common/log_util.dart';
+import 'package:ai_music/modules/explore/models/play_list_high_qulity.dart';
 import 'package:bloc/bloc.dart';
 
 import '../repos/play_list_repo.dart';
@@ -10,11 +11,14 @@ class PlayListBloc extends Bloc<PlayListEvent, PlayListState> {
 
   final PlayListRepo playListRepo;
 
+  // 添加一个缓存Map
+  final Map<String, PlayListHighQulity> _playListCache = {};
+
   PlayListBloc({required this.playListRepo}) : super(PlayListInitial()) {
     on<RequestHotPlayListEvent>(_onRequestHotPlayListEvent);
+    on<RequestHighQualityTagsEvent>(_onRequestHighQualityTagsEvent);
     on<RequestHighQualityPlayListEvent>(_onRequestHighQualityPlayListEvent);
     on<RequestPlayListRecommendEvent>(_onRequestPlayListRecommendEvent);
-    on<RequestHighQualityTagsEvent>(_onRequestHighQualityTagsEvent);
   }
 
   void _onRequestHotPlayListEvent(
@@ -34,17 +38,29 @@ class PlayListBloc extends Bloc<PlayListEvent, PlayListState> {
 
   void _onRequestHighQualityPlayListEvent(RequestHighQualityPlayListEvent event,
       Emitter<PlayListState> emit) async {
-    LogUtil.i("requestHighQualityPlayListEvent", tag: _tag);
+    LogUtil.i("requestHighQualityPlayListEvent: $event", tag: _tag);
+    // 如果缓存中已经有数据，直接使用缓存
+    if (_playListCache.containsKey(event.cat)) {
+      emit(RequestHighQualityPlayListSuccess(
+        _playListCache[event.cat]!,
+        event.cat,
+      ));
+      return;
+    }
+
+    // 如果缓存中没有，才发送loading和请求新数据
+    emit(RequestHighQualityPlayListLoading(event.cat));
     try {
-      emit(RequestHighQualityPlayListLoading());
-      final playListHighQulity =
-          await playListRepo.requestHighQualityPlayList();
+      final playListHighQulity = await playListRepo.requestHighQualityPlayList(
+          cat: event.cat, limit: event.limit);
       LogUtil.i("playListHighQulity: ${playListHighQulity.playlists?.length}",
           tag: _tag);
-      emit(RequestHighQualityPlayListSuccess(playListHighQulity));
+      // 将结果存入缓存
+      _playListCache[event.cat] = playListHighQulity;
+      emit(RequestHighQualityPlayListSuccess(playListHighQulity, event.cat));
     } catch (e, stackTrace) {
       LogUtil.e("错误详情: $e\n$stackTrace", tag: _tag);
-      emit(RequestHighQualityPlayListError(e.toString()));
+      emit(RequestHighQualityPlayListError(e.toString(), event.cat));
     }
   }
 

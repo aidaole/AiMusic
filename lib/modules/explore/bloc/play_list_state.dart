@@ -21,18 +21,21 @@ final class RequestHotPlayListError extends PlayListState {
   RequestHotPlayListError(this.error);
 }
 
-final class RequestHighQualityPlayListLoading extends PlayListState {}
+final class RequestHighQualityPlayListLoading extends PlayListState {
+  final String cat;
+  RequestHighQualityPlayListLoading(this.cat);
+}
 
 final class RequestHighQualityPlayListSuccess extends PlayListState {
   final PlayListHighQulity playList;
-
-  RequestHighQualityPlayListSuccess(this.playList);
+  final String cat;
+  RequestHighQualityPlayListSuccess(this.playList, this.cat);
 }
 
 final class RequestHighQualityPlayListError extends PlayListState {
   final String error;
-
-  RequestHighQualityPlayListError(this.error);
+  final String cat;
+  RequestHighQualityPlayListError(this.error, this.cat);
 }
 
 final class RequestPlayListRecommendLoading extends PlayListState {}
