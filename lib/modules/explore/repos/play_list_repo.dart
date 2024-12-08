@@ -3,6 +3,7 @@ import 'package:ai_music/modules/explore/models/play_list_categories.dart';
 import 'package:ai_music/modules/explore/models/play_list_high_qulity.dart';
 import 'package:ai_music/network/dio_utils.dart';
 
+import '../models/play_list_detail/play_list_detail.dart';
 import '../models/play_list_recommend.dart';
 import '../models/top_artists.dart';
 
@@ -58,5 +59,15 @@ class PlayListRepo {
       return result;
     }
     return TopArtists(artists: [], code: 0);
+  }
+
+  Future<PlayListDetail> requestPlayListDetail({required int id}) async {
+    final resp = await DioUtils.get(
+        path: "/playlist/detail", queryParameters: {"id": id});
+    if (resp != null) {
+      final result = PlayListDetail.fromJson(resp);
+      return result;
+    }
+    return PlayListDetail(code: 0, playlist: null);
   }
 }

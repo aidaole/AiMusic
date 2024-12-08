@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../modules/explore/play_list_detail_page.dart';
 import '../modules/home/home_page.dart';
 import '../modules/login/phone_password_login_page.dart';
 import '../modules/login/qr_login_page.dart';
@@ -29,6 +30,11 @@ class AppPages {
     AppRoutes.phonePasswordLogin: (context) => PhonePasswordLoginPage(),
     AppRoutes.qrLogin: (context) => const QrLoginPage(),
     AppRoutes.appSettings: (context) => const AppSettingsPage(),
+    AppRoutes.playListDetail: (context) {
+      final arguments = ModalRoute.of(context)?.settings.arguments;
+      final playListId = arguments as int?;
+      return PlayListDetailPage(playListId: playListId ?? 0);
+    },
   };
 
   /// 404页面

@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../common/log_util.dart';
 import '../../common/widgets/common_network_image.dart';
+import '../../routes/app_routes.dart';
 import '../../themes/theme_color.dart';
 import '../../themes/theme_size.dart';
 import 'bloc/play_list_bloc.dart';
@@ -180,52 +181,58 @@ class _ExplorePageState extends State<ExplorePage> {
     );
   }
 
-  Padding _buildRecommendPlayList(
+  _buildRecommendPlayList(
       RequestPlayListRecommendSuccess state, int index, BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(right: 15),
-      child: SizedBox(
-        height: 180,
-        width: 130,
-        child: Stack(
-          children: [
-            SizedBox(
-              height: 180,
-              width: 130,
-              child: CommonNetworkImage(
-                imageUrl: state.playList.recommend?[index].picUrl ?? "",
-                borderRadius: BorderRadius.circular(10),
-                width: 130,
+    return GestureDetector(
+      onTap: () {
+        Navigator.pushNamed(context, AppRoutes.playListDetail,
+            arguments: state.playList.recommend?[index].id);
+      },
+      child: Padding(
+        padding: const EdgeInsets.only(right: 15),
+        child: SizedBox(
+          height: 180,
+          width: 130,
+          child: Stack(
+            children: [
+              SizedBox(
                 height: 180,
+                width: 130,
+                child: CommonNetworkImage(
+                  imageUrl: state.playList.recommend?[index].picUrl ?? "",
+                  borderRadius: BorderRadius.circular(10),
+                  width: 130,
+                  height: 180,
+                ),
               ),
-            ),
-            Positioned(
-              bottom: 0,
-              left: 0,
-              right: 0,
-              child: Container(
-                padding: const EdgeInsets.all(8),
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
-                    colors: [
-                      Colors.transparent,
-                      Colors.black.withOpacity(0.7),
-                    ],
+              Positioned(
+                bottom: 0,
+                left: 0,
+                right: 0,
+                child: Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                      colors: [
+                        Colors.transparent,
+                        Colors.black.withOpacity(0.7),
+                      ],
+                    ),
+                  ),
+                  child: Text(
+                    state.playList.recommend?[index].name ?? "",
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                          color: Colors.white,
+                        ),
                   ),
                 ),
-                child: Text(
-                  state.playList.recommend?[index].name ?? "",
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: Colors.white,
-                      ),
-                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
@@ -448,32 +455,38 @@ class _ExplorePageState extends State<ExplorePage> {
                 childAspectRatio: 0.8,
               ),
               itemBuilder: (context, index) {
-                return Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Expanded(
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(12),
-                        child: AspectRatio(
-                          aspectRatio: 1.0,
-                          child: CommonNetworkImage(
-                            imageUrl:
-                                '${state.playList.playlists?[index].coverImgUrl}',
-                            borderRadius: BorderRadius.circular(12),
+                return GestureDetector(
+                  onTap: () {
+                    Navigator.pushNamed(context, AppRoutes.playListDetail,
+                        arguments: state.playList.playlists?[index].id);
+                  },
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Expanded(
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(12),
+                          child: AspectRatio(
+                            aspectRatio: 1.0,
+                            child: CommonNetworkImage(
+                              imageUrl:
+                                  '${state.playList.playlists?[index].coverImgUrl}',
+                              borderRadius: BorderRadius.circular(12),
+                            ),
                           ),
                         ),
                       ),
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      '${state.playList.playlists?[index].name}',
-                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                            color: Colors.white.withOpacity(0.9),
-                          ),
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ],
+                      const SizedBox(height: 8),
+                      Text(
+                        '${state.playList.playlists?[index].name}',
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                              color: Colors.white.withOpacity(0.9),
+                            ),
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ],
+                  ),
                 );
               },
             );

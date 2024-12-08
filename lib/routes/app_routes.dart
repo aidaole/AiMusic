@@ -14,4 +14,7 @@ abstract class AppRoutes {
 
   // 设置相关
   static const appSettings = '/app_settings';
+
+  // 歌单详情
+  static const playListDetail = '/play_list_detail';
 }

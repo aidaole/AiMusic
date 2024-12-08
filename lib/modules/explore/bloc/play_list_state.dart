@@ -1,5 +1,6 @@
 import '../models/high_qulity_tags.dart';
 import '../models/play_list_categories.dart';
+import '../models/play_list_detail/play_list_detail.dart';
 import '../models/play_list_high_qulity.dart';
 import '../models/play_list_recommend.dart';
 import '../models/top_artists.dart';
@@ -79,4 +80,19 @@ final class RequestTopArtistsError extends PlayListState {
   final String error;
 
   RequestTopArtistsError(this.error);
+}
+
+final class RequestPlayListDetailLoading extends PlayListState {
+  final int id;
+  RequestPlayListDetailLoading(this.id);
+}
+
+final class RequestPlayListDetailSuccess extends PlayListState {
+  final PlayListDetail playListDetail;
+  RequestPlayListDetailSuccess(this.playListDetail);
+}
+
+final class RequestPlayListDetailError extends PlayListState {
+  final String error;
+  RequestPlayListDetailError(this.error);
 }
