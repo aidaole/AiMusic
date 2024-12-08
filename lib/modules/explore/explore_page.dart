@@ -2,6 +2,7 @@ import 'package:ai_music/widgets/status_bar_playce_holder.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 
 import '../../common/log_util.dart';
 import '../../themes/theme_color.dart';
@@ -183,34 +184,48 @@ class _ExplorePageState extends State<ExplorePage> {
       RequestPlayListRecommendSuccess state, int index, BuildContext context) {
     return Padding(
       padding: const EdgeInsets.only(right: 15),
-      child: Container(
-        height: 180, // 宽高比1:1
+      child: SizedBox(
+        height: 180,
         width: 130,
-        decoration: BoxDecoration(
-          image: DecorationImage(
-            image: NetworkImage(state.playList.recommend?[index].picUrl ?? ""),
-            fit: BoxFit.cover,
-          ),
-          borderRadius: BorderRadius.circular(10),
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisAlignment: MainAxisAlignment.end,
+        child: Stack(
           children: [
-            Padding(
-              padding: const EdgeInsets.all(10.0),
-              child: Text(
-                state.playList.recommend?[index].name ?? "",
-                style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white.withOpacity(0.8),
-                  shadows: [
-                    Shadow(
-                      color: Colors.black.withOpacity(0.5),
-                      offset: const Offset(1, 1),
-                      blurRadius: 3,
-                    ),
-                  ],
+            ClipRRect(
+              borderRadius: BorderRadius.circular(10),
+              child: CachedNetworkImage(
+                imageUrl: state.playList.recommend?[index].picUrl ?? "",
+                height: 180,
+                width: 130,
+                fit: BoxFit.cover,
+                placeholder: (context, url) => Container(
+                  color: Colors.grey[800],
+                  child: const Center(child: CircularProgressIndicator()),
+                ),
+                errorWidget: (context, url, error) => const Icon(Icons.error),
+              ),
+            ),
+            Positioned(
+              bottom: 0,
+              left: 0,
+              right: 0,
+              child: Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: [
+                      Colors.transparent,
+                      Colors.black.withOpacity(0.7),
+                    ],
+                  ),
+                ),
+                child: Text(
+                  state.playList.recommend?[index].name ?? "",
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        color: Colors.white,
+                      ),
                 ),
               ),
             ),
@@ -253,10 +268,19 @@ class _ExplorePageState extends State<ExplorePage> {
                           width: 2,
                         ),
                         borderRadius: BorderRadius.circular(50),
-                        image: const DecorationImage(
-                          image: NetworkImage(
-                            "https://picsum.photos/180/180",
+                      ),
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(50),
+                        child: CachedNetworkImage(
+                          imageUrl: "https://picsum.photos/180/180",
+                          fit: BoxFit.cover,
+                          placeholder: (context, url) => Container(
+                            color: Colors.grey[800],
+                            child: const Center(
+                                child: CircularProgressIndicator()),
                           ),
+                          errorWidget: (context, url, error) =>
+                              const Icon(Icons.error),
                         ),
                       ),
                     ),
@@ -334,8 +358,9 @@ class _ExplorePageState extends State<ExplorePage> {
         WidgetsBinding.instance.addPostFrameCallback((_) {
           final firstTag = state.tags.tags?.first;
           if (firstTag != null) {
-            context.read<PlayListBloc>().add(
-                RequestHighQualityPlayListEvent(cat: firstTag.name ?? ""));
+            context
+                .read<PlayListBloc>()
+                .add(RequestHighQualityPlayListEvent(cat: firstTag.name ?? ""));
           }
         });
 
@@ -357,7 +382,8 @@ class _ExplorePageState extends State<ExplorePage> {
                 final currentTag = state.tags.tags?[index];
                 if (currentTag != null) {
                   context.read<PlayListBloc>().add(
-                      RequestHighQualityPlayListEvent(cat: currentTag.name ?? ""));
+                      RequestHighQualityPlayListEvent(
+                          cat: currentTag.name ?? ""));
                 }
               },
               tabs:
@@ -373,7 +399,8 @@ class _ExplorePageState extends State<ExplorePage> {
                   final currentTag = state.tags.tags?[index];
                   if (currentTag != null) {
                     context.read<PlayListBloc>().add(
-                        RequestHighQualityPlayListEvent(cat: currentTag.name ?? ""));
+                        RequestHighQualityPlayListEvent(
+                            cat: currentTag.name ?? ""));
                   }
                 },
                 itemBuilder: (context, index) {
@@ -426,9 +453,17 @@ class _ExplorePageState extends State<ExplorePage> {
                         borderRadius: BorderRadius.circular(12),
                         child: AspectRatio(
                           aspectRatio: 1.0,
-                          child: Image.network(
-                            '${state.playList.playlists?[index].coverImgUrl}',
+                          child: CachedNetworkImage(
+                            imageUrl:
+                                '${state.playList.playlists?[index].coverImgUrl}',
                             fit: BoxFit.cover,
+                            placeholder: (context, url) => Container(
+                              color: Colors.grey[800],
+                              child: const Center(
+                                  child: CircularProgressIndicator()),
+                            ),
+                            errorWidget: (context, url, error) =>
+                                const Icon(Icons.error),
                           ),
                         ),
                       ),
