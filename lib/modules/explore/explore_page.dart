@@ -1,10 +1,9 @@
 import 'package:ai_music/widgets/status_bar_playce_holder.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 
 import '../../common/log_util.dart';
+import '../../common/widgets/common_network_image.dart';
 import '../../themes/theme_color.dart';
 import '../../themes/theme_size.dart';
 import 'bloc/play_list_bloc.dart';
@@ -189,18 +188,14 @@ class _ExplorePageState extends State<ExplorePage> {
         width: 130,
         child: Stack(
           children: [
-            ClipRRect(
-              borderRadius: BorderRadius.circular(10),
-              child: CachedNetworkImage(
+            SizedBox(
+              height: 180,
+              width: 130,
+              child: CommonNetworkImage(
                 imageUrl: state.playList.recommend?[index].picUrl ?? "",
-                height: 180,
+                borderRadius: BorderRadius.circular(10),
                 width: 130,
-                fit: BoxFit.cover,
-                placeholder: (context, url) => Container(
-                  color: Colors.grey[800],
-                  child: const Center(child: CircularProgressIndicator()),
-                ),
-                errorWidget: (context, url, error) => const Icon(Icons.error),
+                height: 180,
               ),
             ),
             Positioned(
@@ -259,29 +254,14 @@ class _ExplorePageState extends State<ExplorePage> {
                 padding: const EdgeInsets.only(right: 10),
                 child: Stack(
                   children: [
-                    Container(
+                    SizedBox(
                       width: 80,
                       height: 80,
-                      decoration: BoxDecoration(
-                        border: Border.all(
-                          color: borderColor,
-                          width: 2,
-                        ),
+                      child: CommonNetworkImage(
+                        imageUrl: "https://picsum.photos/180/180",
+                        width: 80,
+                        height: 80,
                         borderRadius: BorderRadius.circular(50),
-                      ),
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(50),
-                        child: CachedNetworkImage(
-                          imageUrl: "https://picsum.photos/180/180",
-                          fit: BoxFit.cover,
-                          placeholder: (context, url) => Container(
-                            color: Colors.grey[800],
-                            child: const Center(
-                                child: CircularProgressIndicator()),
-                          ),
-                          errorWidget: (context, url, error) =>
-                              const Icon(Icons.error),
-                        ),
                       ),
                     ),
                     Positioned(
@@ -453,17 +433,10 @@ class _ExplorePageState extends State<ExplorePage> {
                         borderRadius: BorderRadius.circular(12),
                         child: AspectRatio(
                           aspectRatio: 1.0,
-                          child: CachedNetworkImage(
+                          child: CommonNetworkImage(
                             imageUrl:
                                 '${state.playList.playlists?[index].coverImgUrl}',
-                            fit: BoxFit.cover,
-                            placeholder: (context, url) => Container(
-                              color: Colors.grey[800],
-                              child: const Center(
-                                  child: CircularProgressIndicator()),
-                            ),
-                            errorWidget: (context, url, error) =>
-                                const Icon(Icons.error),
+                            borderRadius: BorderRadius.circular(12),
                           ),
                         ),
                       ),
