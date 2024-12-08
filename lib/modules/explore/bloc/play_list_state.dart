@@ -1,3 +1,4 @@
+import '../models/high_qulity_tags.dart';
 import '../models/play_list_categories.dart';
 import '../models/play_list_high_qulity.dart';
 import '../models/play_list_recommend.dart';
@@ -46,4 +47,18 @@ final class RequestPlayListRecommendError extends PlayListState {
   final String error;
 
   RequestPlayListRecommendError(this.error);
+}
+
+final class RequestHighQualityTagsLoading extends PlayListState {}
+
+final class RequestHighQualityTagsSuccess extends PlayListState {
+  final HighQulityTags tags;
+
+  RequestHighQualityTagsSuccess(this.tags);
+}
+
+final class RequestHighQualityTagsError extends PlayListState {
+  final String error;
+
+  RequestHighQualityTagsError(this.error);
 }

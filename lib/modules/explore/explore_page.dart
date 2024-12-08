@@ -9,6 +9,7 @@ import '../../themes/theme_size.dart';
 import 'bloc/play_list_bloc.dart';
 import 'bloc/play_list_event.dart';
 import 'bloc/play_list_state.dart';
+import 'models/high_qulity_tags.dart';
 
 class ExplorePage extends StatefulWidget {
   const ExplorePage({super.key});
@@ -28,7 +29,8 @@ class _ExplorePageState extends State<ExplorePage> {
         LogUtil.i("ExplorePage initState called", tag: _tag);
         context.read<PlayListBloc>().add(RequestPlayListRecommendEvent());
         // context.read<PlayListBloc>().add(RequestHighQualityPlayListEvent());
-        context.read<PlayListBloc>().add(RequestHotPlayListEvent());
+        // context.read<PlayListBloc>().add(RequestHotPlayListEvent());
+        context.read<PlayListBloc>().add(RequestHighQualityTagsEvent());
       }
     });
   }
@@ -84,7 +86,7 @@ class _ExplorePageState extends State<ExplorePage> {
                   ),
                 ];
               },
-              body: _buildCategoryListBloc(context),
+              body: _buildHightQulityTabsBloc(context),
             ),
           ),
         ],
@@ -179,8 +181,8 @@ class _ExplorePageState extends State<ExplorePage> {
     );
   }
 
-  Padding _buildRecommendPlayList(RequestPlayListRecommendSuccess state,
-      int index, BuildContext context) {
+  Padding _buildRecommendPlayList(
+      RequestPlayListRecommendSuccess state, int index, BuildContext context) {
     return Padding(
       padding: const EdgeInsets.only(right: 15),
       child: Container(
@@ -188,8 +190,7 @@ class _ExplorePageState extends State<ExplorePage> {
         width: 130,
         decoration: BoxDecoration(
           image: DecorationImage(
-            image: NetworkImage(
-                state.playList.recommend?[index].picUrl ?? ""),
+            image: NetworkImage(state.playList.recommend?[index].picUrl ?? ""),
             fit: BoxFit.cover,
           ),
           borderRadius: BorderRadius.circular(10),
@@ -289,32 +290,32 @@ class _ExplorePageState extends State<ExplorePage> {
     );
   }
 
-  _buildCategoryListBloc(BuildContext context) {
+  _buildHightQulityTabsBloc(BuildContext context) {
     return BlocBuilder<PlayListBloc, PlayListState>(
       buildWhen: (previous, current) =>
-          current is RequestHotPlayListLoading ||
-          current is RequestHotPlayListError ||
-          current is RequestHotPlayListSuccess,
+          current is RequestHighQualityTagsLoading ||
+          current is RequestHighQualityTagsError ||
+          current is RequestHighQualityTagsSuccess,
       builder: (context, state) {
         LogUtil.i(state, tag: _tag);
-        if (state is RequestHotPlayListLoading) {
+        if (state is RequestHighQualityTagsLoading) {
           return const Center(child: CircularProgressIndicator());
         }
-        if (state is RequestHotPlayListError) {
+        if (state is RequestHighQualityTagsError) {
           return Center(child: Text(state.error));
         }
-        if (state is RequestHotPlayListSuccess) {
-          return _buildCategoryList(context, state);
+        if (state is RequestHighQualityTagsSuccess) {
+          return _buildHighQulityTabs(context, state);
         }
         return const SizedBox();
       },
     );
   }
 
-  Widget _buildCategoryList(
-      BuildContext context, RequestHotPlayListSuccess state) {
+  Widget _buildHighQulityTabs(
+      BuildContext context, RequestHighQualityTagsSuccess state) {
     return DefaultTabController(
-      length: state.playList.tags.length,
+      length: state.tags.tags?.length ?? 0,
       child: Column(
         children: [
           TabBar(
@@ -324,16 +325,17 @@ class _ExplorePageState extends State<ExplorePage> {
             indicatorColor: Colors.white,
             dividerColor: Colors.transparent,
             tabAlignment: TabAlignment.start,
-            tabs:
-                state.playList.tags.map((tag) => Tab(text: tag.name)).toList(),
+            tabs: state.tags.tags?.map((tag) => Tab(text: tag.name)).toList() ??
+                [],
           ),
           Expanded(
             child: Builder(
               builder: (context) {
                 return TabBarView(
-                  children: state.playList.tags
-                      .map((tag) => _buildGridView(context, tag.name))
-                      .toList(),
+                  children: state.tags.tags
+                          ?.map((tag) => _buildGridView(context, tag))
+                          .toList() ??
+                      [],
                 );
               },
             ),
@@ -343,7 +345,7 @@ class _ExplorePageState extends State<ExplorePage> {
     );
   }
 
-  Widget _buildGridView(BuildContext context, String category) {
+  Widget _buildGridView(BuildContext context, Tag tag) {
     // 生成随机高度列表，实际项目中应该根据实际内容高度来设置
     final List<double> heights = List.generate(
       20,
@@ -381,7 +383,7 @@ class _ExplorePageState extends State<ExplorePage> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      '$category 项目 $index',
+                      '${tag.name} 项目 $index',
                       style: Theme.of(context).textTheme.bodyMedium,
                     ),
                     const SizedBox(height: 4),

@@ -1,3 +1,4 @@
+import 'package:ai_music/modules/explore/models/high_qulity_tags.dart';
 import 'package:ai_music/modules/explore/models/play_list_categories.dart';
 import 'package:ai_music/modules/explore/models/play_list_high_qulity.dart';
 import 'package:ai_music/network/dio_utils.dart';
@@ -20,8 +21,19 @@ class PlayListRepo {
     return PlayListCatagories(tags: [], code: 0);
   }
 
-  Future<PlayListHighQulity> requestHighQualityPlayList() async {
-    final resp = await DioUtils.get(path: "/top/playlist/highquality");
+  Future<HighQulityTags> requestHighQualityTags() async {
+    final resp = await DioUtils.get(path: "/playlist/highquality/tags");
+    if (resp != null) {
+      return HighQulityTags.fromJson(resp);
+    }
+    return HighQulityTags(tags: [], code: 0);
+  }
+
+  Future<PlayListHighQulity> requestHighQualityPlayList(
+      {String cat = "全部", int limit = 10}) async {
+    final resp = await DioUtils.get(
+        path: "/top/playlist/highquality",
+        queryParameters: {"cat": cat, "limit": limit});
     if (resp != null) {
       final result = PlayListHighQulity.fromJson(resp);
       return result;

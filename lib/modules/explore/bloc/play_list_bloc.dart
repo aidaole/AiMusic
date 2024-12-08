@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:ai_music/common/log_util.dart';
 import 'package:bloc/bloc.dart';
 
@@ -16,6 +14,7 @@ class PlayListBloc extends Bloc<PlayListEvent, PlayListState> {
     on<RequestHotPlayListEvent>(_onRequestHotPlayListEvent);
     on<RequestHighQualityPlayListEvent>(_onRequestHighQualityPlayListEvent);
     on<RequestPlayListRecommendEvent>(_onRequestPlayListRecommendEvent);
+    on<RequestHighQualityTagsEvent>(_onRequestHighQualityTagsEvent);
   }
 
   void _onRequestHotPlayListEvent(
@@ -61,6 +60,19 @@ class PlayListBloc extends Bloc<PlayListEvent, PlayListState> {
     } catch (e, stackTrace) {
       LogUtil.e("错误详情: $e\n$stackTrace", tag: _tag);
       emit(RequestPlayListRecommendError(e.toString()));
+    }
+  }
+
+  void _onRequestHighQualityTagsEvent(
+      RequestHighQualityTagsEvent event, Emitter<PlayListState> emit) async {
+    LogUtil.i("requestHighQualityTagsEvent", tag: _tag);
+    try {
+      emit(RequestHighQualityTagsLoading());
+      final highQualityTags = await playListRepo.requestHighQualityTags();
+      emit(RequestHighQualityTagsSuccess(highQualityTags));
+    } catch (e, stackTrace) {
+      LogUtil.e("错误详情: $e\n$stackTrace", tag: _tag);
+      emit(RequestHighQualityTagsError(e.toString()));
     }
   }
 }
