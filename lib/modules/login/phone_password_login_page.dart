@@ -45,7 +45,7 @@ class PhonePasswordLoginPage extends StatelessWidget {
             height: 10,
           ),
           Text(
-            "未注册的手机号验证通过后将自动创建账号",
+            "密码登录目前已经失效了, 请使用二维码登录, 更安全, 避免输入用户名密码",
             style: Theme.of(context).textTheme.titleLarge?.copyWith(
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
@@ -119,6 +119,7 @@ class PhonePasswordLoginPage extends StatelessWidget {
         controller: _passwordInputController..text = '',
         style: const TextStyle(color: Colors.white, fontSize: 20),
         keyboardType: TextInputType.visiblePassword,
+        obscureText: true, // 添加这一行使密码显示为*号
         decoration: InputDecoration(
           hintText: '请输入密码',
           hintStyle: TextStyle(color: Colors.white.withAlpha(80)),
@@ -135,7 +136,7 @@ class PhonePasswordLoginPage extends StatelessWidget {
     return Row(
       children: [
         Checkbox(value: false, onChanged: (value) {}),
-        const Text("我已阅读并同意用户协议, 并授权获取短信验证码"),
+        const Expanded(child: Text("我已阅读并同意用户协议, 并授权获取短信验证码")),
       ],
     );
   }
