@@ -1,3 +1,4 @@
+import 'package:ai_music/modules/music/models/recommend_songs/song.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:palette_generator/palette_generator.dart';
@@ -6,7 +7,6 @@ import '../../common/log_util.dart';
 import '../../common/widgets/common_circle_loading.dart';
 import '../../themes/theme_color.dart';
 import '../../themes/theme_size.dart';
-import '../explore/models/play_list_detail/track.dart';
 import 'bloc/music_page_bloc.dart';
 
 class MusicPage extends StatefulWidget {
@@ -19,10 +19,16 @@ class MusicPage extends StatefulWidget {
 }
 
 class _MusicPageState extends State<MusicPage> {
+  static const String _tag = "MusicPage";
   @override
   void initState() {
     super.initState();
-    context.read<MusicPageBloc>().add(MusicPageInitEvent());
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        LogUtil.i("MusicPage initState called", tag: _tag);
+        context.read<MusicPageBloc>().add(MusicPageInitEvent());
+      }
+    });
   }
 
   @override
@@ -42,7 +48,7 @@ class _MusicPageState extends State<MusicPage> {
             if (state is AddPlayListSuccess) {
               return _buildMusicListWidget(context);
             }
-            if (state is MusicPageInitial) {
+            if (state is MusicPageLoading) {
               return const Center(
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -73,16 +79,16 @@ class _MusicPageState extends State<MusicPage> {
     return PageView.builder(
       scrollDirection: Axis.vertical,
       itemBuilder: (context, index) {
-        final tracks = context.read<MusicPageBloc>().tracks;
-        final track = tracks[index];
-        return _buildMusicInfoItemWidget(context, index, track);
+        final songs = context.read<MusicPageBloc>().songs;
+        final song = songs[index];
+        return _buildMusicInfoItemWidget(context, index, song);
       },
     );
   }
 
-  _buildMusicInfoItemWidget(BuildContext context, int index, Track track) {
+  _buildMusicInfoItemWidget(BuildContext context, int index, Song song) {
     return FutureBuilder<Color>(
-      future: _extractDominantColor(track.al?.picUrl),
+      future: _extractDominantColor(song.al?.picUrl),
       builder: (context, snapshot) {
         final backgroundColor = snapshot.data ?? Colors.black;
 
@@ -93,7 +99,7 @@ class _MusicPageState extends State<MusicPage> {
           child: Column(
             children: [
               const SizedBox(height: 100),
-              _buildMusicPicWidget(context, track.al?.picUrl),
+              _buildMusicPicWidget(context, song.al?.picUrl),
               const SizedBox(height: 40),
               _buildMusicLyricWidget(context),
               const Spacer(),
@@ -132,7 +138,7 @@ class _MusicPageState extends State<MusicPage> {
 
   _buildMusicControlWidget(BuildContext context, int index) {
     const iconSize = 35.0;
-    final track = context.read<MusicPageBloc>().tracks[index];
+    final track = context.read<MusicPageBloc>().songs[index];
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 20),
       child: Column(

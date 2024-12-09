@@ -31,11 +31,9 @@ class PlayListRepo {
     return HighQulityTags(tags: [], code: 0);
   }
 
-  Future<PlayListHighQulity> requestHighQualityPlayList(
-      {String cat = "全部", int limit = 10}) async {
+  Future<PlayListHighQulity> requestHighQualityPlayList({String cat = "全部", int limit = 10}) async {
     final resp = await DioUtils.get(
-        path: "/top/playlist/highquality",
-        queryParameters: {"cat": cat, "limit": limit});
+        path: "/top/playlist/highquality", queryParameters: {"cat": cat, "limit": limit});
     if (resp != null) {
       final result = PlayListHighQulity.fromJson(resp);
       return result;
@@ -62,8 +60,7 @@ class PlayListRepo {
   }
 
   Future<PlayListDetail> requestPlayListDetail({required int id}) async {
-    final resp = await DioUtils.get(
-        path: "/playlist/detail", queryParameters: {"id": id});
+    final resp = await DioUtils.get(path: "/playlist/detail", queryParameters: {"id": id});
     if (resp != null) {
       final result = PlayListDetail.fromJson(resp);
       return result;

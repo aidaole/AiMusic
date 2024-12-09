@@ -4,8 +4,10 @@ sealed class MusicPageState {}
 
 final class MusicPageInitial extends MusicPageState {}
 
-final class AddPlayListSuccess extends MusicPageState {
-  final List<Track> tracks;
+final class MusicPageLoading extends MusicPageState {}
 
-  AddPlayListSuccess({required this.tracks});
+final class AddPlayListSuccess extends MusicPageState {
+  final List<Song> songs;
+
+  AddPlayListSuccess({required this.songs});
 }

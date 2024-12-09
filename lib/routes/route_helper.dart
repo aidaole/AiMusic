@@ -19,7 +19,8 @@ class RouteHelper {
     String routeName, {
     Object? arguments,
   }) {
-    return Navigator.pushReplacementNamed(context, routeName, arguments: arguments);
+    return Navigator.pushReplacementNamed(context, routeName,
+        arguments: arguments);
   }
 
   /// 移除所有页面，并导航到指定页面

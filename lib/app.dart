@@ -32,7 +32,7 @@ class App extends StatelessWidget {
           create: (context) => PlayListBloc(playListRepo: PlayListRepo()),
         ),
         BlocProvider(
-          create: (context) => MusicPageBloc(MusicPageRepo()),
+          create: (context) => MusicPageBloc(MusicPageRepo(), PlayListRepo()),
         )
       ],
       child: _buildMaterialApp(),
