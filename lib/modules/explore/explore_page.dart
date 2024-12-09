@@ -29,8 +29,8 @@ class _ExplorePageState extends State<ExplorePage> {
       if (mounted) {
         LogUtil.i("ExplorePage initState called", tag: _tag);
         context.read<PlayListBloc>().add(RequestPlayListRecommendEvent());
-        context.read<PlayListBloc>().add(RequestHighQualityTagsEvent());
         context.read<PlayListBloc>().add(RequestTopArtistsEvent());
+        context.read<PlayListBloc>().add(RequestHighQualityTagsEvent());
       }
     });
   }
@@ -69,8 +69,7 @@ class _ExplorePageState extends State<ExplorePage> {
           // 可滚动的内容部分
           Expanded(
             child: NestedScrollView(
-              headerSliverBuilder:
-                  (BuildContext context, bool innerBoxIsScrolled) {
+              headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
                 return [
                   SliverToBoxAdapter(
                     child: Column(
@@ -181,8 +180,7 @@ class _ExplorePageState extends State<ExplorePage> {
     );
   }
 
-  _buildRecommendPlayList(
-      RequestPlayListRecommendSuccess state, int index, BuildContext context) {
+  _buildRecommendPlayList(RequestPlayListRecommendSuccess state, int index, BuildContext context) {
     return GestureDetector(
       onTap: () {
         Navigator.pushNamed(context, AppRoutes.playListDetail,
@@ -274,8 +272,7 @@ class _ExplorePageState extends State<ExplorePage> {
     );
   }
 
-  SizedBox _buildTopArtistList(
-      RequestTopArtistsSuccess state, Color borderColor) {
+  SizedBox _buildTopArtistList(RequestTopArtistsSuccess state, Color borderColor) {
     return SizedBox(
       height: 85,
       child: ListView.builder(
@@ -344,8 +341,7 @@ class _ExplorePageState extends State<ExplorePage> {
     );
   }
 
-  Widget _buildHighQulityTabs(
-      BuildContext context, RequestHighQualityTagsSuccess state) {
+  Widget _buildHighQulityTabs(BuildContext context, RequestHighQualityTagsSuccess state) {
     LogUtil.i("${state.tags.tags?.length}", tag: _tag);
     return DefaultTabController(
       length: state.tags.tags?.length ?? 0,
@@ -391,14 +387,12 @@ class _ExplorePageState extends State<ExplorePage> {
                 );
                 final currentTag = state.tags.tags?[index];
                 if (currentTag != null) {
-                  context.read<PlayListBloc>().add(
-                      RequestHighQualityPlayListEvent(
-                          cat: currentTag.name ?? ""));
+                  context
+                      .read<PlayListBloc>()
+                      .add(RequestHighQualityPlayListEvent(cat: currentTag.name ?? ""));
                 }
               },
-              tabs:
-                  state.tags.tags?.map((tag) => Tab(text: tag.name)).toList() ??
-                      [],
+              tabs: state.tags.tags?.map((tag) => Tab(text: tag.name)).toList() ?? [],
             ),
             Expanded(
               child: PageView.builder(
@@ -408,9 +402,9 @@ class _ExplorePageState extends State<ExplorePage> {
                   tabController.animateTo(index);
                   final currentTag = state.tags.tags?[index];
                   if (currentTag != null) {
-                    context.read<PlayListBloc>().add(
-                        RequestHighQualityPlayListEvent(
-                            cat: currentTag.name ?? ""));
+                    context
+                        .read<PlayListBloc>()
+                        .add(RequestHighQualityPlayListEvent(cat: currentTag.name ?? ""));
                   }
                 },
                 itemBuilder: (context, index) {
@@ -429,12 +423,9 @@ class _ExplorePageState extends State<ExplorePage> {
   Widget _buildHighQulityTabList(BuildContext context, Tag tag) {
     return BlocBuilder<PlayListBloc, PlayListState>(
         buildWhen: (previous, current) =>
-            (current is RequestHighQualityPlayListSuccess &&
-                current.cat == tag.name) ||
-            (current is RequestHighQualityPlayListLoading &&
-                current.cat == tag.name) ||
-            (current is RequestHighQualityPlayListError &&
-                current.cat == tag.name),
+            (current is RequestHighQualityPlayListSuccess && current.cat == tag.name) ||
+            (current is RequestHighQualityPlayListLoading && current.cat == tag.name) ||
+            (current is RequestHighQualityPlayListError && current.cat == tag.name),
         builder: (context, state) {
           LogUtil.i("${tag.name} state: $state", tag: _tag);
           if (state is RequestHighQualityPlayListLoading) {
@@ -444,8 +435,7 @@ class _ExplorePageState extends State<ExplorePage> {
             return Center(child: Text(state.error));
           }
           if (state is RequestHighQualityPlayListSuccess) {
-            LogUtil.i("${tag.name} state: ${state.playList.playlists?.length}",
-                tag: _tag);
+            LogUtil.i("${tag.name} state: ${state.playList.playlists?.length}", tag: _tag);
             return GridView.builder(
               itemCount: state.playList.playlists?.length ?? 0,
               gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
@@ -469,8 +459,7 @@ class _ExplorePageState extends State<ExplorePage> {
                           child: AspectRatio(
                             aspectRatio: 1.0,
                             child: CommonNetworkImage(
-                              imageUrl:
-                                  '${state.playList.playlists?[index].coverImgUrl}',
+                              imageUrl: '${state.playList.playlists?[index].coverImgUrl}',
                               borderRadius: BorderRadius.circular(12),
                             ),
                           ),
