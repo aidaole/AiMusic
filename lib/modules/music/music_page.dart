@@ -8,6 +8,7 @@ import '../../common/widgets/common_circle_loading.dart';
 import '../../themes/theme_color.dart';
 import '../../themes/theme_size.dart';
 import 'bloc/music_page_bloc.dart';
+import 'music_player.dart';
 
 class MusicPage extends StatefulWidget {
   static final Map<String, Color> _colorCache = {};
@@ -118,7 +119,8 @@ class _MusicPageState extends State<MusicPage> {
       child: Container(
         height: MediaQuery.of(context).size.width - 60,
         decoration: BoxDecoration(
-            image: DecorationImage(image: NetworkImage(picUrl ?? ""), fit: BoxFit.cover),
+            image: DecorationImage(
+                image: NetworkImage(picUrl ?? ""), fit: BoxFit.cover),
             borderRadius: const BorderRadius.all(Radius.circular(20))),
       ),
     );
@@ -161,6 +163,8 @@ class _MusicPageState extends State<MusicPage> {
           const SizedBox(
             height: 10,
           ),
+          const MusicPlayer(),
+          const SizedBox(height: 10),
           const Row(
             children: [
               Icon(Icons.favorite_sharp, size: iconSize),
@@ -237,7 +241,8 @@ class _MusicPageState extends State<MusicPage> {
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            IconButton(onPressed: () {}, icon: const Icon(Icons.menu, size: iconSize)),
+            IconButton(
+                onPressed: () {}, icon: const Icon(Icons.menu, size: iconSize)),
             Text(
               "模式选择",
               style: Theme.of(context).textTheme.titleLarge,
@@ -261,7 +266,8 @@ class _MusicPageState extends State<MusicPage> {
     }
 
     try {
-      final PaletteGenerator paletteGenerator = await PaletteGenerator.fromImageProvider(
+      final PaletteGenerator paletteGenerator =
+          await PaletteGenerator.fromImageProvider(
         NetworkImage(imageUrl),
         size: const Size(200, 200),
       );

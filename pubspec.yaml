@@ -24,6 +24,8 @@ dependencies:
   cached_network_image: ^3.4.1
   shimmer: ^3.0.0
   palette_generator: ^0.3.3
+  just_audio: ^0.9.42
+  audio_session: ^0.1.21
 
 dev_dependencies:
   flutter_test:
