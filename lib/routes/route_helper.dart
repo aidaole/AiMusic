@@ -1,4 +1,6 @@
+import 'package:ai_music/modules/home/bloc/home_page_bloc.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 /// 路由助手类
 class RouteHelper {
@@ -17,8 +19,7 @@ class RouteHelper {
     String routeName, {
     Object? arguments,
   }) {
-    return Navigator.pushReplacementNamed(context, routeName,
-        arguments: arguments);
+    return Navigator.pushReplacementNamed(context, routeName, arguments: arguments);
   }
 
   /// 移除所有页面，并导航到指定页面
@@ -49,5 +50,10 @@ class RouteHelper {
   /// 获取路由参数
   static T? arguments<T>(BuildContext context) {
     return ModalRoute.of(context)?.settings.arguments as T?;
+  }
+
+  /// 切换到首页指定tab
+  static void switchHomeTab(BuildContext context, int index) {
+    context.read<HomePageBloc>().add(HomeSwitchTabEvent(index));
   }
 }

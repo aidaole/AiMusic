@@ -7,7 +7,10 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'modules/account/repositories/account_repository.dart';
 import 'modules/explore/bloc/play_list_bloc.dart';
 import 'modules/explore/repos/play_list_repo.dart';
+import 'modules/home/bloc/home_page_bloc.dart';
 import 'modules/home/home_page.dart';
+import 'modules/music/bloc/music_page_bloc.dart';
+import 'modules/music/bloc/music_page_repo.dart';
 import 'routes/app_pages.dart';
 
 class App extends StatelessWidget {
@@ -18,12 +21,18 @@ class App extends StatelessWidget {
     return MultiBlocProvider(
       providers: [
         BlocProvider(
+          create: (context) => HomePageBloc(),
+        ),
+        BlocProvider(
           create: (context) => AccountBloc(
             repository: AccountRepository(),
           ),
         ),
         BlocProvider(
           create: (context) => PlayListBloc(playListRepo: PlayListRepo()),
+        ),
+        BlocProvider(
+          create: (context) => MusicPageBloc(MusicPageRepo()),
         )
       ],
       child: _buildMaterialApp(),

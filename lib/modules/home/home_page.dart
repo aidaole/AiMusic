@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../account/account_page.dart';
 import '../explore/explore_page.dart';
 import '../music/music_page.dart';
+import 'bloc/home_page_bloc.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -12,7 +14,6 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  int _selectedIndex = 0;
   final List<Widget> _pages = [
     const KeepAlivePage(child: ExplorePage()),
     const KeepAlivePage(child: MusicPage()),
@@ -21,30 +22,37 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Stack(
-        children: [
-          IndexedStack(
-            index: _selectedIndex,
-            children: _pages,
+    return BlocBuilder<HomePageBloc, HomePageState>(
+      buildWhen: (previous, current) => current is HomePageSwitchTabState,
+      builder: (context, state) {
+        int selectedIndex = 0;
+        if (state is HomePageSwitchTabState) {
+          selectedIndex = state.index;
+        }
+        return Scaffold(
+          body: Stack(
+            children: [
+              IndexedStack(
+                index: selectedIndex,
+                children: _pages,
+              ),
+              Align(
+                alignment: Alignment.bottomCenter,
+                child: _buildBottomNavigationBar(selectedIndex),
+              ),
+            ],
           ),
-          Align(
-            alignment: Alignment.bottomCenter,
-            child: _buildBottomNavigationBar(),
-          ),
-        ],
-      ),
+        );
+      },
     );
   }
 
-  Widget _buildBottomNavigationBar() {
+  Widget _buildBottomNavigationBar(int selectedIndex) {
     return SafeArea(
       child: BottomNavigationBar(
-        currentIndex: _selectedIndex,
+        currentIndex: selectedIndex,
         onTap: (index) {
-          setState(() {
-            _selectedIndex = index;
-          });
+          context.read<HomePageBloc>().add(HomeSwitchTabEvent(index));
         },
         backgroundColor: Colors.transparent,
         elevation: 0,
@@ -72,8 +80,7 @@ class KeepAlivePage extends StatefulWidget {
   State<KeepAlivePage> createState() => _KeepAlivePageState();
 }
 
-class _KeepAlivePageState extends State<KeepAlivePage>
-    with AutomaticKeepAliveClientMixin {
+class _KeepAlivePageState extends State<KeepAlivePage> with AutomaticKeepAliveClientMixin {
   @override
   bool get wantKeepAlive => true;
 

@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../themes/theme_color.dart';
 import '../../themes/theme_size.dart';
+import '../explore/models/play_list_detail/track.dart';
+import 'bloc/music_page_bloc.dart';
 
 class MusicPage extends StatelessWidget {
+  static const String _tag = "MusicPage";
   const MusicPage({super.key});
 
   @override
@@ -19,36 +23,38 @@ class MusicPage extends StatelessWidget {
   }
 
   _buildMainContent(BuildContext context) {
-    return Stack(
-      children: [
-        _buildMusicListWidget(),
-        Column(
+    BlocConsumer<MusicPageBloc, MusicPageState>(
+      listener: (context, state) {},
+      buildWhen: (previous, current) => current is AddPlayListSuccess,
+      builder: (context, state) {
+        return Stack(
           children: [
-            _buildStatusBar(context),
-            _buildActionBar(context),
+            _buildMusicListWidget(context),
+            Column(
+              children: [
+                _buildStatusBar(context),
+                _buildActionBar(context),
+              ],
+            )
           ],
-        )
-      ],
-    );
-  }
-
-  _buildMusicListWidget() {
-    return PageView.builder(
-      scrollDirection: Axis.vertical,
-      itemBuilder: (context, index) {
-        return _buildMusicInfoItemWidget(context, index);
+        );
       },
     );
   }
 
-  Container _buildMusicInfoItemWidget(BuildContext context, int index) {
-    final colors = [
-      Colors.amber,
-      Colors.blue,
-      Colors.green,
-      Colors.purple,
-      Colors.red
-    ];
+  _buildMusicListWidget(BuildContext context) {
+    return PageView.builder(
+      scrollDirection: Axis.vertical,
+      itemBuilder: (context, index) {
+        final tracks = context.read<MusicPageBloc>().tracks;
+        final track = tracks[index];
+        return _buildMusicInfoItemWidget(context, index, track);
+      },
+    );
+  }
+
+  Container _buildMusicInfoItemWidget(BuildContext context, int index, Track track) {
+    final colors = [Colors.amber, Colors.blue, Colors.green, Colors.purple, Colors.red];
     return Container(
       color: colors[index % colors.length],
       width: double.infinity,
@@ -58,7 +64,7 @@ class MusicPage extends StatelessWidget {
           const SizedBox(
             height: 100,
           ),
-          _buildMusicPicWidget(context),
+          _buildMusicPicWidget(context, track.al?.picUrl),
           const SizedBox(
             height: 40,
           ),
@@ -73,13 +79,13 @@ class MusicPage extends StatelessWidget {
     );
   }
 
-  Padding _buildMusicPicWidget(BuildContext context) {
+  Padding _buildMusicPicWidget(BuildContext context, String? picUrl) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 30),
       child: Container(
         height: MediaQuery.of(context).size.width - 60,
         decoration: BoxDecoration(
-            color: Colors.white.withAlpha(50),
+            image: DecorationImage(image: NetworkImage(picUrl ?? ""), fit: BoxFit.cover),
             borderRadius: const BorderRadius.all(Radius.circular(20))),
       ),
     );
@@ -197,8 +203,7 @@ class MusicPage extends StatelessWidget {
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            IconButton(
-                onPressed: () {}, icon: const Icon(Icons.menu, size: iconSize)),
+            IconButton(onPressed: () {}, icon: const Icon(Icons.menu, size: iconSize)),
             Text(
               "模式选择",
               style: Theme.of(context).textTheme.titleLarge,

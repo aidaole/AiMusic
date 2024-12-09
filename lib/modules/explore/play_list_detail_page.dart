@@ -8,6 +8,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../common/log_util.dart';
 import '../../routes/route_helper.dart';
 import '../../themes/theme_size.dart';
+import '../music/bloc/music_page_bloc.dart';
 import 'bloc/play_list_bloc.dart';
 import 'bloc/play_list_event.dart';
 import 'bloc/play_list_state.dart';
@@ -105,7 +106,13 @@ class PlayListDetailPage extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       IconButton(
-                          onPressed: () {},
+                          onPressed: () {
+                            logd("${state.playListDetail.playlist?.tracks?.length}", tag: _tag);
+                            RouteHelper.popUntil(context, '/home');
+                            RouteHelper.switchHomeTab(context, 1);
+                            context.read<MusicPageBloc>().add(AddPlayListEvent(
+                                tracks: state.playListDetail.playlist?.tracks ?? []));
+                          },
                           icon: const Icon(
                             Icons.play_circle,
                             size: 40,
