@@ -97,6 +97,9 @@ class PlayListDetailPage extends StatelessWidget {
                         .titleLarge
                         ?.copyWith(fontWeight: FontWeight.bold),
                   ),
+                  const SizedBox(
+                    height: 10,
+                  ),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.start,
                     crossAxisAlignment: CrossAxisAlignment.center,
