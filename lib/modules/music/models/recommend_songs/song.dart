@@ -20,7 +20,9 @@ class Song {
         ar: (json['ar'] as List<dynamic>?)
             ?.map((e) => Ar.fromJson(e as Map<String, dynamic>))
             .toList(),
-        al: json['al'] == null ? null : Al.fromJson(json['al'] as Map<String, dynamic>),
+        al: json['al'] == null
+            ? null
+            : Al.fromJson(json['al'] as Map<String, dynamic>),
       );
 
   Map<String, dynamic> toJson() => {

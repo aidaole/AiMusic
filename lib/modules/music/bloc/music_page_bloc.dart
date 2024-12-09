@@ -19,7 +19,8 @@ class MusicPageBloc extends Bloc<MusicPageEvent, MusicPageState> {
     on<AddPlayListEvent>(_onAddPlayListEvent);
   }
 
-  void _onMusicPageInitEvent(MusicPageInitEvent event, Emitter<MusicPageState> emit) async {
+  void _onMusicPageInitEvent(
+      MusicPageInitEvent event, Emitter<MusicPageState> emit) async {
     logd("MusicPageInitEvent", tag: _tag);
     if (songs.isNotEmpty) {
       emit(AddPlayListSuccess(songs: songs));
@@ -31,7 +32,8 @@ class MusicPageBloc extends Bloc<MusicPageEvent, MusicPageState> {
     }
   }
 
-  void _onAddPlayListEvent(AddPlayListEvent event, Emitter<MusicPageState> emit) {
+  void _onAddPlayListEvent(
+      AddPlayListEvent event, Emitter<MusicPageState> emit) {
     logd("${event.tracks.length}", tag: _tag);
     songs.insertAll(0, event.tracks);
     logd(songs, tag: _tag);

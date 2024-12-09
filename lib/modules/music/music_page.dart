@@ -1,3 +1,4 @@
+import 'package:ai_music/common/widgets/common_network_image.dart';
 import 'package:ai_music/modules/music/models/recommend_songs/song.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -79,6 +80,9 @@ class _MusicPageState extends State<MusicPage> {
   _buildMusicListWidget(BuildContext context) {
     return PageView.builder(
       scrollDirection: Axis.vertical,
+      controller: PageController(viewportFraction: 1.0),
+      pageSnapping: true,
+      itemCount: context.read<MusicPageBloc>().songs.length,
       itemBuilder: (context, index) {
         final songs = context.read<MusicPageBloc>().songs;
         final song = songs[index];
@@ -88,13 +92,21 @@ class _MusicPageState extends State<MusicPage> {
   }
 
   _buildMusicInfoItemWidget(BuildContext context, int index, Song song) {
-    return FutureBuilder<Color>(
-      future: _extractDominantColor(song.al?.picUrl),
-      builder: (context, snapshot) {
-        final backgroundColor = snapshot.data ?? Colors.black;
-
-        return Container(
-          color: backgroundColor,
+    return Stack(
+      children: [
+        // 背景颜色层
+        // FutureBuilder<Color>(
+        //   future: _extractDominantColor(song.al?.picUrl),
+        //   builder: (context, snapshot) {
+        //     return Container(
+        //       color: snapshot.data ?? Colors.black,
+        //       width: double.infinity,
+        //       height: double.infinity,
+        //     );
+        //   },
+        // ),
+        // 内容层
+        SizedBox(
           width: double.infinity,
           height: double.infinity,
           child: Column(
@@ -108,20 +120,19 @@ class _MusicPageState extends State<MusicPage> {
               SizedBox(height: defaultBottomNavigationBarHeight),
             ],
           ),
-        );
-      },
+        ),
+      ],
     );
   }
 
   Padding _buildMusicPicWidget(BuildContext context, String? picUrl) {
+    double size = MediaQuery.of(context).size.width - 60;
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 30),
-      child: Container(
-        height: MediaQuery.of(context).size.width - 60,
-        decoration: BoxDecoration(
-            image: DecorationImage(
-                image: NetworkImage(picUrl ?? ""), fit: BoxFit.cover),
-            borderRadius: const BorderRadius.all(Radius.circular(20))),
+      child: ClipRRect(
+        borderRadius: const BorderRadius.all(Radius.circular(20)),
+        child: CommonNetworkImage(
+            imageUrl: picUrl ?? "", width: size, height: size, fit: BoxFit.cover),
       ),
     );
   }
@@ -163,7 +174,7 @@ class _MusicPageState extends State<MusicPage> {
           const SizedBox(
             height: 10,
           ),
-          const MusicPlayer(),
+          MusicPlayer(url: track.al?.picUrl),
           const SizedBox(height: 10),
           const Row(
             children: [
@@ -241,8 +252,7 @@ class _MusicPageState extends State<MusicPage> {
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            IconButton(
-                onPressed: () {}, icon: const Icon(Icons.menu, size: iconSize)),
+            IconButton(onPressed: () {}, icon: const Icon(Icons.menu, size: iconSize)),
             Text(
               "模式选择",
               style: Theme.of(context).textTheme.titleLarge,
@@ -266,10 +276,9 @@ class _MusicPageState extends State<MusicPage> {
     }
 
     try {
-      final PaletteGenerator paletteGenerator =
-          await PaletteGenerator.fromImageProvider(
+      final PaletteGenerator paletteGenerator = await PaletteGenerator.fromImageProvider(
         NetworkImage(imageUrl),
-        size: const Size(200, 200),
+        size: const Size(20, 20),
       );
 
       final color = paletteGenerator.vibrantColor?.color ??
