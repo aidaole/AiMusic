@@ -11,14 +11,14 @@ class CommonNetworkImage extends StatelessWidget {
   final Color? backgroundColor;
 
   const CommonNetworkImage({
-    Key? key,
+    super.key,
     required this.imageUrl,
     this.width,
     this.height,
     this.fit = BoxFit.cover,
     this.borderRadius,
     this.backgroundColor,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -52,4 +52,4 @@ class CommonNetworkImage extends StatelessWidget {
       ),
     );
   }
-} 
+}

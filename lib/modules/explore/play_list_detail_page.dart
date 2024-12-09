@@ -62,17 +62,13 @@ class PlayListDetailPage extends StatelessWidget {
       },
       builder: (context, state) {
         if (state is RequestPlayListDetailLoading) {
-          return Expanded(
-            child: Container(
-              child: const Text('加载中...'),
-            ),
+          return const Expanded(
+            child: Text('加载中...'),
           );
         }
         if (state is RequestPlayListDetailError) {
           return Expanded(
-            child: Container(
-              child: Text('加载失败: ${state.error}'),
-            ),
+            child: Text('加载失败: ${state.error}'),
           );
         }
         if (state is RequestPlayListDetailSuccess) {

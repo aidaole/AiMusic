@@ -13,7 +13,12 @@ class MusicPageBloc extends Bloc<MusicPageEvent, MusicPageState> {
   final List<Track> tracks = [];
 
   MusicPageBloc(this.repo) : super(MusicPageInitial()) {
+    on<MusicPageInitEvent>(_onMusicPageInitEvent);
     on<AddPlayListEvent>(_onAddPlayListEvent);
+  }
+
+  void _onMusicPageInitEvent(MusicPageInitEvent event, Emitter<MusicPageState> emit) {
+    emit(MusicPageInitial());
   }
 
   void _onAddPlayListEvent(AddPlayListEvent event, Emitter<MusicPageState> emit) {

@@ -1,14 +1,27 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../common/log_util.dart';
 import '../../themes/theme_color.dart';
 import '../../themes/theme_size.dart';
 import '../explore/models/play_list_detail/track.dart';
 import 'bloc/music_page_bloc.dart';
 
-class MusicPage extends StatelessWidget {
-  static const String _tag = "MusicPage";
+class MusicPage extends StatefulWidget {
   const MusicPage({super.key});
+
+  @override
+  State<MusicPage> createState() => _MusicPageState();
+}
+
+class _MusicPageState extends State<MusicPage> {
+  final String _tag = "MusicPage";
+
+  @override
+  void initState() {
+    super.initState();
+    context.read<MusicPageBloc>().add(MusicPageInitEvent());
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -23,22 +36,24 @@ class MusicPage extends StatelessWidget {
   }
 
   _buildMainContent(BuildContext context) {
-    BlocConsumer<MusicPageBloc, MusicPageState>(
-      listener: (context, state) {},
-      buildWhen: (previous, current) => current is AddPlayListSuccess,
-      builder: (context, state) {
-        return Stack(
+    return Stack(
+      children: [
+        BlocBuilder<MusicPageBloc, MusicPageState>(
+          builder: (context, state) {
+            logd("MusicPage state: $state", tag: _tag);
+            if (state is AddPlayListSuccess) {
+              return _buildMusicListWidget(context);
+            }
+            return const Text("加载中...");
+          },
+        ),
+        Column(
           children: [
-            _buildMusicListWidget(context),
-            Column(
-              children: [
-                _buildStatusBar(context),
-                _buildActionBar(context),
-              ],
-            )
+            _buildStatusBar(context),
+            _buildActionBar(context),
           ],
-        );
-      },
+        )
+      ],
     );
   }
 
