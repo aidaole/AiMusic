@@ -82,17 +82,19 @@ final class RequestTopArtistsError extends PlayListState {
   RequestTopArtistsError(this.error);
 }
 
-final class RequestPlayListDetailLoading extends PlayListState {
+class PlayListDetailState extends PlayListState {}
+
+final class RequestPlayListDetailLoading extends PlayListDetailState {
   final int id;
   RequestPlayListDetailLoading(this.id);
 }
 
-final class RequestPlayListDetailSuccess extends PlayListState {
+final class RequestPlayListDetailSuccess extends PlayListDetailState {
   final PlayListDetail playListDetail;
   RequestPlayListDetailSuccess(this.playListDetail);
 }
 
-final class RequestPlayListDetailError extends PlayListState {
+final class RequestPlayListDetailError extends PlayListDetailState {
   final String error;
   RequestPlayListDetailError(this.error);
 }

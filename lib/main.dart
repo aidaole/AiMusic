@@ -14,9 +14,9 @@ void main() async {
   );
   try {
     await DioUtils.init();
-    LogUtil.i('Dio初始化成功');
+    logi('Dio初始化成功');
   } catch (e) {
-    LogUtil.e('Dio初始化失败: $e');
+    loge('Dio初始化失败: $e');
   }
   SystemChrome.setSystemUIOverlayStyle(
     const SystemUiOverlayStyle(
