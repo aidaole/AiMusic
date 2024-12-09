@@ -9,3 +9,9 @@ class AddPlayListEvent extends MusicPageEvent {
 
   AddPlayListEvent({required this.tracks});
 }
+
+class MusicPageChangeIndexEvent extends MusicPageEvent {
+  final int index;
+
+  MusicPageChangeIndexEvent({required this.index});
+}

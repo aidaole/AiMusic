@@ -80,8 +80,10 @@ class _MusicPageState extends State<MusicPage> {
   _buildMusicListWidget(BuildContext context) {
     return PageView.builder(
       scrollDirection: Axis.vertical,
-      controller: PageController(viewportFraction: 1.0),
-      pageSnapping: true,
+      onPageChanged: (index) {
+        logd("当前滑动到第$index个", tag: _tag);
+        context.read<MusicPageBloc>().add(MusicPageChangeIndexEvent(index: index));
+      },
       itemCount: context.read<MusicPageBloc>().songs.length,
       itemBuilder: (context, index) {
         final songs = context.read<MusicPageBloc>().songs;

@@ -11,3 +11,9 @@ final class AddPlayListSuccess extends MusicPageState {
 
   AddPlayListSuccess({required this.songs});
 }
+
+final class MusicPageChangeIndexSuccess extends MusicPageState {
+  final SongDetail songDetail;
+
+  MusicPageChangeIndexSuccess({required this.songDetail});
+}
