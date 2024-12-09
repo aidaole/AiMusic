@@ -23,6 +23,7 @@ dependencies:
   shared_preferences: ^2.3.3
   cached_network_image: ^3.4.1
   shimmer: ^3.0.0
+  palette_generator: ^0.3.3
 
 dev_dependencies:
   flutter_test:

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:palette_generator/palette_generator.dart';
 
 import '../../common/log_util.dart';
 import '../../themes/theme_color.dart';
@@ -7,20 +8,38 @@ import '../../themes/theme_size.dart';
 import '../explore/models/play_list_detail/track.dart';
 import 'bloc/music_page_bloc.dart';
 
-class MusicPage extends StatefulWidget {
+class MusicPage extends StatelessWidget {
+  static final Map<String, Color> _colorCache = {};
+
   const MusicPage({super.key});
 
-  @override
-  State<MusicPage> createState() => _MusicPageState();
-}
+  Future<Color> _extractDominantColor(String? imageUrl) async {
+    if (imageUrl == null || imageUrl.isEmpty) {
+      return Colors.black;
+    }
 
-class _MusicPageState extends State<MusicPage> {
-  final String _tag = "MusicPage";
+    // 检查缓存
+    if (_colorCache.containsKey(imageUrl)) {
+      return _colorCache[imageUrl]!;
+    }
 
-  @override
-  void initState() {
-    super.initState();
-    context.read<MusicPageBloc>().add(MusicPageInitEvent());
+    try {
+      final PaletteGenerator paletteGenerator = await PaletteGenerator.fromImageProvider(
+        NetworkImage(imageUrl),
+        size: const Size(200, 200),
+      );
+
+      final color = paletteGenerator.vibrantColor?.color ??
+          paletteGenerator.dominantColor?.color ??
+          Colors.black;
+
+      // 存入缓存
+      _colorCache[imageUrl] = color;
+      return color;
+    } catch (e) {
+      logd('提取颜色失败: $e');
+      return Colors.black;
+    }
   }
 
   @override
@@ -40,7 +59,7 @@ class _MusicPageState extends State<MusicPage> {
       children: [
         BlocBuilder<MusicPageBloc, MusicPageState>(
           builder: (context, state) {
-            logd("MusicPage state: $state", tag: _tag);
+            logd("MusicPage state: $state", tag: "MusicPage");
             if (state is AddPlayListSuccess) {
               return _buildMusicListWidget(context);
             }
@@ -68,29 +87,29 @@ class _MusicPageState extends State<MusicPage> {
     );
   }
 
-  Container _buildMusicInfoItemWidget(BuildContext context, int index, Track track) {
-    final colors = [Colors.amber, Colors.blue, Colors.green, Colors.purple, Colors.red];
-    return Container(
-      color: colors[index % colors.length],
-      width: double.infinity,
-      height: double.infinity,
-      child: Column(
-        children: [
-          const SizedBox(
-            height: 100,
+  _buildMusicInfoItemWidget(BuildContext context, int index, Track track) {
+    return FutureBuilder<Color>(
+      future: _extractDominantColor(track.al?.picUrl),
+      builder: (context, snapshot) {
+        final backgroundColor = snapshot.data ?? Colors.black;
+
+        return Container(
+          color: backgroundColor,
+          width: double.infinity,
+          height: double.infinity,
+          child: Column(
+            children: [
+              const SizedBox(height: 100),
+              _buildMusicPicWidget(context, track.al?.picUrl),
+              const SizedBox(height: 40),
+              _buildMusicLyricWidget(context),
+              const Spacer(),
+              _buildMusicControlWidget(context),
+              SizedBox(height: defaultBottomNavigationBarHeight),
+            ],
           ),
-          _buildMusicPicWidget(context, track.al?.picUrl),
-          const SizedBox(
-            height: 40,
-          ),
-          _buildMusicLyricWidget(context),
-          const Spacer(),
-          _buildMusicControlWidget(context),
-          SizedBox(
-            height: defaultBottomNavigationBarHeight,
-          )
-        ],
-      ),
+        );
+      },
     );
   }
 
