@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../common/log_util.dart';
+import '../../common/widgets/common_circle_loading.dart';
 import '../../common/widgets/common_network_image.dart';
 import '../../routes/app_routes.dart';
 import '../../themes/theme_color.dart';
@@ -158,7 +159,7 @@ class _ExplorePageState extends State<ExplorePage> {
             builder: (context, state) {
               LogUtil.i(state, tag: _tag);
               if (state is RequestPlayListRecommendLoading) {
-                return const Center(child: CircularProgressIndicator());
+                return const Center(child: CommonCircleLoading());
               }
               if (state is RequestPlayListRecommendError) {
                 return Center(child: Text(state.error));
@@ -257,7 +258,7 @@ class _ExplorePageState extends State<ExplorePage> {
           builder: (context, state) {
             LogUtil.i(state, tag: _tag);
             if (state is RequestTopArtistsLoading) {
-              return const Center(child: CircularProgressIndicator());
+              return const Center(child: CommonCircleLoading());
             }
             if (state is RequestTopArtistsError) {
               return Center(child: Text(state.error));
@@ -328,7 +329,7 @@ class _ExplorePageState extends State<ExplorePage> {
       builder: (context, state) {
         LogUtil.i(state, tag: _tag);
         if (state is RequestHighQualityTagsLoading) {
-          return const Center(child: CircularProgressIndicator());
+          return const Center(child: CommonCircleLoading());
         }
         if (state is RequestHighQualityTagsError) {
           return Center(child: Text(state.error));
@@ -429,7 +430,7 @@ class _ExplorePageState extends State<ExplorePage> {
         builder: (context, state) {
           LogUtil.i("${tag.name} state: $state", tag: _tag);
           if (state is RequestHighQualityPlayListLoading) {
-            return const Center(child: CircularProgressIndicator());
+            return const Center(child: CommonCircleLoading());
           }
           if (state is RequestHighQualityPlayListError) {
             return Center(child: Text(state.error));
@@ -480,7 +481,7 @@ class _ExplorePageState extends State<ExplorePage> {
               },
             );
           }
-          return const Center(child: CircularProgressIndicator());
+          return const Center(child: CommonCircleLoading());
         });
   }
 }

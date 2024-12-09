@@ -3,55 +3,34 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:palette_generator/palette_generator.dart';
 
 import '../../common/log_util.dart';
+import '../../common/widgets/common_circle_loading.dart';
 import '../../themes/theme_color.dart';
 import '../../themes/theme_size.dart';
 import '../explore/models/play_list_detail/track.dart';
 import 'bloc/music_page_bloc.dart';
 
-class MusicPage extends StatelessWidget {
+class MusicPage extends StatefulWidget {
   static final Map<String, Color> _colorCache = {};
 
   const MusicPage({super.key});
 
-  Future<Color> _extractDominantColor(String? imageUrl) async {
-    if (imageUrl == null || imageUrl.isEmpty) {
-      return Colors.black;
-    }
+  @override
+  State<MusicPage> createState() => _MusicPageState();
+}
 
-    // 检查缓存
-    if (_colorCache.containsKey(imageUrl)) {
-      return _colorCache[imageUrl]!;
-    }
-
-    try {
-      final PaletteGenerator paletteGenerator = await PaletteGenerator.fromImageProvider(
-        NetworkImage(imageUrl),
-        size: const Size(200, 200),
-      );
-
-      final color = paletteGenerator.vibrantColor?.color ??
-          paletteGenerator.dominantColor?.color ??
-          Colors.black;
-
-      // 存入缓存
-      _colorCache[imageUrl] = color;
-      return color;
-    } catch (e) {
-      logd('提取颜色失败: $e');
-      return Colors.black;
-    }
+class _MusicPageState extends State<MusicPage> {
+  @override
+  void initState() {
+    super.initState();
+    context.read<MusicPageBloc>().add(MusicPageInitEvent());
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: defaultBgColor,
-      body: _buildBody(context),
+      body: _buildMainContent(context),
     );
-  }
-
-  _buildBody(BuildContext context) {
-    return _buildMainContent(context);
   }
 
   _buildMainContent(BuildContext context) {
@@ -63,7 +42,21 @@ class MusicPage extends StatelessWidget {
             if (state is AddPlayListSuccess) {
               return _buildMusicListWidget(context);
             }
-            return const Text("加载中...");
+            if (state is MusicPageInitial) {
+              return const Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    CommonCircleLoading(),
+                    SizedBox(
+                      height: 10,
+                    ),
+                    Text("加载中..."),
+                  ],
+                ),
+              );
+            }
+            return const SizedBox.shrink();
           },
         ),
         Column(
@@ -104,7 +97,7 @@ class MusicPage extends StatelessWidget {
               const SizedBox(height: 40),
               _buildMusicLyricWidget(context),
               const Spacer(),
-              _buildMusicControlWidget(context),
+              _buildMusicControlWidget(context, index),
               SizedBox(height: defaultBottomNavigationBarHeight),
             ],
           ),
@@ -137,15 +130,16 @@ class MusicPage extends StatelessWidget {
     );
   }
 
-  _buildMusicControlWidget(BuildContext context) {
+  _buildMusicControlWidget(BuildContext context, int index) {
     const iconSize = 35.0;
+    final track = context.read<MusicPageBloc>().tracks[index];
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 20),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            "You're Beautiful",
+            "${track.name}",
             style: Theme.of(context)
                 .textTheme
                 .titleLarge
@@ -155,7 +149,7 @@ class MusicPage extends StatelessWidget {
             height: 10,
           ),
           Text(
-            "James Blunt",
+            "${track.ar?[0].name}",
             style: Theme.of(context).textTheme.titleLarge,
           ),
           const SizedBox(
@@ -248,5 +242,34 @@ class MusicPage extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  Future<Color> _extractDominantColor(String? imageUrl) async {
+    if (imageUrl == null || imageUrl.isEmpty) {
+      return Colors.black;
+    }
+
+    // 检查缓存
+    if (MusicPage._colorCache.containsKey(imageUrl)) {
+      return MusicPage._colorCache[imageUrl]!;
+    }
+
+    try {
+      final PaletteGenerator paletteGenerator = await PaletteGenerator.fromImageProvider(
+        NetworkImage(imageUrl),
+        size: const Size(200, 200),
+      );
+
+      final color = paletteGenerator.vibrantColor?.color ??
+          paletteGenerator.dominantColor?.color ??
+          Colors.black;
+
+      // 存入缓存
+      MusicPage._colorCache[imageUrl] = color;
+      return color;
+    } catch (e) {
+      logd('提取颜色失败: $e');
+      return Colors.black;
+    }
   }
 }

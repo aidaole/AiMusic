@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../common/log_util.dart';
+import '../../common/widgets/common_circle_loading.dart';
 import '../../modules/account/bloc/account_bloc.dart';
 import '../../modules/account/bloc/account_event.dart';
 
@@ -145,9 +146,7 @@ class _QrLoginPageState extends State<QrLoginPage> {
           Text(
             "请使用登录了网易账号的网易云音乐App扫码",
             style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-                color: Colors.white.withAlpha(80)),
+                fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white.withAlpha(80)),
           ),
           const SizedBox(height: 40),
           // 二维码显示区域
@@ -159,7 +158,7 @@ class _QrLoginPageState extends State<QrLoginPage> {
 
   Widget _buildQrCodeWidget() {
     if (_isLoading) {
-      return const Center(child: CircularProgressIndicator());
+      return const Center(child: CommonCircleLoading());
     }
 
     if (_qrUrl == null) {
