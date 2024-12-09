@@ -1,5 +1,4 @@
 import 'package:ai_music/common/widgets/common_network_image.dart';
-import 'package:ai_music/modules/explore/models/play_list_detail/track.dart';
 import 'package:ai_music/themes/theme_color.dart';
 import 'package:ai_music/widgets/status_bar_playce_holder.dart';
 import 'package:flutter/material.dart';
@@ -9,6 +8,7 @@ import '../../common/log_util.dart';
 import '../../routes/route_helper.dart';
 import '../../themes/theme_size.dart';
 import '../music/bloc/music_page_bloc.dart';
+import '../music/models/recommend_songs/song.dart';
 import 'bloc/play_list_bloc.dart';
 import 'bloc/play_list_event.dart';
 import 'bloc/play_list_state.dart';
@@ -21,9 +21,7 @@ class PlayListDetailPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     logd('playListId: $playListId', tag: _tag);
-    context
-        .read<PlayListBloc>()
-        .add(RequestPlayListDetailEvent(id: playListId));
+    context.read<PlayListBloc>().add(RequestPlayListDetailEvent(id: playListId));
     return Scaffold(
       backgroundColor: defaultBgColor,
       body: _buildBody(context),
@@ -105,22 +103,18 @@ class PlayListDetailPage extends StatelessWidget {
                     children: [
                       IconButton(
                           onPressed: () {
-                            logd(
-                                "${state.playListDetail.playlist?.tracks?.length}",
-                                tag: _tag);
+                            logd("${state.playListDetail.playlist?.tracks?.length}", tag: _tag);
                             RouteHelper.popUntil(context, '/home');
                             RouteHelper.switchHomeTab(context, 1);
                             context.read<MusicPageBloc>().add(AddPlayListEvent(
-                                tracks: state.playListDetail.playlist?.tracks ??
-                                    []));
+                                tracks: state.playListDetail.playlist?.tracks ?? []));
                           },
                           icon: const Icon(
                             Icons.play_circle,
                             size: 40,
                           )),
                       Expanded(
-                          child: Text(
-                              "播放全部 ${state.playListDetail.playlist?.trackCount ?? ''}")),
+                          child: Text("播放全部 ${state.playListDetail.playlist?.trackCount ?? ''}")),
                       IconButton(
                           onPressed: () {},
                           icon: const Icon(
@@ -145,11 +139,9 @@ class PlayListDetailPage extends StatelessWidget {
                     child: ListView.builder(
                       padding: EdgeInsets.zero,
                       physics: const ClampingScrollPhysics(),
-                      itemCount:
-                          state.playListDetail.playlist?.tracks?.length ?? 0,
+                      itemCount: state.playListDetail.playlist?.tracks?.length ?? 0,
                       itemBuilder: (BuildContext context, int index) {
-                        var item =
-                            state.playListDetail.playlist?.tracks?[index];
+                        var item = state.playListDetail.playlist?.tracks?[index];
                         return _buildTrackItem(context, index, item);
                       },
                     ),
@@ -164,7 +156,7 @@ class PlayListDetailPage extends StatelessWidget {
     );
   }
 
-  _buildTrackItem(BuildContext context, int index, Track? item) {
+  _buildTrackItem(BuildContext context, int index, Song? item) {
     double itemHeight = 80;
     logd('index: $index, item: ${item?.name}', tag: _tag);
     return SizedBox(
@@ -175,8 +167,10 @@ class PlayListDetailPage extends StatelessWidget {
           Text(
             "${index + 1}",
             textAlign: TextAlign.center,
-            style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                color: Colors.white.withAlpha(80), fontWeight: FontWeight.bold),
+            style: Theme.of(context)
+                .textTheme
+                .bodyLarge
+                ?.copyWith(color: Colors.white.withAlpha(80), fontWeight: FontWeight.bold),
           ),
           const SizedBox(
             width: 20,
@@ -185,8 +179,7 @@ class PlayListDetailPage extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Text("${item?.name}",
-                  style: Theme.of(context).textTheme.bodyLarge),
+              Text("${item?.name}", style: Theme.of(context).textTheme.bodyLarge),
               const SizedBox(
                 height: 5,
               ),

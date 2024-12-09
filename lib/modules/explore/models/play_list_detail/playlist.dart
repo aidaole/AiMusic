@@ -1,4 +1,4 @@
-import 'track.dart';
+import 'package:ai_music/modules/music/models/recommend_songs/song.dart';
 
 class Playlist {
   int? id;
@@ -12,7 +12,7 @@ class Playlist {
   int? subscribedCount;
   String? description;
   bool? subscribed;
-  List<Track>? tracks;
+  List<Song>? tracks;
 
   Playlist({
     this.id,
@@ -41,7 +41,7 @@ class Playlist {
         subscribedCount: json['subscribedCount'] as int?,
         description: json['description'] as String?,
         tracks: (json['tracks'] as List<dynamic>?)
-            ?.map((e) => Track.fromJson(e as Map<String, dynamic>))
+            ?.map((e) => Song.fromJson(e as Map<String, dynamic>))
             .toList(),
       );
 
