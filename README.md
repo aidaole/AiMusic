@@ -1,4 +1,4 @@
-# QiMusic
+# AiMusic
 
 A new Flutter project.
 
