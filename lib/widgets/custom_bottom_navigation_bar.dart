@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../themes/theme_size.dart';
+
 /// 底部导航项数据模型
 class CustomBottomNavigationBarItem {
   final Widget icon;
@@ -38,6 +40,7 @@ class CustomBottomNavigationBar extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 30),
       child: Container(
+        height: defaultBottomNavigationBarHeight,
         decoration: BoxDecoration(
           color: backgroundColor,
           boxShadow: elevation! > 0
@@ -49,13 +52,11 @@ class CustomBottomNavigationBar extends StatelessWidget {
                 ]
               : null,
         ),
-        child: SafeArea(
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: List.generate(
-              items.length,
-              (index) => _buildNavigationItem(index),
-            ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: List.generate(
+            items.length,
+            (index) => _buildNavigationItem(index),
           ),
         ),
       ),
@@ -83,7 +84,6 @@ class CustomBottomNavigationBar extends StatelessWidget {
                     child: item.icon,
                   ),
             if (item.label != null) ...[
-              const SizedBox(height: 4),
               Text(
                 item.label!,
                 style: TextStyle(

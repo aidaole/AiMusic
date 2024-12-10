@@ -1,6 +1,9 @@
+import 'dart:ui';
+
 class SongDetail {
   List<Datum>? data;
   int? code;
+  Color? color;
 
   SongDetail({this.data, this.code});
 

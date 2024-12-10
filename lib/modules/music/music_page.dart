@@ -3,7 +3,6 @@ import 'package:ai_music/modules/music/models/recommend_songs/song.dart';
 import 'package:ai_music/widgets/status_bar_playce_holder.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:palette_generator/palette_generator.dart';
 
 import '../../common/log_util.dart';
 import '../../common/widgets/common_circle_loading.dart';
@@ -12,8 +11,6 @@ import '../../themes/theme_size.dart';
 import 'bloc/music_page_bloc.dart';
 
 class MusicPage extends StatefulWidget {
-  static final Map<String, Color> _colorCache = {};
-
   const MusicPage({super.key});
 
   @override
@@ -45,12 +42,8 @@ class _MusicPageState extends State<MusicPage> {
     return Stack(
       children: [
         BlocBuilder<MusicPageBloc, MusicPageState>(
-          buildWhen: (previous, current) {
-            if (current is AddPlayListSuccess) {
-              return true;
-            }
-            return false;
-          },
+          buildWhen: (previous, current) =>
+              current is AddPlayListSuccess || current is MusicPageLoading,
           builder: (context, state) {
             logd("MusicPage state: $state", tag: "MusicPage");
             if (state is AddPlayListSuccess) {
@@ -94,16 +87,11 @@ class _MusicPageState extends State<MusicPage> {
     return Stack(
       children: [
         // 背景颜色层
-        // FutureBuilder<Color>(
-        //   future: _extractDominantColor(song.al?.picUrl),
-        //   builder: (context, snapshot) {
-        //     return Container(
-        //       color: snapshot.data ?? Colors.black,
-        //       width: double.infinity,
-        //       height: double.infinity,
-        //     );
-        //   },
-        // ),
+        Container(
+          color: Colors.black,
+          width: double.infinity,
+          height: double.infinity,
+        ),
         // 内容层
         SizedBox(
           width: double.infinity,
@@ -163,9 +151,11 @@ class _MusicPageState extends State<MusicPage> {
               children: [
                 Text(
                   "${song.name}",
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                   style: Theme.of(context).textTheme.titleLarge?.copyWith(
                         fontWeight: FontWeight.bold,
-                        fontSize: 30,
+                        fontSize: 25,
                       ),
                 ),
                 const SizedBox(
@@ -173,12 +163,13 @@ class _MusicPageState extends State<MusicPage> {
                 ),
                 Text(
                   "${song.ar?[0].name}",
-                  style: Theme.of(context).textTheme.titleLarge,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: Theme.of(context).textTheme.titleMedium,
                 ),
                 const SizedBox(
                   height: 10,
                 ),
-                const SizedBox(height: 10),
                 _buildControllItems(),
               ],
             )),
@@ -194,7 +185,7 @@ class _MusicPageState extends State<MusicPage> {
   }
 
   Row _buildControllItems() {
-    const iconSize = 35.0;
+    const iconSize = 30.0;
     return const Row(
       children: [
         Icon(Icons.favorite_sharp, size: iconSize),
@@ -239,36 +230,6 @@ class _MusicPageState extends State<MusicPage> {
     );
   }
 
-  Future<Color> _extractDominantColor(String? imageUrl) async {
-    if (imageUrl == null || imageUrl.isEmpty) {
-      return Colors.black;
-    }
-
-    // 检查缓存
-    if (MusicPage._colorCache.containsKey(imageUrl)) {
-      return MusicPage._colorCache[imageUrl]!;
-    }
-
-    try {
-      final PaletteGenerator paletteGenerator =
-          await PaletteGenerator.fromImageProvider(
-        NetworkImage(imageUrl),
-        size: const Size(20, 20),
-      );
-
-      final color = paletteGenerator.vibrantColor?.color ??
-          paletteGenerator.dominantColor?.color ??
-          Colors.black;
-
-      // 存入缓存
-      MusicPage._colorCache[imageUrl] = color;
-      return color;
-    } catch (e) {
-      logd('提取颜色失败: $e');
-      return Colors.black;
-    }
-  }
-
   _buildSeekBarWidget(BuildContext context, Song song) {
     return SizedBox(
         height: 80,
@@ -297,13 +258,5 @@ class _MusicPageState extends State<MusicPage> {
             );
           },
         ));
-  }
-
-  /// 将毫秒转换为 "mm:ss" 格式的时间字符串
-  String _formatDuration(int milliseconds) {
-    final int seconds = (milliseconds / 1000).floor();
-    final int minutes = (seconds / 60).floor();
-    final int remainingSeconds = seconds % 60;
-    return '${minutes.toString().padLeft(2, '0')}:${remainingSeconds.toString().padLeft(2, '0')}';
   }
 }

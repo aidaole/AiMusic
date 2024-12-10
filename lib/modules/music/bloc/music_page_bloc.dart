@@ -1,5 +1,9 @@
+import 'dart:ui';
+
 import 'package:ai_music/modules/music/models/recommend_songs/song.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:palette_generator/palette_generator.dart';
 
 import '../../../common/log_util.dart';
 import '../../explore/repos/play_list_repo.dart';
@@ -16,6 +20,7 @@ class MusicPageBloc extends Bloc<MusicPageEvent, MusicPageState> {
   final PlayListRepo playlistRepo;
   final List<Song> songs = [];
   final MusicService musicService = MusicService();
+  static final Map<String, Color> _colorCache = {};
 
   MusicPageBloc(this.repo, this.playlistRepo) : super(MusicPageInitial()) {
     on<MusicPageInitEvent>(_onMusicPageInitEvent);
@@ -23,7 +28,8 @@ class MusicPageBloc extends Bloc<MusicPageEvent, MusicPageState> {
     on<MusicPageChangeIndexEvent>(_onMusicPageChangeIndexEvent);
   }
 
-  void _onMusicPageInitEvent(MusicPageInitEvent event, Emitter<MusicPageState> emit) async {
+  void _onMusicPageInitEvent(
+      MusicPageInitEvent event, Emitter<MusicPageState> emit) async {
     logd("MusicPageInitEvent", tag: _tag);
     if (songs.isNotEmpty) {
       emit(AddPlayListSuccess(songs: songs));
@@ -37,7 +43,8 @@ class MusicPageBloc extends Bloc<MusicPageEvent, MusicPageState> {
     }
   }
 
-  void _onAddPlayListEvent(AddPlayListEvent event, Emitter<MusicPageState> emit) {
+  void _onAddPlayListEvent(
+      AddPlayListEvent event, Emitter<MusicPageState> emit) {
     logd("${event.tracks.length}", tag: _tag);
     songs.insertAll(0, event.tracks);
     logd(songs, tag: _tag);
@@ -49,7 +56,10 @@ class MusicPageBloc extends Bloc<MusicPageEvent, MusicPageState> {
       MusicPageChangeIndexEvent event, Emitter<MusicPageState> emit) async {
     try {
       logd("当前滑动到第${event.index}个", tag: _tag);
-      final songDetail = await repo.getSongDetail(songs[event.index].id);
+      final song = songs[event.index];
+      final color = await _extractDominantColor(song.al?.picUrl);
+      final songDetail = await repo.getSongDetail(song.id);
+      songDetail.color = color;
       String currentMusicUrl = songDetail.data?[0].url ?? "";
       if (!currentMusicUrl.startsWith("https")) {
         currentMusicUrl = currentMusicUrl.replaceFirst("http", "https");
@@ -61,6 +71,35 @@ class MusicPageBloc extends Bloc<MusicPageEvent, MusicPageState> {
       musicService.play();
     } catch (e) {
       logd("获取歌曲详情失败: $e", tag: _tag);
+    }
+  }
+
+  Future<Color> _extractDominantColor(String? imageUrl) async {
+    if (imageUrl == null || imageUrl.isEmpty) {
+      return Colors.black;
+    }
+
+    // 检查缓存
+    if (_colorCache.containsKey(imageUrl)) {
+      return _colorCache[imageUrl]!;
+    }
+
+    try {
+      final PaletteGenerator paletteGenerator =
+          await PaletteGenerator.fromImageProvider(
+        NetworkImage(imageUrl),
+        size: const Size(20, 20),
+      );
+
+      final color = paletteGenerator.vibrantColor?.color ??
+          paletteGenerator.dominantColor?.color ??
+          Colors.black;
+      // 存入缓存
+      _colorCache[imageUrl] = color;
+      return color;
+    } catch (e) {
+      logd('提取颜色失败: $e');
+      return Colors.black;
     }
   }
 }

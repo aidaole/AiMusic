@@ -1,3 +1,4 @@
+import 'package:ai_music/themes/theme_size.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -75,11 +76,17 @@ class _HomePageState extends State<HomePage> {
       unselectedItemColor: Colors.white70,
       items: [
         const CustomBottomNavigationBarItem(
-          icon: Icon(Icons.explore),
+          icon: Icon(
+            Icons.explore,
+            size: 20,
+          ),
           label: "发现",
         ),
         CustomBottomNavigationBarItem(
-          icon: const Icon(Icons.music_note),
+          icon: const Icon(
+            Icons.music_note,
+            size: 20,
+          ),
           activeIcon: StreamBuilder(
             stream: context.read<MusicPageBloc>().musicService.playingStream,
             initialData: true,
@@ -90,14 +97,14 @@ class _HomePageState extends State<HomePage> {
                 isPlaying
                     ? Icons.pause_circle_filled
                     : Icons.play_circle_filled,
-                size: 46,
+                size: defaultBottomNavigationBarHeight - 16,
               );
             },
           ),
           label: selectedIndex == 1 ? null : "音乐",
         ),
         const CustomBottomNavigationBarItem(
-          icon: Icon(Icons.person),
+          icon: Icon(Icons.person, size: 20),
           label: "我的",
         ),
       ],
