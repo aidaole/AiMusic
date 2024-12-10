@@ -1,7 +1,5 @@
 import 'package:ai_music/modules/music/models/recommend_songs/song.dart';
-import 'package:audio_session/audio_session.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:just_audio/just_audio.dart';
 
 import '../../../common/log_util.dart';
 import '../../explore/repos/play_list_repo.dart';

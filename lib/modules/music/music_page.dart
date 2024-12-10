@@ -9,7 +9,6 @@ import '../../common/widgets/common_circle_loading.dart';
 import '../../themes/theme_color.dart';
 import '../../themes/theme_size.dart';
 import 'bloc/music_page_bloc.dart';
-import 'music_player.dart';
 
 class MusicPage extends StatefulWidget {
   static final Map<String, Color> _colorCache = {};
@@ -147,40 +146,44 @@ class _MusicPageState extends State<MusicPage> {
   }
 
   _buildMusicControlWidget(BuildContext context, int index) {
-    final track = context.read<MusicPageBloc>().songs[index];
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 20),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            "${track.name}",
-            style: Theme.of(context)
-                .textTheme
-                .titleLarge
-                ?.copyWith(fontWeight: FontWeight.bold, fontSize: 30),
-          ),
-          const SizedBox(
-            height: 10,
-          ),
-          Text(
-            "${track.ar?[0].name}",
-            style: Theme.of(context).textTheme.titleLarge,
-          ),
-          const SizedBox(
-            height: 10,
-          ),
-          const SizedBox(height: 10),
-          _buildControllItems(),
-          const SizedBox(
-            height: 10,
-          ),
-          // _buildSongPlayerWidget(context, index),
-          const SizedBox(
-            height: 20,
-          )
-        ],
-      ),
+    final song = context.read<MusicPageBloc>().songs[index];
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Container(
+            padding: const EdgeInsets.symmetric(horizontal: 20),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  "${song.name}",
+                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 30,
+                      ),
+                ),
+                const SizedBox(
+                  height: 10,
+                ),
+                Text(
+                  "${song.ar?[0].name}",
+                  style: Theme.of(context).textTheme.titleLarge,
+                ),
+                const SizedBox(
+                  height: 10,
+                ),
+                const SizedBox(height: 10),
+                _buildControllItems(),
+              ],
+            )),
+        const SizedBox(
+          height: 10,
+        ),
+        _buildSeekBarWidget(context, song),
+        const SizedBox(
+          height: 20,
+        )
+      ],
     );
   }
 
@@ -260,5 +263,38 @@ class _MusicPageState extends State<MusicPage> {
       logd('提取颜色失败: $e');
       return Colors.black;
     }
+  }
+
+  _buildSeekBarWidget(BuildContext context, Song song) {
+    return SizedBox(
+        height: 80,
+        width: double.infinity,
+        child: StreamBuilder<Duration?>(
+          stream: context.read<MusicPageBloc>().musicService.positionStream,
+          builder: (context, snapshot) {
+            final position = snapshot.data ?? Duration.zero;
+            final duration = context.read<MusicPageBloc>().musicService.duration ?? Duration.zero;
+            return Slider(
+              label: null,
+              activeColor: Colors.white.withOpacity(0.8),
+              inactiveColor: Colors.white.withOpacity(0.2),
+              thumbColor: Colors.white,
+              overlayColor: WidgetStateProperty.all(Colors.transparent),
+              value: position.inSeconds.toDouble(),
+              max: duration.inSeconds.toDouble(),
+              onChanged: (value) {
+                context.read<MusicPageBloc>().musicService.seek(Duration(seconds: value.toInt()));
+              },
+            );
+          },
+        ));
+  }
+
+  /// 将毫秒转换为 "mm:ss" 格式的时间字符串
+  String _formatDuration(int milliseconds) {
+    final int seconds = (milliseconds / 1000).floor();
+    final int minutes = (seconds / 60).floor();
+    final int remainingSeconds = seconds % 60;
+    return '${minutes.toString().padLeft(2, '0')}:${remainingSeconds.toString().padLeft(2, '0')}';
   }
 }
