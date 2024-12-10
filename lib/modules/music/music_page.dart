@@ -45,24 +45,19 @@ class _MusicPageState extends State<MusicPage> {
     return Stack(
       children: [
         BlocBuilder<MusicPageBloc, MusicPageState>(
+          buildWhen: (previous, current) {
+            if (current is AddPlayListSuccess) {
+              return true;
+            }
+            return false;
+          },
           builder: (context, state) {
             logd("MusicPage state: $state", tag: "MusicPage");
             if (state is AddPlayListSuccess) {
               return _buildMusicListWidget(context);
             }
             if (state is MusicPageLoading) {
-              return const Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    CommonCircleLoading(),
-                    SizedBox(
-                      height: 10,
-                    ),
-                    Text("加载中..."),
-                  ],
-                ),
-              );
+              return const CommonCircleLoading();
             }
             return const SizedBox.shrink();
           },
@@ -152,7 +147,6 @@ class _MusicPageState extends State<MusicPage> {
   }
 
   _buildMusicControlWidget(BuildContext context, int index) {
-    const iconSize = 35.0;
     final track = context.read<MusicPageBloc>().songs[index];
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -176,68 +170,40 @@ class _MusicPageState extends State<MusicPage> {
           const SizedBox(
             height: 10,
           ),
-          MusicPlayer(url: track.al?.picUrl),
           const SizedBox(height: 10),
-          const Row(
-            children: [
-              Icon(Icons.favorite_sharp, size: iconSize),
-              SizedBox(
-                width: 20,
-              ),
-              Icon(Icons.message, size: iconSize),
-              SizedBox(
-                width: 20,
-              ),
-              Icon(Icons.share, size: iconSize),
-              Spacer(),
-              Icon(Icons.thumb_up, size: iconSize - 10),
-              SizedBox(
-                width: 20,
-              ),
-              Icon(Icons.more_vert, size: iconSize - 10),
-            ],
-          ),
+          _buildControllItems(),
           const SizedBox(
             height: 10,
           ),
-          Row(
-            children: [
-              Text(
-                "0:00",
-                style: Theme.of(context).textTheme.bodyMedium,
-              ),
-              Expanded(
-                child: SliderTheme(
-                  data: SliderThemeData(
-                    activeTrackColor: Colors.white,
-                    inactiveTrackColor: Colors.white.withOpacity(0.3),
-                    thumbColor: Colors.white,
-                    trackHeight: 2.0,
-                    thumbShape: const RoundSliderThumbShape(
-                      enabledThumbRadius: 6.0,
-                    ),
-                  ),
-                  child: Slider(
-                    value: 0.0,
-                    min: 0.0,
-                    max: 100.0,
-                    onChanged: (value) {
-                      // TODO: 处理进度条拖动
-                    },
-                  ),
-                ),
-              ),
-              Text(
-                "3:45",
-                style: Theme.of(context).textTheme.bodyMedium,
-              ),
-            ],
-          ),
+          // _buildSongPlayerWidget(context, index),
           const SizedBox(
             height: 20,
           )
         ],
       ),
+    );
+  }
+
+  Row _buildControllItems() {
+    const iconSize = 35.0;
+    return const Row(
+      children: [
+        Icon(Icons.favorite_sharp, size: iconSize),
+        SizedBox(
+          width: 20,
+        ),
+        Icon(Icons.message, size: iconSize),
+        SizedBox(
+          width: 20,
+        ),
+        Icon(Icons.share, size: iconSize),
+        Spacer(),
+        Icon(Icons.thumb_up, size: iconSize - 10),
+        SizedBox(
+          width: 20,
+        ),
+        Icon(Icons.more_vert, size: iconSize - 10),
+      ],
     );
   }
 

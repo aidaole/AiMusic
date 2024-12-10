@@ -19,7 +19,7 @@ class MusicPageRepo {
   }
 
   Future<SongDetail> getSongDetail(int? id) async {
-    final resp = await DioUtils.get(path: "/song/url/v1?id=$id&level=exhigh");
+    final resp = await DioUtils.get(path: "/song/url/v1?id=$id&level=standard");
     if (resp != null) {
       return SongDetail.fromJson(resp);
     }

@@ -15,6 +15,11 @@ class SongDetail {
         'data': data?.map((e) => e.toJson()).toList(),
         'code': code,
       };
+
+  @override
+  String toString() {
+    return toJson().toString();
+  }
 }
 
 class Datum {
@@ -59,4 +64,9 @@ class Datum {
         'time': time,
         'musicId': musicId,
       };
+
+  @override
+  String toString() {
+    return toJson().toString();
+  }
 }

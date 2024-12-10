@@ -1,9 +1,12 @@
 import 'package:ai_music/modules/music/models/recommend_songs/song.dart';
+import 'package:audio_session/audio_session.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:just_audio/just_audio.dart';
 
 import '../../../common/log_util.dart';
 import '../../explore/repos/play_list_repo.dart';
 import '../models/song_detail/song_detail.dart';
+import '../music_service.dart';
 import 'music_page_repo.dart';
 
 part 'music_page_event.dart';
@@ -14,6 +17,7 @@ class MusicPageBloc extends Bloc<MusicPageEvent, MusicPageState> {
   final MusicPageRepo repo;
   final PlayListRepo playlistRepo;
   final List<Song> songs = [];
+  final MusicService musicService = MusicService();
 
   MusicPageBloc(this.repo, this.playlistRepo) : super(MusicPageInitial()) {
     on<MusicPageInitEvent>(_onMusicPageInitEvent);
@@ -25,11 +29,13 @@ class MusicPageBloc extends Bloc<MusicPageEvent, MusicPageState> {
     logd("MusicPageInitEvent", tag: _tag);
     if (songs.isNotEmpty) {
       emit(AddPlayListSuccess(songs: songs));
+      _onMusicPageChangeIndexEvent(MusicPageChangeIndexEvent(index: 0), emit);
     } else {
       emit(MusicPageLoading());
       List<Song> newSongs = await repo.getRecommendSongs();
       songs.addAll(newSongs);
       emit(AddPlayListSuccess(songs: songs));
+      _onMusicPageChangeIndexEvent(MusicPageChangeIndexEvent(index: 0), emit);
     }
   }
 
@@ -38,14 +44,25 @@ class MusicPageBloc extends Bloc<MusicPageEvent, MusicPageState> {
     songs.insertAll(0, event.tracks);
     logd(songs, tag: _tag);
     emit(AddPlayListSuccess(songs: songs));
+    _onMusicPageChangeIndexEvent(MusicPageChangeIndexEvent(index: 0), emit);
   }
 
   void _onMusicPageChangeIndexEvent(
       MusicPageChangeIndexEvent event, Emitter<MusicPageState> emit) async {
-    logd("当前滑动到第${event.index}个", tag: _tag);
-    SongDetail songDetail = await repo.getSongDetail(songs[event.index].id);
-    logd(songDetail, tag: _tag);
-    emit(MusicPageChangeIndexSuccess(songDetail: songDetail));
-    songDetail.data?[0].url;
+    try {
+      logd("当前滑动到第${event.index}个", tag: _tag);
+      final songDetail = await repo.getSongDetail(songs[event.index].id);
+      String currentMusicUrl = songDetail.data?[0].url ?? "";
+      if (!currentMusicUrl.startsWith("https")) {
+        currentMusicUrl = currentMusicUrl.replaceFirst("http", "https");
+      }
+      songDetail.data?[0].url = currentMusicUrl;
+      logd(songDetail.toString(), tag: _tag);
+
+      musicService.init(currentMusicUrl);
+      musicService.play();
+    } catch (e) {
+      logd("获取歌曲详情失败: $e", tag: _tag);
+    }
   }
 }
