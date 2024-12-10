@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../common/log_util.dart';
+import '../../widgets/custom_bottom_navigation_bar.dart';
 import '../account/account_page.dart';
 import '../explore/explore_page.dart';
+import '../music/bloc/music_page_bloc.dart';
 import '../music/music_page.dart';
 import 'bloc/home_page_bloc.dart';
 
@@ -14,56 +17,90 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  final String _tag = "HomePage";
+
   final List<Widget> _pages = [
     const KeepAlivePage(child: ExplorePage()),
     const KeepAlivePage(child: MusicPage()),
     const KeepAlivePage(child: AccountPage()),
   ];
 
+  int _preSelectedIndex = 0;
+  int _selectedIndex = 0;
+
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<HomePageBloc, HomePageState>(
       buildWhen: (previous, current) => current is HomePageSwitchTabState,
       builder: (context, state) {
-        int selectedIndex = 0;
+        logd("state: $state", tag: _tag);
         if (state is HomePageSwitchTabState) {
-          selectedIndex = state.index;
+          _selectedIndex = state.index;
         }
-        return Scaffold(
+        if (_preSelectedIndex == _selectedIndex && _selectedIndex == 1) {
+          if (context.read<MusicPageBloc>().musicService.isPlaying) {
+            context.read<MusicPageBloc>().musicService.pause();
+          } else {
+            context.read<MusicPageBloc>().musicService.play();
+          }
+        }
+        Widget widget = Scaffold(
           body: Stack(
             children: [
               IndexedStack(
-                index: selectedIndex,
+                index: _selectedIndex,
                 children: _pages,
               ),
               Align(
                 alignment: Alignment.bottomCenter,
-                child: _buildBottomNavigationBar(selectedIndex),
+                child: _buildBottomNavigationBar(_selectedIndex),
               ),
             ],
           ),
         );
+        _preSelectedIndex = _selectedIndex;
+        return widget;
       },
     );
   }
 
   Widget _buildBottomNavigationBar(int selectedIndex) {
-    return SafeArea(
-      child: BottomNavigationBar(
-        currentIndex: selectedIndex,
-        onTap: (index) {
-          context.read<HomePageBloc>().add(HomeSwitchTabEvent(index));
-        },
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        selectedItemColor: Colors.white,
-        unselectedItemColor: Colors.white70,
-        items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.explore), label: "发现"),
-          BottomNavigationBarItem(icon: Icon(Icons.music_note), label: "音乐"),
-          BottomNavigationBarItem(icon: Icon(Icons.person), label: "我的"),
-        ],
-      ),
+    return CustomBottomNavigationBar(
+      currentIndex: selectedIndex,
+      onTap: (index) {
+        context.read<HomePageBloc>().add(HomeSwitchTabEvent(index));
+      },
+      backgroundColor: Colors.transparent,
+      selectedItemColor: Colors.white,
+      unselectedItemColor: Colors.white70,
+      items: [
+        const CustomBottomNavigationBarItem(
+          icon: Icon(Icons.explore),
+          label: "发现",
+        ),
+        CustomBottomNavigationBarItem(
+          icon: const Icon(Icons.music_note),
+          activeIcon: StreamBuilder(
+            stream: context.read<MusicPageBloc>().musicService.playingStream,
+            initialData: true,
+            builder: (BuildContext context, AsyncSnapshot snapshot) {
+              logd("snapshot.data: ${snapshot.data}", tag: _tag);
+              bool isPlaying = snapshot.data ?? false;
+              return Icon(
+                isPlaying
+                    ? Icons.pause_circle_filled
+                    : Icons.play_circle_filled,
+                size: 46,
+              );
+            },
+          ),
+          label: selectedIndex == 1 ? null : "音乐",
+        ),
+        const CustomBottomNavigationBarItem(
+          icon: Icon(Icons.person),
+          label: "我的",
+        ),
+      ],
     );
   }
 }

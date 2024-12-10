@@ -81,7 +81,6 @@ class App extends StatelessWidget {
             labelSmall: TextStyle(color: Colors.white),
           ),
           iconTheme: const IconThemeData(color: Colors.white)),
-      home: const HomePage(),
       initialRoute: AppRoutes.home,
       routes: AppPages.routes,
       onUnknownRoute: (settings) => AppPages.unknownRoute,
