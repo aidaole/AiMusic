@@ -1,5 +1,6 @@
 import 'package:ai_music/common/widgets/common_network_image.dart';
 import 'package:ai_music/modules/music/models/recommend_songs/song.dart';
+import 'package:ai_music/widgets/load_error_widget.dart';
 import 'package:ai_music/widgets/status_bar_playce_holder.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -50,9 +51,9 @@ class _MusicPageState extends State<MusicPage> {
               return _buildMusicListWidget(context);
             }
             if (state is MusicPageLoading) {
-              return const CommonCircleLoading();
+              return const Center(child: CommonCircleLoading());
             }
-            return const SizedBox.shrink();
+            return const LoadErrorWidget();
           },
         ),
         Column(
@@ -88,7 +89,7 @@ class _MusicPageState extends State<MusicPage> {
       children: [
         // 背景颜色层
         Container(
-          color: Colors.black,
+          color: song.color ?? defaultBgColor,
           width: double.infinity,
           height: double.infinity,
         ),

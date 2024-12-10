@@ -8,7 +8,6 @@ import 'modules/account/repositories/account_repository.dart';
 import 'modules/explore/bloc/play_list_bloc.dart';
 import 'modules/explore/repos/play_list_repo.dart';
 import 'modules/home/bloc/home_page_bloc.dart';
-import 'modules/home/home_page.dart';
 import 'modules/music/bloc/music_page_bloc.dart';
 import 'modules/music/bloc/music_page_repo.dart';
 import 'routes/app_pages.dart';

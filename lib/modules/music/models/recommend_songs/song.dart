@@ -1,3 +1,5 @@
+import 'package:flutter/material.dart';
+
 import 'al.dart';
 import 'ar.dart';
 
@@ -8,6 +10,7 @@ class Song {
   Al? al;
   int? dt;
   int? fee;
+  Color? color;
 
   Song({
     this.name,

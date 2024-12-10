@@ -1,9 +1,10 @@
+import 'dart:math';
 import 'dart:ui';
 
 import 'package:ai_music/modules/music/models/recommend_songs/song.dart';
+import 'package:ai_music/themes/theme_color.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:palette_generator/palette_generator.dart';
 
 import '../../../common/log_util.dart';
 import '../../explore/repos/play_list_repo.dart';
@@ -20,7 +21,6 @@ class MusicPageBloc extends Bloc<MusicPageEvent, MusicPageState> {
   final PlayListRepo playlistRepo;
   final List<Song> songs = [];
   final MusicService musicService = MusicService();
-  static final Map<String, Color> _colorCache = {};
 
   MusicPageBloc(this.repo, this.playlistRepo) : super(MusicPageInitial()) {
     on<MusicPageInitEvent>(_onMusicPageInitEvent);
@@ -37,9 +37,28 @@ class MusicPageBloc extends Bloc<MusicPageEvent, MusicPageState> {
     } else {
       emit(MusicPageLoading());
       List<Song> newSongs = await repo.getRecommendSongs();
+      await _addSongsColor(newSongs);
       songs.addAll(newSongs);
       emit(AddPlayListSuccess(songs: songs));
       _onMusicPageChangeIndexEvent(MusicPageChangeIndexEvent(index: 0), emit);
+    }
+  }
+
+  Future<void> _addSongsColor(List<Song> newSongs) async {
+    // 如果图片URL为空,生成一个接近defaultBgColor的随机颜色
+    for (var song in newSongs) {
+      final Random random = Random();
+      const Color baseColor = defaultBgColor;
+      const int variance = 200; // 颜色变化范围
+      // 在基础颜色的RGB值上添加随机偏移
+      int r = (baseColor.red + random.nextInt(variance) - variance ~/ 2)
+          .clamp(0, 255);
+      int g = (baseColor.green + random.nextInt(variance) - variance ~/ 2)
+          .clamp(0, 255);
+      int b = (baseColor.blue + random.nextInt(variance) - variance ~/ 2)
+          .clamp(0, 255);
+
+      song.color = Color.fromRGBO(r, g, b, 1.0).withAlpha(80);
     }
   }
 
@@ -57,9 +76,7 @@ class MusicPageBloc extends Bloc<MusicPageEvent, MusicPageState> {
     try {
       logd("当前滑动到第${event.index}个", tag: _tag);
       final song = songs[event.index];
-      final color = await _extractDominantColor(song.al?.picUrl);
       final songDetail = await repo.getSongDetail(song.id);
-      songDetail.color = color;
       String currentMusicUrl = songDetail.data?[0].url ?? "";
       if (!currentMusicUrl.startsWith("https")) {
         currentMusicUrl = currentMusicUrl.replaceFirst("http", "https");
@@ -68,38 +85,11 @@ class MusicPageBloc extends Bloc<MusicPageEvent, MusicPageState> {
       logd(songDetail.toString(), tag: _tag);
 
       musicService.init(currentMusicUrl);
-      musicService.play();
+      if (musicService.isPlaying) {
+        musicService.play();
+      }
     } catch (e) {
       logd("获取歌曲详情失败: $e", tag: _tag);
-    }
-  }
-
-  Future<Color> _extractDominantColor(String? imageUrl) async {
-    if (imageUrl == null || imageUrl.isEmpty) {
-      return Colors.black;
-    }
-
-    // 检查缓存
-    if (_colorCache.containsKey(imageUrl)) {
-      return _colorCache[imageUrl]!;
-    }
-
-    try {
-      final PaletteGenerator paletteGenerator =
-          await PaletteGenerator.fromImageProvider(
-        NetworkImage(imageUrl),
-        size: const Size(20, 20),
-      );
-
-      final color = paletteGenerator.vibrantColor?.color ??
-          paletteGenerator.dominantColor?.color ??
-          Colors.black;
-      // 存入缓存
-      _colorCache[imageUrl] = color;
-      return color;
-    } catch (e) {
-      logd('提取颜色失败: $e');
-      return Colors.black;
     }
   }
 }
