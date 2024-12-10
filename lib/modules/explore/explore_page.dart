@@ -63,9 +63,6 @@ class _ExplorePageState extends State<ExplorePage> {
       padding: const EdgeInsets.symmetric(horizontal: 20),
       child: Column(
         children: [
-          const SizedBox(
-            height: 20,
-          ),
           _buildSearchBar(context),
           // 可滚动的内容部分
           Expanded(

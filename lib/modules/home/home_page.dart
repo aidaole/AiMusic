@@ -59,7 +59,7 @@ class _HomePageState extends State<HomePage> {
         selectedItemColor: Colors.white,
         unselectedItemColor: Colors.white70,
         items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.search), label: "发现"),
+          BottomNavigationBarItem(icon: Icon(Icons.explore), label: "发现"),
           BottomNavigationBarItem(icon: Icon(Icons.music_note), label: "音乐"),
           BottomNavigationBarItem(icon: Icon(Icons.person), label: "我的"),
         ],

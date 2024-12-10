@@ -1,5 +1,6 @@
 import 'package:ai_music/common/widgets/common_network_image.dart';
 import 'package:ai_music/modules/music/models/recommend_songs/song.dart';
+import 'package:ai_music/widgets/status_bar_playce_holder.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:palette_generator/palette_generator.dart';
@@ -63,7 +64,7 @@ class _MusicPageState extends State<MusicPage> {
         ),
         Column(
           children: [
-            _buildStatusBar(context),
+            const StatusBarPlaceHolder(),
             _buildActionBar(context),
           ],
         )
@@ -76,7 +77,9 @@ class _MusicPageState extends State<MusicPage> {
       scrollDirection: Axis.vertical,
       onPageChanged: (index) {
         logd("当前滑动到第$index个", tag: _tag);
-        context.read<MusicPageBloc>().add(MusicPageChangeIndexEvent(index: index));
+        context
+            .read<MusicPageBloc>()
+            .add(MusicPageChangeIndexEvent(index: index));
       },
       itemCount: context.read<MusicPageBloc>().songs.length,
       itemBuilder: (context, index) {
@@ -128,7 +131,10 @@ class _MusicPageState extends State<MusicPage> {
       child: ClipRRect(
         borderRadius: const BorderRadius.all(Radius.circular(20)),
         child: CommonNetworkImage(
-            imageUrl: picUrl ?? "", width: size, height: size, fit: BoxFit.cover),
+            imageUrl: picUrl ?? "",
+            width: size,
+            height: size,
+            fit: BoxFit.cover),
       ),
     );
   }
@@ -210,10 +216,6 @@ class _MusicPageState extends State<MusicPage> {
     );
   }
 
-  _buildStatusBar(BuildContext context) {
-    return SizedBox(height: defaultStatusBarHeight.toDouble());
-  }
-
   _buildActionBar(BuildContext context) {
     const iconSize = 25.0;
     return Container(
@@ -223,7 +225,8 @@ class _MusicPageState extends State<MusicPage> {
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            IconButton(onPressed: () {}, icon: const Icon(Icons.menu, size: iconSize)),
+            IconButton(
+                onPressed: () {}, icon: const Icon(Icons.menu, size: iconSize)),
             Text(
               "模式选择",
               style: Theme.of(context).textTheme.titleLarge,
@@ -247,7 +250,8 @@ class _MusicPageState extends State<MusicPage> {
     }
 
     try {
-      final PaletteGenerator paletteGenerator = await PaletteGenerator.fromImageProvider(
+      final PaletteGenerator paletteGenerator =
+          await PaletteGenerator.fromImageProvider(
         NetworkImage(imageUrl),
         size: const Size(20, 20),
       );
@@ -273,7 +277,9 @@ class _MusicPageState extends State<MusicPage> {
           stream: context.read<MusicPageBloc>().musicService.positionStream,
           builder: (context, snapshot) {
             final position = snapshot.data ?? Duration.zero;
-            final duration = context.read<MusicPageBloc>().musicService.duration ?? Duration.zero;
+            final duration =
+                context.read<MusicPageBloc>().musicService.duration ??
+                    Duration.zero;
             return Slider(
               label: null,
               activeColor: Colors.white.withOpacity(0.8),
@@ -283,7 +289,10 @@ class _MusicPageState extends State<MusicPage> {
               value: position.inSeconds.toDouble(),
               max: duration.inSeconds.toDouble(),
               onChanged: (value) {
-                context.read<MusicPageBloc>().musicService.seek(Duration(seconds: value.toInt()));
+                context
+                    .read<MusicPageBloc>()
+                    .musicService
+                    .seek(Duration(seconds: value.toInt()));
               },
             );
           },
