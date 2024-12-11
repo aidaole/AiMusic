@@ -1,4 +1,4 @@
-import 'package:ai_music/modules/explore/models/artiest_play_list.dart';
+import 'package:ai_music/modules/explore/models/artist_play_list.dart';
 
 /// code : 200
 /// message : "ok"
@@ -23,7 +23,7 @@ class ArtistDetail {
   int? _code;
   String? _message;
   Data? _data;
-  ArtiestPlayList? playlist;
+  ArtistPlayList? playlist;
 
   ArtistDetail copyWith({
     int? code,
@@ -85,8 +85,11 @@ class Data {
 
   Data.fromJson(dynamic json) {
     _videoCount = json['videoCount'];
-    _vipRights = json['vipRights'] != null ? VipRights.fromJson(json['vipRights']) : null;
-    _identify = json['identify'] != null ? Identify.fromJson(json['identify']) : null;
+    _vipRights = json['vipRights'] != null
+        ? VipRights.fromJson(json['vipRights'])
+        : null;
+    _identify =
+        json['identify'] != null ? Identify.fromJson(json['identify']) : null;
     _artist = json['artist'] != null ? Artist.fromJson(json['artist']) : null;
     _blacklist = json['blacklist'];
     _preferShow = json['preferShow'];
@@ -308,8 +311,9 @@ class User {
     _backgroundImgId = json['backgroundImgId'];
     _userType = json['userType'];
     _experts = json['experts'];
-    _avatarDetail =
-        json['avatarDetail'] != null ? AvatarDetail.fromJson(json['avatarDetail']) : null;
+    _avatarDetail = json['avatarDetail'] != null
+        ? AvatarDetail.fromJson(json['avatarDetail'])
+        : null;
   }
   String? _backgroundUrl;
   int? _birthday;
@@ -600,10 +604,13 @@ class Artist {
     _cover = json['cover'];
     _avatar = json['avatar'];
     _name = json['name'];
-    _transNames = json['transNames'] != null ? json['transNames'].cast<String>() : [];
+    _transNames =
+        json['transNames'] != null ? json['transNames'].cast<String>() : [];
     _alias = json['alias'] != null ? json['alias'].cast<String>() : [];
-    _identities = json['identities'] != null ? json['identities'].cast<String>() : [];
-    _identifyTag = json['identifyTag'] != null ? json['identifyTag'].cast<String>() : [];
+    _identities =
+        json['identities'] != null ? json['identities'].cast<String>() : [];
+    _identifyTag =
+        json['identifyTag'] != null ? json['identifyTag'].cast<String>() : [];
     _briefDesc = json['briefDesc'];
     _rank = json['rank'] != null ? Rank.fromJson(json['rank']) : null;
     _albumSize = json['albumSize'];
@@ -817,13 +824,15 @@ class VipRights {
     int? now,
   }) =>
       VipRights(
-        rightsInfoDetailDtoList: rightsInfoDetailDtoList ?? _rightsInfoDetailDtoList,
+        rightsInfoDetailDtoList:
+            rightsInfoDetailDtoList ?? _rightsInfoDetailDtoList,
         oldProtocol: oldProtocol ?? _oldProtocol,
         redVipAnnualCount: redVipAnnualCount ?? _redVipAnnualCount,
         redVipLevel: redVipLevel ?? _redVipLevel,
         now: now ?? _now,
       );
-  List<RightsInfoDetailDtoList>? get rightsInfoDetailDtoList => _rightsInfoDetailDtoList;
+  List<RightsInfoDetailDtoList>? get rightsInfoDetailDtoList =>
+      _rightsInfoDetailDtoList;
   bool? get oldProtocol => _oldProtocol;
   int? get redVipAnnualCount => _redVipAnnualCount;
   int? get redVipLevel => _redVipLevel;
@@ -832,7 +841,8 @@ class VipRights {
   Map<String, dynamic> toJson() {
     final map = <String, dynamic>{};
     if (_rightsInfoDetailDtoList != null) {
-      map['rightsInfoDetailDtoList'] = _rightsInfoDetailDtoList?.map((v) => v.toJson()).toList();
+      map['rightsInfoDetailDtoList'] =
+          _rightsInfoDetailDtoList?.map((v) => v.toJson()).toList();
     }
     map['oldProtocol'] = _oldProtocol;
     map['redVipAnnualCount'] = _redVipAnnualCount;

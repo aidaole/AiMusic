@@ -1,3 +1,4 @@
+import 'package:ai_music/common/widgets/common_circle_loading.dart';
 import 'package:ai_music/common/widgets/common_network_image.dart';
 import 'package:ai_music/themes/theme_color.dart';
 import 'package:ai_music/widgets/status_bar_playce_holder.dart';
@@ -21,9 +22,11 @@ class PlayListDetailPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     logd('playListId: $playListId', tag: _tag);
-    context
-        .read<PlayListBloc>()
-        .add(RequestPlayListDetailEvent(id: playListId));
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      context
+          .read<PlayListBloc>()
+          .add(RequestPlayListDetailEvent(id: playListId));
+    });
     return Scaffold(
       backgroundColor: defaultBgColor,
       body: _buildBody(context),
@@ -65,12 +68,14 @@ class PlayListDetailPage extends StatelessWidget {
       builder: (context, state) {
         if (state is RequestPlayListDetailLoading) {
           return const Expanded(
-            child: Text('加载中...'),
+            child: Center(
+              child: CommonCircleLoading(text: "加载中"),
+            ),
           );
         }
         if (state is RequestPlayListDetailError) {
           return Expanded(
-            child: Text('加载失败: ${state.error}'),
+            child: Center(child: Text('加载失败: ${state.error}')),
           );
         }
         if (state is RequestPlayListDetailSuccess) {

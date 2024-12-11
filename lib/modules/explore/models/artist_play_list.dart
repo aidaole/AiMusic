@@ -1,7 +1,7 @@
 import '../../music/models/recommend_songs/song.dart';
 
-class ArtiestPlayList {
-  ArtiestPlayList({
+class ArtistPlayList {
+  ArtistPlayList({
     List<Song>? songs,
     bool? more,
     int? total,
@@ -13,7 +13,7 @@ class ArtiestPlayList {
     _code = code;
   }
 
-  ArtiestPlayList.fromJson(dynamic json) {
+  ArtistPlayList.fromJson(dynamic json) {
     if (json['songs'] != null) {
       _songs = [];
       json['songs'].forEach((v) {
@@ -28,13 +28,13 @@ class ArtiestPlayList {
   bool? _more;
   int? _total;
   int? _code;
-  ArtiestPlayList copyWith({
+  ArtistPlayList copyWith({
     List<Song>? songs,
     bool? more,
     int? total,
     int? code,
   }) =>
-      ArtiestPlayList(
+      ArtistPlayList(
         songs: songs ?? _songs,
         more: more ?? _more,
         total: total ?? _total,
