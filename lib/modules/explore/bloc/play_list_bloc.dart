@@ -20,6 +20,7 @@ class PlayListBloc extends Bloc<PlayListEvent, PlayListState> {
     on<RequestHighQualityPlayListEvent>(_onRequestHighQualityPlayListEvent);
     on<RequestPlayListRecommendEvent>(_onRequestPlayListRecommendEvent);
     on<RequestTopArtistsEvent>(_onRequestTopArtistsEvent);
+    on<RequestArtistsDetailEvent>(_onRequestArtistsPlayListEvent);
     on<RequestPlayListDetailEvent>(_onRequestPlayListDetailEvent);
   }
 
@@ -29,8 +30,7 @@ class PlayListBloc extends Bloc<PlayListEvent, PlayListState> {
     try {
       emit(RequestHotPlayListLoading());
       final playListCatagories = await playListRepo.requestHotPlayList();
-      LogUtil.i("playListCatagories: ${playListCatagories.tags.length}",
-          tag: _tag);
+      LogUtil.i("playListCatagories: ${playListCatagories.tags.length}", tag: _tag);
       emit(RequestHotPlayListSuccess(playListCatagories));
     } catch (e, stackTrace) {
       LogUtil.e("错误详情: $e\n$stackTrace", tag: _tag);
@@ -38,8 +38,8 @@ class PlayListBloc extends Bloc<PlayListEvent, PlayListState> {
     }
   }
 
-  void _onRequestHighQualityPlayListEvent(RequestHighQualityPlayListEvent event,
-      Emitter<PlayListState> emit) async {
+  void _onRequestHighQualityPlayListEvent(
+      RequestHighQualityPlayListEvent event, Emitter<PlayListState> emit) async {
     LogUtil.i("requestHighQualityPlayListEvent: $event", tag: _tag);
     // 如果缓存中已经有数据，直接使用缓存
     if (_playListCache.containsKey(event.cat)) {
@@ -53,10 +53,9 @@ class PlayListBloc extends Bloc<PlayListEvent, PlayListState> {
     // 如果缓存中没有，才发送loading和请求新数据
     emit(RequestHighQualityPlayListLoading(event.cat));
     try {
-      final playListHighQulity = await playListRepo.requestHighQualityPlayList(
-          cat: event.cat, limit: event.limit);
-      LogUtil.i("playListHighQulity: ${playListHighQulity.playlists?.length}",
-          tag: _tag);
+      final playListHighQulity =
+          await playListRepo.requestHighQualityPlayList(cat: event.cat, limit: event.limit);
+      LogUtil.i("playListHighQulity: ${playListHighQulity.playlists?.length}", tag: _tag);
       // 将结果存入缓存
       _playListCache[event.cat] = playListHighQulity;
       emit(RequestHighQualityPlayListSuccess(playListHighQulity, event.cat));
@@ -72,8 +71,7 @@ class PlayListBloc extends Bloc<PlayListEvent, PlayListState> {
     try {
       emit(RequestPlayListRecommendLoading());
       final playListRecommend = await playListRepo.requestPlayListRecommend();
-      LogUtil.i("playListRecommend: ${playListRecommend.recommend?.length}",
-          tag: _tag);
+      LogUtil.i("playListRecommend: ${playListRecommend.recommend?.length}", tag: _tag);
       emit(RequestPlayListRecommendSuccess(playListRecommend));
     } catch (e, stackTrace) {
       LogUtil.e("错误详情: $e\n$stackTrace", tag: _tag);
@@ -94,8 +92,7 @@ class PlayListBloc extends Bloc<PlayListEvent, PlayListState> {
     }
   }
 
-  void _onRequestTopArtistsEvent(
-      RequestTopArtistsEvent event, Emitter<PlayListState> emit) async {
+  void _onRequestTopArtistsEvent(RequestTopArtistsEvent event, Emitter<PlayListState> emit) async {
     try {
       emit(RequestTopArtistsLoading());
       final topArtists = await playListRepo.requestTopArtists();
@@ -111,12 +108,23 @@ class PlayListBloc extends Bloc<PlayListEvent, PlayListState> {
     LogUtil.i("requestPlayListDetailEvent: $event", tag: _tag);
     try {
       emit(RequestPlayListDetailLoading(event.id));
-      final playListDetail =
-          await playListRepo.requestPlayListDetail(id: event.id);
+      final playListDetail = await playListRepo.requestPlayListDetail(id: event.id);
       emit(RequestPlayListDetailSuccess(playListDetail));
     } catch (e, stackTrace) {
       LogUtil.e("错误详情: $e\n$stackTrace", tag: _tag);
       emit(RequestPlayListDetailError(e.toString()));
+    }
+  }
+
+  void _onRequestArtistsPlayListEvent(
+      RequestArtistsDetailEvent event, Emitter<PlayListState> emit) async {
+    logd("_onRequestArtistsPlayListEvent", tag: _tag);
+    try {
+      emit(RequestArtistDetailLoading());
+      final artiestDetail = await playListRepo.requestArtiestDetail(artiestId: event.artistId);
+      emit(RequestArtiestDetailSuccess(artiestDetail: artiestDetail));
+    } catch (e) {
+      emit(RequestArtiestDetailFailed(error: e.toString()));
     }
   }
 }

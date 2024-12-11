@@ -9,12 +9,12 @@ abstract class AppRoutes {
   // 主页相关
   static const home = '/home';
 
-  // 播放相关
-  static const player = '/player';
-
   // 设置相关
   static const appSettings = '/app_settings';
 
   // 歌单详情
   static const playListDetail = '/play_list_detail';
+
+  // 歌手详情
+  static const artiestDetail = '/artiest_detail';
 }

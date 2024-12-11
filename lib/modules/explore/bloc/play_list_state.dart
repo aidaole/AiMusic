@@ -1,3 +1,5 @@
+import 'package:ai_music/modules/explore/models/artist_detail.dart';
+
 import '../models/high_qulity_tags.dart';
 import '../models/play_list_categories.dart';
 import '../models/play_list_detail/play_list_detail.dart';
@@ -25,18 +27,21 @@ final class RequestHotPlayListError extends PlayListState {
 
 final class RequestHighQualityPlayListLoading extends PlayListState {
   final String cat;
+
   RequestHighQualityPlayListLoading(this.cat);
 }
 
 final class RequestHighQualityPlayListSuccess extends PlayListState {
   final PlayListHighQulity playList;
   final String cat;
+
   RequestHighQualityPlayListSuccess(this.playList, this.cat);
 }
 
 final class RequestHighQualityPlayListError extends PlayListState {
   final String error;
   final String cat;
+
   RequestHighQualityPlayListError(this.error, this.cat);
 }
 
@@ -86,15 +91,39 @@ class PlayListDetailState extends PlayListState {}
 
 final class RequestPlayListDetailLoading extends PlayListDetailState {
   final int id;
+
   RequestPlayListDetailLoading(this.id);
 }
 
 final class RequestPlayListDetailSuccess extends PlayListDetailState {
   final PlayListDetail playListDetail;
+
   RequestPlayListDetailSuccess(this.playListDetail);
 }
 
 final class RequestPlayListDetailError extends PlayListDetailState {
   final String error;
+
   RequestPlayListDetailError(this.error);
+}
+
+// 歌手详情
+class ArtiestDetailState extends PlayListState {}
+
+final class RequestArtistDetailLoading extends ArtiestDetailState {}
+
+final class RequestArtiestDetailSuccess extends ArtiestDetailState {
+  final ArtistDetail artiestDetail;
+
+  RequestArtiestDetailSuccess({
+    required this.artiestDetail,
+  });
+}
+
+final class RequestArtiestDetailFailed extends ArtiestDetailState {
+  final String error;
+
+  RequestArtiestDetailFailed({
+    required this.error,
+  });
 }

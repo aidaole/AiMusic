@@ -10,7 +10,7 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   LogUtil.init(
     enableLog: true,
-    showStack: true,
+    showStack: false,
   );
   try {
     await DioUtils.init();

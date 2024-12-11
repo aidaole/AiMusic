@@ -1,3 +1,4 @@
+import 'package:ai_music/modules/explore/artist_detail_page.dart';
 import 'package:flutter/material.dart';
 
 import '../modules/explore/play_list_detail_page.dart';
@@ -35,6 +36,11 @@ class AppPages {
       final playListId = arguments as int?;
       return PlayListDetailPage(playListId: playListId ?? 0);
     },
+    AppRoutes.artiestDetail: (context) {
+      final arguments = ModalRoute.of(context)?.settings.arguments;
+      final artiestId = arguments as int?;
+      return ArtistDetailPage(artiestId: artiestId ?? 0);
+    }
   };
 
   /// 404页面

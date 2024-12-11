@@ -15,6 +15,12 @@ class RequestHighQualityTagsEvent extends PlayListEvent {}
 
 class RequestTopArtistsEvent extends PlayListEvent {}
 
+class RequestArtistsDetailEvent extends PlayListEvent {
+  final int artistId;
+
+  RequestArtistsDetailEvent({required this.artistId});
+}
+
 class RequestPlayListDetailEvent extends PlayListEvent {
   final int id;
 
