@@ -1,6 +1,7 @@
 import 'package:ai_music/common/log_util.dart';
 
 import '../../../network/dio_utils.dart';
+import '../models/artiest_play_list.dart';
 import '../models/artist_detail.dart';
 import '../models/high_qulity_tags.dart';
 import '../models/play_list_categories.dart';
@@ -80,5 +81,13 @@ class PlayListRepo {
       return result;
     }
     return ArtistDetail(code: 0, message: "失败", data: Data());
+  }
+
+  Future<ArtiestPlayList> requestArtistPlayList({required int artistId}) async {
+    final resp = await DioUtils.get(path: "/artist/songs", queryParameters: {"id": artistId});
+    if (resp != null) {
+      return ArtiestPlayList.fromJson(resp);
+    }
+    return ArtiestPlayList(songs: List.empty(), more: false, total: 0, code: 0);
   }
 }

@@ -122,6 +122,8 @@ class PlayListBloc extends Bloc<PlayListEvent, PlayListState> {
     try {
       emit(RequestArtistDetailLoading());
       final artiestDetail = await playListRepo.requestArtiestDetail(artiestId: event.artistId);
+      final artiestPlayList = await playListRepo.requestArtistPlayList(artistId: event.artistId);
+      artiestDetail.playlist = artiestPlayList;
       emit(RequestArtiestDetailSuccess(artiestDetail: artiestDetail));
     } catch (e) {
       emit(RequestArtiestDetailFailed(error: e.toString()));

@@ -7,6 +7,7 @@ import '../../common/log_util.dart';
 import '../../common/widgets/common_network_image.dart';
 import '../../routes/route_helper.dart';
 import '../../themes/theme_size.dart';
+import '../music/bloc/music_page_bloc.dart';
 import '../music/models/recommend_songs/song.dart';
 import 'bloc/play_list_bloc.dart';
 import 'bloc/play_list_event.dart';
@@ -106,20 +107,18 @@ class ArtistDetailPage extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.start,
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      // IconButton(
-                      //     onPressed: () {
-                      //       logd("${state.playListDetail.playlist?.tracks?.length}", tag: _tag);
-                      //       RouteHelper.popUntil(context, '/home');
-                      //       RouteHelper.switchHomeTab(context, 1);
-                      //       context.read<MusicPageBloc>().add(AddPlayListEvent(
-                      //           tracks: state.playListDetail.playlist?.tracks ?? []));
-                      //     },
-                      //     icon: const Icon(
-                      //       Icons.play_circle,
-                      //       size: 40,
-                      //     )),
-                      // Expanded(
-                      //     child: Text("播放全部 ${state.playListDetail.playlist?.trackCount ?? ''}")),
+                      IconButton(
+                          onPressed: () {
+                            RouteHelper.popUntil(context, '/home');
+                            RouteHelper.switchHomeTab(context, 1);
+                            context.read<MusicPageBloc>().add(AddPlayListEvent(
+                                tracks: state.artiestDetail.playlist?.songs ?? []));
+                          },
+                          icon: const Icon(
+                            Icons.play_circle,
+                            size: 40,
+                          )),
+                      Expanded(child: Text("播放全部 ${state.artiestDetail.playlist?.total ?? ''}")),
                       IconButton(
                           onPressed: () {},
                           icon: const Icon(
@@ -140,17 +139,17 @@ class ArtistDetailPage extends StatelessWidget {
                           )),
                     ],
                   ),
-                  // Expanded(
-                  //   child: ListView.builder(
-                  //     padding: EdgeInsets.zero,
-                  //     physics: const ClampingScrollPhysics(),
-                  //     itemCount: state.playListDetail.playlist?.tracks?.length ?? 0,
-                  //     itemBuilder: (BuildContext context, int index) {
-                  //       var item = state.playListDetail.playlist?.tracks?[index];
-                  //       return _buildTrackItem(context, index, item);
-                  //     },
-                  //   ),
-                  // ),
+                  Expanded(
+                    child: ListView.builder(
+                      padding: EdgeInsets.zero,
+                      physics: const ClampingScrollPhysics(),
+                      itemCount: state.artiestDetail.playlist?.songs?.length ?? 0,
+                      itemBuilder: (BuildContext context, int index) {
+                        var item = state.artiestDetail.playlist?.songs?[index];
+                        return _buildTrackItem(context, index, item);
+                      },
+                    ),
+                  ),
                 ],
               ),
             ),
