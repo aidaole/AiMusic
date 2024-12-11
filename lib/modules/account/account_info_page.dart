@@ -254,7 +254,7 @@ class AccountInfoPage extends StatelessWidget {
         color: Colors.blue.withAlpha(20),
         image: account.backgroundUrl.isNotEmpty
             ? DecorationImage(
-                image: NetworkImage(account.backgroundUrl),
+                image: NetworkImage(account.avatarUrl),
                 fit: BoxFit.cover,
               )
             : null,

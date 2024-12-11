@@ -45,9 +45,35 @@ npx NeteaseCloudMusicApi@latest
 4. 登录,包含账号密码登录(失效)，验证码登录(失效), 二维码登录(可用, 使用网易云音乐扫描二维码登录)
 
 后续还有新功能，陆续添加
-![](':size=300')
 
-<img src="images/README/2024-12-10-21-35-23.png" width="200" /> 
-<img src="images/README/2024-12-10-21-36-45.png" width="200" /> 
+发现页面,支持嵌套滑动, 歌单详情页, 滑动吸顶等
+
+<div>
+    <img src="images/README/2024-12-11-23-59-59.png" width="150" /> 
+    <img src="images/README/2024-12-11-23-58-12.png" width="150" />
+    <img src="images/README/2024-12-12-00-01-21.png" width="150" /> 
+    <img src="images/README/2024-12-12-00-01-49.png" width="150" /> 
+</div>
+
+播放页面,沉浸式背景,随机颜色,中间tab底部bar修改为播放按钮, 上下滑动切歌, 预览进度, 拖动控制等
+
+<div>
+    <img src="images/README/2024-12-12-00-09-44.png" width="150" /> 
+    <img src="images/README/2024-12-12-00-05-36.png" width="150" /> 
+</div>
+
+登录相关, 账号密码登录(失效), 验证码登录(失效), 二维码登录(可用, 使用网易云音乐扫描二维码登录)
+
+<div>
+    <img src="images/README/2024-12-12-00-11-31.png" width="150" /> 
+    <img src="images/README/2024-12-12-00-11-10.png" width="150" /> 
+    <img src="images/README/2024-12-12-00-12-30.png" width="150" /> 
+    <img src="images/README/2024-12-12-00-13-13.png" width="150" /> 
+</div>
+
+
+
+
+
 
 
