@@ -36,9 +36,11 @@ class PlayListRepo {
     return HighQulityTags(tags: [], code: 0);
   }
 
-  Future<PlayListHighQulity> requestHighQualityPlayList({String cat = "全部", int limit = 10}) async {
+  Future<PlayListHighQulity> requestHighQualityPlayList(
+      {String cat = "全部", int limit = 10}) async {
     final resp = await DioUtils.get(
-        path: "/top/playlist/highquality", queryParameters: {"cat": cat, "limit": limit});
+        path: "/top/playlist/highquality",
+        queryParameters: {"cat": cat, "limit": limit});
     if (resp != null) {
       final result = PlayListHighQulity.fromJson(resp);
       return result;
@@ -65,7 +67,8 @@ class PlayListRepo {
   }
 
   Future<PlayListDetail> requestPlayListDetail({required int id}) async {
-    final resp = await DioUtils.get(path: "/playlist/detail", queryParameters: {"id": id});
+    final resp = await DioUtils.get(
+        path: "/playlist/detail", queryParameters: {"id": id});
     if (resp != null) {
       final result = PlayListDetail.fromJson(resp);
       return result;
@@ -74,7 +77,8 @@ class PlayListRepo {
   }
 
   Future<ArtistDetail> requestArtiestDetail({required int artiestId}) async {
-    final resp = await DioUtils.get(path: "/artist/detail", queryParameters: {"id": artiestId});
+    final resp = await DioUtils.get(
+        path: "/artist/detail", queryParameters: {"id": artiestId});
     logd("requestArtiestDetail-> $resp", tag: _tag);
     if (resp != null) {
       final result = ArtistDetail.fromJson(resp);
@@ -84,7 +88,8 @@ class PlayListRepo {
   }
 
   Future<ArtiestPlayList> requestArtistPlayList({required int artistId}) async {
-    final resp = await DioUtils.get(path: "/artist/songs", queryParameters: {"id": artistId});
+    final resp = await DioUtils.get(
+        path: "/artist/top/song", queryParameters: {"id": artistId});
     if (resp != null) {
       return ArtiestPlayList.fromJson(resp);
     }

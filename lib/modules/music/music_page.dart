@@ -115,6 +115,7 @@ class _MusicPageState extends State<MusicPage> {
 
   Padding _buildMusicPicWidget(BuildContext context, String? picUrl) {
     double size = MediaQuery.of(context).size.width - 60;
+    logd("picUrl: $picUrl", tag: _tag);
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 30),
       child: ClipRRect(
