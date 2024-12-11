@@ -1,6 +1,7 @@
 import 'package:ai_music/common/widgets/common_circle_loading.dart';
 import 'package:ai_music/common/widgets/common_network_image.dart';
 import 'package:ai_music/themes/theme_color.dart';
+import 'package:ai_music/widgets/CommonSliverAppBarDelegate.dart';
 import 'package:ai_music/widgets/status_bar_playce_holder.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -80,92 +81,107 @@ class PlayListDetailPage extends StatelessWidget {
         }
         if (state is RequestPlayListDetailSuccess) {
           return Expanded(
-            child: Padding(
-              padding: const EdgeInsets.all(20),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  CommonNetworkImage(
-                    borderRadius: BorderRadius.circular(20),
-                    imageUrl: state.playListDetail.playlist?.coverImgUrl ?? '',
-                    width: double.infinity,
-                    height: 200,
-                  ),
-                  const SizedBox(
-                    height: 20,
-                  ),
-                  Text(
-                    state.playListDetail.playlist?.name ?? '',
-                    style: Theme.of(context)
-                        .textTheme
-                        .titleLarge
-                        ?.copyWith(fontWeight: FontWeight.bold),
-                  ),
-                  const SizedBox(
-                    height: 10,
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      IconButton(
-                          onPressed: () {
-                            logd(
-                                "${state.playListDetail.playlist?.tracks?.length}",
-                                tag: _tag);
-                            RouteHelper.popUntil(context, '/home');
-                            RouteHelper.switchHomeTab(context, 1);
-                            context.read<MusicPageBloc>().add(AddPlayListEvent(
-                                tracks: state.playListDetail.playlist?.tracks ??
-                                    []));
-                          },
-                          icon: const Icon(
-                            Icons.play_circle,
-                            size: 40,
-                          )),
-                      Expanded(
-                          child: Text(
-                              "播放全部 ${state.playListDetail.playlist?.trackCount ?? ''}")),
-                      IconButton(
-                          onPressed: () {},
-                          icon: const Icon(
-                            Icons.favorite_sharp,
-                            size: 20,
-                          )),
-                      IconButton(
-                          onPressed: () {},
-                          icon: const Icon(
-                            Icons.message,
-                            size: 20,
-                          )),
-                      IconButton(
-                          onPressed: () {},
-                          icon: const Icon(
-                            Icons.share,
-                            size: 20,
-                          )),
-                    ],
-                  ),
-                  Expanded(
-                    child: ListView.builder(
-                      padding: EdgeInsets.zero,
-                      physics: const ClampingScrollPhysics(),
-                      itemCount:
-                          state.playListDetail.playlist?.tracks?.length ?? 0,
-                      itemBuilder: (BuildContext context, int index) {
-                        var item =
-                            state.playListDetail.playlist?.tracks?[index];
-                        return _buildTrackItem(context, index, item);
-                      },
+              child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20),
+            child: NestedScrollView(
+              headerSliverBuilder: (context, innerBoxScrolled) {
+                return [
+                  SliverToBoxAdapter(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        CommonNetworkImage(
+                          borderRadius: BorderRadius.circular(20),
+                          imageUrl:
+                              state.playListDetail.playlist?.coverImgUrl ?? '',
+                          width: double.infinity,
+                          height: 200,
+                        ),
+                        const SizedBox(
+                          height: 20,
+                        ),
+                        Text(
+                          state.playListDetail.playlist?.name ?? '',
+                          style: Theme.of(context)
+                              .textTheme
+                              .titleLarge
+                              ?.copyWith(fontWeight: FontWeight.bold),
+                        ),
+                        const SizedBox(
+                          height: 10,
+                        )
+                      ],
                     ),
                   ),
-                ],
+                  SliverPersistentHeader(
+                      pinned: true,
+                      floating: false,
+                      delegate: CommonSliverAppBarDelegate(
+                          minHeight: defaultActionBarHeight,
+                          maxHeight: defaultActionBarHeight,
+                          child: Container(
+                              color: defaultBgColor,
+                              child: _buildControlPlayWidget(state, context))))
+                ];
+              },
+              body: ListView.builder(
+                padding: EdgeInsets.zero,
+                physics: const ClampingScrollPhysics(),
+                itemCount: state.playListDetail.playlist?.tracks?.length ?? 0,
+                itemBuilder: (BuildContext context, int index) {
+                  var item = state.playListDetail.playlist?.tracks?[index];
+                  return _buildTrackItem(context, index, item);
+                },
               ),
             ),
-          );
+          ));
         }
         return const SizedBox.shrink();
       },
+    );
+  }
+
+  Row _buildControlPlayWidget(
+      RequestPlayListDetailSuccess state, BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        IconButton(
+            onPressed: () {
+              logd("${state.playListDetail.playlist?.tracks?.length}",
+                  tag: _tag);
+              RouteHelper.popUntil(context, '/home');
+              RouteHelper.switchHomeTab(context, 1);
+              context.read<MusicPageBloc>().add(AddPlayListEvent(
+                  tracks: state.playListDetail.playlist?.tracks ?? []));
+            },
+            icon: const Icon(
+              Icons.play_circle,
+              size: 40,
+            )),
+        Expanded(
+            child: Text(
+                "播放全部 ${state.playListDetail.playlist?.trackCount ?? ''}")),
+        IconButton(
+            onPressed: () {},
+            icon: const Icon(
+              Icons.favorite_sharp,
+              size: 20,
+            )),
+        IconButton(
+            onPressed: () {},
+            icon: const Icon(
+              Icons.message,
+              size: 20,
+            )),
+        IconButton(
+            onPressed: () {},
+            icon: const Icon(
+              Icons.share,
+              size: 20,
+            )),
+      ],
     );
   }
 
@@ -186,21 +202,25 @@ class PlayListDetailPage extends StatelessWidget {
           const SizedBox(
             width: 20,
           ),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text("${item?.name}",
-                  style: Theme.of(context).textTheme.bodyLarge),
-              const SizedBox(
-                height: 5,
-              ),
-              Text("${item?.ar?[0].name}",
-                  style: Theme.of(context)
-                      .textTheme
-                      .bodyMedium
-                      ?.copyWith(color: Colors.white.withAlpha(80))),
-            ],
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text("${item?.name}",
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: Theme.of(context).textTheme.bodyLarge),
+                const SizedBox(
+                  height: 5,
+                ),
+                Text("${item?.ar?[0].name}",
+                    style: Theme.of(context)
+                        .textTheme
+                        .bodyMedium
+                        ?.copyWith(color: Colors.white.withAlpha(80))),
+              ],
+            ),
           ),
         ],
       ),

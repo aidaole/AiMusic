@@ -1,4 +1,5 @@
 import 'package:ai_music/themes/theme_color.dart';
+import 'package:ai_music/widgets/CommonSliverAppBarDelegate.dart';
 import 'package:ai_music/widgets/status_bar_playce_holder.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -91,87 +92,102 @@ class ArtistDetailPage extends StatelessWidget {
     return Expanded(
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            CommonNetworkImage(
-              borderRadius: BorderRadius.circular(20),
-              imageUrl: state.artiestDetail.data?.artist?.cover ?? '',
-              width: double.infinity,
-              height: 200,
-            ),
-            const SizedBox(
-              height: 20,
-            ),
-            Text(
-              state.artiestDetail.data?.artist?.name ?? '未知',
-              style: Theme.of(context)
-                  .textTheme
-                  .titleLarge
-                  ?.copyWith(fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(
-              height: 10,
-            ),
-            Text(state.artiestDetail.data?.artist?.briefDesc ?? '未知',
-                overflow: TextOverflow.ellipsis,
-                maxLines: 4,
-                style: Theme.of(context).textTheme.bodyMedium),
-            const SizedBox(
-              height: 20,
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                IconButton(
-                    onPressed: () {
-                      RouteHelper.popUntil(context, '/home');
-                      RouteHelper.switchHomeTab(context, 1);
-                      context.read<MusicPageBloc>().add(AddPlayListEvent(
-                          tracks: state.artiestDetail.playlist?.songs ?? []));
-                    },
-                    icon: const Icon(
-                      Icons.play_circle,
-                      size: 40,
-                    )),
-                Expanded(
-                    child: Text(
-                        "播放全部 ${state.artiestDetail.playlist?.total ?? ''}")),
-                IconButton(
-                    onPressed: () {},
-                    icon: const Icon(
-                      Icons.favorite_sharp,
-                      size: 20,
-                    )),
-                IconButton(
-                    onPressed: () {},
-                    icon: const Icon(
-                      Icons.message,
-                      size: 20,
-                    )),
-                IconButton(
-                    onPressed: () {},
-                    icon: const Icon(
-                      Icons.share,
-                      size: 20,
-                    )),
-              ],
-            ),
-            Expanded(
-              child: ListView.builder(
-                padding: EdgeInsets.zero,
-                physics: const ClampingScrollPhysics(),
-                itemCount: state.artiestDetail.playlist?.songs?.length ?? 0,
-                itemBuilder: (BuildContext context, int index) {
-                  var item = state.artiestDetail.playlist?.songs?[index];
-                  return _buildTrackItem(context, index, item);
-                },
+        child: NestedScrollView(
+          headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
+            return [
+              SliverToBoxAdapter(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    CommonNetworkImage(
+                      borderRadius: BorderRadius.circular(20),
+                      imageUrl: state.artiestDetail.data?.artist?.cover ?? '',
+                      width: double.infinity,
+                      height: 200,
+                    ),
+                    const SizedBox(height: 20),
+                    Text(
+                      state.artiestDetail.data?.artist?.name ?? '未知',
+                      style: Theme.of(context)
+                          .textTheme
+                          .titleLarge
+                          ?.copyWith(fontWeight: FontWeight.bold),
+                    ),
+                    const SizedBox(height: 10),
+                    Text(state.artiestDetail.data?.artist?.briefDesc ?? '未知',
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 4,
+                        style: Theme.of(context).textTheme.bodyMedium),
+                    const SizedBox(height: 20),
+                  ],
+                ),
               ),
-            ),
-          ],
+              SliverPersistentHeader(
+                pinned: true,
+                floating: false,
+                delegate: CommonSliverAppBarDelegate(
+                  minHeight: defaultActionBarHeight,
+                  maxHeight: defaultActionBarHeight,
+                  child: Container(
+                    color: defaultBgColor,
+                    child: _buildPlayMusicWidget(context, state),
+                  ),
+                ),
+              ),
+            ];
+          },
+          body: ListView.builder(
+            padding: EdgeInsets.zero,
+            itemCount: state.artiestDetail.playlist?.songs?.length ?? 0,
+            itemBuilder: (BuildContext context, int index) {
+              var item = state.artiestDetail.playlist?.songs?[index];
+              return _buildTrackItem(context, index, item);
+            },
+          ),
         ),
       ),
+    );
+  }
+
+  Row _buildPlayMusicWidget(
+      BuildContext context, RequestArtiestDetailSuccess state) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        IconButton(
+            onPressed: () {
+              RouteHelper.popUntil(context, '/home');
+
+              RouteHelper.switchHomeTab(context, 1);
+              context.read<MusicPageBloc>().add(AddPlayListEvent(
+                  tracks: state.artiestDetail.playlist?.songs ?? []));
+            },
+            icon: const Icon(
+              Icons.play_circle,
+              size: 40,
+            )),
+        Expanded(
+            child: Text("播放全部 ${state.artiestDetail.playlist?.total ?? ''}")),
+        IconButton(
+            onPressed: () {},
+            icon: const Icon(
+              Icons.favorite_sharp,
+              size: 20,
+            )),
+        IconButton(
+            onPressed: () {},
+            icon: const Icon(
+              Icons.message,
+              size: 20,
+            )),
+        IconButton(
+            onPressed: () {},
+            icon: const Icon(
+              Icons.share,
+              size: 20,
+            )),
+      ],
     );
   }
 
@@ -192,21 +208,23 @@ class ArtistDetailPage extends StatelessWidget {
           const SizedBox(
             width: 20,
           ),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text("${item?.name}",
-                  style: Theme.of(context).textTheme.bodyLarge),
-              const SizedBox(
-                height: 5,
-              ),
-              Text("${item?.ar?[0].name}",
-                  style: Theme.of(context)
-                      .textTheme
-                      .bodyMedium
-                      ?.copyWith(color: Colors.white.withAlpha(80))),
-            ],
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text("${item?.name}",
+                    style: Theme.of(context).textTheme.bodyLarge),
+                const SizedBox(
+                  height: 5,
+                ),
+                Text("${item?.ar?[0].name}",
+                    style: Theme.of(context)
+                        .textTheme
+                        .bodyMedium
+                        ?.copyWith(color: Colors.white.withAlpha(80))),
+              ],
+            ),
           ),
         ],
       ),
