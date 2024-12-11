@@ -74,6 +74,14 @@ class PhonePasswordLoginPage extends StatelessWidget {
           const SizedBox(
             height: 20,
           ),
+          CommonButton(
+              text: "短信登录",
+              onPressed: () {
+                RouteHelper.push(context, AppRoutes.smsLogin);
+              }),
+          const SizedBox(
+            height: 20,
+          ),
           _buildUserAgreementWidget(),
         ],
       ),

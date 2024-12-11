@@ -19,3 +19,11 @@ class AccountError extends AccountState {
 class LogoutSuccess extends AccountState {}
 
 class LogoutFailed extends AccountState {}
+
+class GetSmsCodeSuccess extends AccountState {
+  final String phone;
+
+  GetSmsCodeSuccess({required this.phone});
+}
+
+class GetSmsCodeFailed extends AccountState {}

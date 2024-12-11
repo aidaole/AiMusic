@@ -1,11 +1,15 @@
+import 'package:ai_music/common/log_util.dart';
 import 'package:ai_music/themes/theme_color.dart';
 import 'package:ai_music/widgets/common_button.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 import '../../network/dio_utils.dart';
 import '../../widgets/status_bar_playce_holder.dart';
 
 class SmsVerifyPhoneCodePage extends StatelessWidget {
+  static const String _tag = 'SmsVerifyPhoneCodePage';
+
   SmsVerifyPhoneCodePage({super.key, required this.phone});
   final String phone;
   // 创建4个验证码输入框的控制器
@@ -128,26 +132,19 @@ class SmsVerifyPhoneCodePage extends StatelessWidget {
       onPressed: () async {
         // 获取所有输入框的验证码并拼接
         final code = controllers.map((c) => c.text).join();
-
-        final phoneLoginResponse = await DioUtils.get(
-            path: "/login/cellphone?phone=$phone&captcha=$code");
-        debugPrint('手机号登录响应: $phoneLoginResponse');
-
-        // 发送验证码验证请求
-        // final response = await DioUtils.get(path: '/captcha/verify?phone=$phone&captcha=$code');
-
-        // if (response != null && response['code'] == 200) {
-        //   // 验证成功,返回首页
-        //   // RouteHelper.popUntil(context, AppRoutes.home);
-        // } else {
-        //   // 其他错误,显示错误提示
-        //   ScaffoldMessenger.of(context).showSnackBar(
-        //     SnackBar(
-        //       content: Text('验证失败: ${response?['message'] ?? '未知错误'}'),
-        //     ),
-        //   );
-        // }
+        final response = await DioUtils.get(
+            path: "/captcha/verify?phone=$phone&captcha=$code");
+        logd('手机号登录响应: $response', tag: _tag);
+        if (response != null && response['code'] == 200) {
+          showToast('虽然可以验证成功, 但是无法获取用户信息. 请使用扫描登录');
+        } else {
+          showToast('验证失败: ${response?['message'] ?? '未知错误'}');
+        }
       },
     );
+  }
+
+  void showToast(String s) {
+    Fluttertoast.showToast(msg: s);
   }
 }

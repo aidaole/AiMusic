@@ -26,6 +26,7 @@ dependencies:
   palette_generator: ^0.3.3
   just_audio: ^0.9.42
   audio_session: ^0.1.21
+  fluttertoast: ^8.2.8
 
 dev_dependencies:
   flutter_test:

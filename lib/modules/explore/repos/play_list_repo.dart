@@ -11,7 +11,7 @@ import '../models/play_list_recommend.dart';
 import '../models/top_artists.dart';
 
 class PlayListRepo {
-  static String _tag = "PlayListRepo";
+  static const String _tag = "PlayListRepo";
 
   Future<PlayListCatagories> requestHotPlayList() async {
     final resp = await DioUtils.get(path: "/playlist/hot");

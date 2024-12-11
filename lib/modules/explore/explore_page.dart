@@ -356,6 +356,7 @@ class _ExplorePageState extends State<ExplorePage> {
         final TabController tabController = DefaultTabController.of(context);
         final pageController = PageController();
 
+        // ignore: invalid_use_of_protected_member
         if (!tabController.hasListeners) {
           tabController.addListener(() {
             if (!tabController.indexIsChanging) {

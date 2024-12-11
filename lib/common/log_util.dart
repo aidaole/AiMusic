@@ -1,21 +1,21 @@
 import 'package:flutter/foundation.dart';
 import 'package:stack_trace/stack_trace.dart';
 
-const String _default_tag = 'Flutter';
+const String defaultTag = 'Flutter';
 
-void logd(dynamic msg, {String tag = _default_tag}) {
+void logd(dynamic msg, {String tag = defaultTag}) {
   LogUtil.d(msg, tag: tag);
 }
 
-void logi(dynamic msg, {String tag = _default_tag}) {
+void logi(dynamic msg, {String tag = defaultTag}) {
   LogUtil.i(msg, tag: tag);
 }
 
-void logw(dynamic msg, {String tag = _default_tag}) {
+void logw(dynamic msg, {String tag = defaultTag}) {
   LogUtil.w(msg, tag: tag);
 }
 
-void loge(dynamic msg, {String tag = _default_tag}) {
+void loge(dynamic msg, {String tag = defaultTag}) {
   LogUtil.e(msg, tag: tag);
 }
 
