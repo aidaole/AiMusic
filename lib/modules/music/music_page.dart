@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:ai_music/common/widgets/common_network_image.dart';
 import 'package:ai_music/modules/music/models/recommend_songs/song.dart';
 import 'package:ai_music/widgets/load_error_widget.dart';
@@ -243,6 +245,7 @@ class _MusicPageState extends State<MusicPage> {
             final duration =
                 context.read<MusicPageBloc>().musicService.duration ??
                     Duration.zero;
+            final maxSeconds = (song.dt?.toDouble() ?? 0) / 1000;
             return Slider(
               label: null,
               activeColor: Colors.white.withOpacity(0.8),
@@ -250,8 +253,13 @@ class _MusicPageState extends State<MusicPage> {
               thumbColor: Colors.white,
               overlayColor: WidgetStateProperty.all(Colors.transparent),
               value: position.inSeconds.toDouble(),
-              max: duration.inSeconds.toDouble(),
+              secondaryTrackValue: min(duration.inSeconds.toDouble(), maxSeconds),
+              secondaryActiveColor: Colors.white.withOpacity(0.4),
+              max: maxSeconds,
               onChanged: (value) {
+                if (value.toInt() > duration.inSeconds) {
+                  return;
+                }
                 context
                     .read<MusicPageBloc>()
                     .musicService
