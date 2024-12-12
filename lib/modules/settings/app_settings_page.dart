@@ -6,7 +6,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../routes/app_routes.dart';
 import '../../routes/route_helper.dart';
-import '../../themes/theme_color.dart';
 import '../account/bloc/account_bloc.dart';
 import '../account/bloc/account_event.dart';
 import '../account/bloc/account_state.dart';
@@ -17,9 +16,8 @@ class AppSettingsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: defaultBgColor,
       body: Padding(
-        padding: const EdgeInsets.all(20.0),
+        padding: const EdgeInsets.symmetric(horizontal: 20.0),
         child: Column(
           children: [
             const StatusBarPlaceHolder(),

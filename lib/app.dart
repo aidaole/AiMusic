@@ -1,5 +1,6 @@
 import 'package:ai_music/modules/account/bloc/account_bloc.dart';
 import 'package:ai_music/routes/app_routes.dart';
+import 'package:ai_music/themes/theme_color.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -32,7 +33,7 @@ class App extends StatelessWidget {
         ),
         BlocProvider(
           create: (context) => MusicPageBloc(MusicPageRepo(), PlayListRepo()),
-        )
+        ),
       ],
       child: _buildMaterialApp(),
     );
@@ -43,18 +44,18 @@ class App extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
           primarySwatch: Colors.blue,
-          scaffoldBackgroundColor: Colors.white,
+          scaffoldBackgroundColor: defaultBgColor,
           appBarTheme: const AppBarTheme(
-            backgroundColor: Colors.amber,
+            backgroundColor: defaultBgColor,
             elevation: 0,
             systemOverlayStyle: SystemUiOverlayStyle(
               statusBarColor: Colors.white,
               statusBarIconBrightness: Brightness.dark,
             ),
-            iconTheme: IconThemeData(color: Colors.black),
+            iconTheme: IconThemeData(color: Colors.white),
             titleTextStyle: TextStyle(
-              color: Colors.black,
-              fontSize: 20,
+              color: Colors.white,
+              fontSize: 22,
               fontWeight: FontWeight.bold,
             ),
           ),

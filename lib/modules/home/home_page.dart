@@ -66,6 +66,7 @@ class _HomePageState extends State<HomePage> {
   }
 
   Widget _buildBottomNavigationBar(int selectedIndex) {
+    final double iconSize = 24;
     return CustomBottomNavigationBar(
       currentIndex: selectedIndex,
       onTap: (index) {
@@ -75,17 +76,17 @@ class _HomePageState extends State<HomePage> {
       selectedItemColor: Colors.white,
       unselectedItemColor: Colors.white70,
       items: [
-        const CustomBottomNavigationBarItem(
+        CustomBottomNavigationBarItem(
           icon: Icon(
             Icons.explore,
-            size: 20,
+            size: iconSize,
           ),
           label: "发现",
         ),
         CustomBottomNavigationBarItem(
-          icon: const Icon(
+          icon: Icon(
             Icons.music_note,
-            size: 20,
+            size: iconSize,
           ),
           activeIcon: StreamBuilder(
             stream: context.read<MusicPageBloc>().musicService.playingStream,
@@ -94,17 +95,15 @@ class _HomePageState extends State<HomePage> {
               logd("snapshot.data: ${snapshot.data}", tag: _tag);
               bool isPlaying = snapshot.data ?? false;
               return Icon(
-                isPlaying
-                    ? Icons.pause_circle_filled
-                    : Icons.play_circle_filled,
+                isPlaying ? Icons.pause_circle_filled : Icons.play_circle_filled,
                 size: defaultBottomNavigationBarHeight - 16,
               );
             },
           ),
           label: selectedIndex == 1 ? null : "音乐",
         ),
-        const CustomBottomNavigationBarItem(
-          icon: Icon(Icons.person, size: 20),
+        CustomBottomNavigationBarItem(
+          icon: Icon(Icons.person, size: iconSize),
           label: "我的",
         ),
       ],
@@ -124,8 +123,7 @@ class KeepAlivePage extends StatefulWidget {
   State<KeepAlivePage> createState() => _KeepAlivePageState();
 }
 
-class _KeepAlivePageState extends State<KeepAlivePage>
-    with AutomaticKeepAliveClientMixin {
+class _KeepAlivePageState extends State<KeepAlivePage> with AutomaticKeepAliveClientMixin {
   @override
   bool get wantKeepAlive => true;
 

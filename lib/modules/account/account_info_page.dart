@@ -47,7 +47,7 @@ class AccountInfoPage extends StatelessWidget {
       builder: (BuildContext context, ScrollController scrollController) {
         // 获取底部导航栏高度，如果没有设置可以使用默认值
         final bottomPadding =
-            MediaQuery.of(context).padding.bottom + kBottomNavigationBarHeight;
+            MediaQuery.of(context).padding.bottom + defaultBottomNavigationBarHeight;
         return Stack(
           clipBehavior: Clip.none,
           children: [
@@ -83,9 +83,7 @@ class AccountInfoPage extends StatelessWidget {
                         // 计算列表区域的高度
                         // 总高度减去上方内容高度(约110)和底部导航栏高度
                         final availableHeight =
-                            MediaQuery.of(context).size.height * 0.8 -
-                                130 -
-                                bottomPadding;
+                            MediaQuery.of(context).size.height * 0.8 - 130 - bottomPadding;
                         return SizedBox(
                           height: availableHeight,
                           child: _buildSongsListWidget(),
@@ -190,18 +188,15 @@ class AccountInfoPage extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        Text("${account.follows} 关注",
-            style: Theme.of(context).textTheme.titleSmall),
+        Text("${account.follows} 关注", style: Theme.of(context).textTheme.titleSmall),
         const SizedBox(
           width: 15,
         ),
-        Text("${account.fans} 粉丝",
-            style: Theme.of(context).textTheme.titleSmall),
+        Text("${account.fans} 粉丝", style: Theme.of(context).textTheme.titleSmall),
         const SizedBox(
           width: 15,
         ),
-        Text("${account.gained} 获得",
-            style: Theme.of(context).textTheme.titleSmall),
+        Text("${account.gained} 获得", style: Theme.of(context).textTheme.titleSmall),
       ],
     );
   }
