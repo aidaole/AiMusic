@@ -1,3 +1,4 @@
+import 'package:ai_music/widgets/status_bar_playce_holder.dart';
 import 'package:flutter/material.dart';
 
 import '../../routes/app_routes.dart';
@@ -27,78 +28,15 @@ class AccountInfoPage extends StatelessWidget {
         // 底层音乐墙
         _buildMusicWall(),
         // 可滑动的内容区域
-        _buildAccountInfoWidget(),
+        _buildAccountInfo(context),
         // 顶部固定操作栏
         Column(
           children: [
-            _buildStatusBar(context),
+            const StatusBarPlaceHolder(),
             _buildActionBar(context),
           ],
         ),
       ],
-    );
-  }
-
-  DraggableScrollableSheet _buildAccountInfoWidget() {
-    return DraggableScrollableSheet(
-      initialChildSize: 0.8,
-      minChildSize: 0.2,
-      maxChildSize: 0.8,
-      builder: (BuildContext context, ScrollController scrollController) {
-        // 获取底部导航栏高度，如果没有设置可以使用默认值
-        final bottomPadding =
-            MediaQuery.of(context).padding.bottom + defaultBottomNavigationBarHeight;
-        return Stack(
-          clipBehavior: Clip.none,
-          children: [
-            Container(
-              height: double.infinity,
-              decoration: const BoxDecoration(
-                color: defaultBgColor,
-                borderRadius: BorderRadius.only(
-                  topLeft: Radius.circular(20),
-                  topRight: Radius.circular(20),
-                ),
-              ),
-              child: SingleChildScrollView(
-                controller: scrollController,
-                physics: const ClampingScrollPhysics(),
-                child: Column(
-                  children: [
-                    const SizedBox(height: 50), // 为头像留出空间
-                    Text(
-                      account.nickname,
-                      style: Theme.of(context).textTheme.titleLarge,
-                    ),
-                    Text(
-                      account.signature,
-                      style: Theme.of(context).textTheme.bodyMedium,
-                    ),
-                    const SizedBox(height: 20),
-                    _buildFansInfoWidget(context),
-                    const SizedBox(height: 20),
-                    // 使用 LayoutBuilder 来获取剩余可用空间
-                    LayoutBuilder(
-                      builder: (context, constraints) {
-                        // 计算列表区域的高度
-                        // 总高度减去上方内容高度(约110)和底部导航栏高度
-                        final availableHeight =
-                            MediaQuery.of(context).size.height * 0.8 - 130 - bottomPadding;
-                        return SizedBox(
-                          height: availableHeight,
-                          child: _buildSongsListWidget(),
-                        );
-                      },
-                    ),
-                  ],
-                ),
-              ),
-            ),
-            // 使用 Positioned 将头像放置在顶部并超出容器
-            _buildAvatarWidget(),
-          ],
-        );
-      },
     );
   }
 
@@ -237,12 +175,6 @@ class AccountInfoPage extends StatelessWidget {
     );
   }
 
-  _buildStatusBar(BuildContext context) {
-    return SizedBox(
-      height: defaultStatusBarHeight.toDouble(),
-    );
-  }
-
   _buildMusicWall() {
     return Container(
       decoration: BoxDecoration(
@@ -257,21 +189,66 @@ class AccountInfoPage extends StatelessWidget {
     );
   }
 
-  Positioned _buildAvatarWidget() {
-    return Positioned(
-      top: -50,
-      left: 0,
-      right: 0,
-      child: Center(
-        child: account.avatarUrl.isNotEmpty
-            ? CircleAvatar(
-                radius: 50,
-                backgroundImage: NetworkImage(account.avatarUrl),
-              )
-            : const Icon(
-                Icons.account_circle_rounded,
-                size: 100,
+  _buildAccountInfo(BuildContext context) {
+    return NestedScrollView(
+      headerSliverBuilder: (context, innerBoxScrolled) {
+        return [
+          const SliverAppBar(
+            backgroundColor: Colors.transparent,
+            collapsedHeight: 300,
+            toolbarHeight: 300,
+          ),
+        ];
+      },
+      body: Column(
+        children: [
+          const SizedBox(
+            height: 200,
+          ),
+          Expanded(
+            child: Container(
+              decoration: const BoxDecoration(
+                  color: defaultBgColor,
+                  borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(20), topRight: Radius.circular(20))),
+              child: Column(
+                children: [
+                  SizedBox(
+                      width: 100.1,
+                      height: 100.1,
+                      child: Align(
+                        alignment: const FractionalOffset(0.5, -500),
+                        child: account.avatarUrl.isNotEmpty
+                            ? SizedBox(
+                                height: 100,
+                                width: 100,
+                                child: CircleAvatar(
+                                  radius: 50,
+                                  backgroundImage: NetworkImage(account.avatarUrl),
+                                ),
+                              )
+                            : const Icon(
+                                Icons.account_circle_rounded,
+                                size: 100,
+                              ),
+                      )),
+                  Text(
+                    account.nickname,
+                    style: Theme.of(context).textTheme.titleLarge,
+                  ),
+                  Text(
+                    account.signature,
+                    style: Theme.of(context).textTheme.bodyMedium,
+                  ),
+                  const SizedBox(height: 20),
+                  _buildFansInfoWidget(context),
+                  const SizedBox(height: 20),
+                  Expanded(child: _buildSongsListWidget()),
+                ],
               ),
+            ),
+          ),
+        ],
       ),
     );
   }
