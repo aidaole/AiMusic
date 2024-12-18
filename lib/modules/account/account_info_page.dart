@@ -196,17 +196,18 @@ class AccountInfoPage extends StatelessWidget {
     return NestedScrollView(
       headerSliverBuilder: (context, innerBoxScrolled) {
         return [
-          const SliverAppBar(
-            backgroundColor: Colors.transparent,
-            collapsedHeight: 300,
-            toolbarHeight: 300,
+          SliverToBoxAdapter(
+            child: Container(
+              height: 350,
+              color: Colors.transparent,
+            ),
           ),
         ];
       },
       body: Column(
         children: [
           const SizedBox(
-            height: 200,
+            height: 150,
           ),
           Expanded(
             child: Stack(clipBehavior: Clip.none, children: [
@@ -254,26 +255,6 @@ class AccountInfoPage extends StatelessWidget {
                                 Icons.account_circle_rounded,
                                 size: 100,
                               )),
-                    const Column(
-                      children: [
-                        Text(
-                          "MGONE",
-                          style: TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        SizedBox(
-                          height: 10,
-                        ),
-                        Text(
-                          "爱听歌的好boy",
-                          style: TextStyle(
-                            fontSize: 16,
-                          ),
-                        )
-                      ],
-                    ),
                   ],
                 ),
               ),

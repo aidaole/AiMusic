@@ -4,20 +4,12 @@ import 'package:flutter/material.dart';
 
 import '../../routes/app_routes.dart';
 import '../../routes/route_helper.dart';
-import '../../themes/theme_color.dart';
 
 class AccountNotLoginPage extends StatelessWidget {
   const AccountNotLoginPage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: defaultBgColor,
-      body: _buildBody(context),
-    );
-  }
-
-  _buildBody(BuildContext context) {
     return Column(
       children: [
         const StatusBarPlaceHolder(),
