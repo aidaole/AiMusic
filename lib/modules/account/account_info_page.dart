@@ -126,15 +126,18 @@ class AccountInfoPage extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        Text("${account.follows} 关注", style: Theme.of(context).textTheme.titleSmall),
+        Text("${account.follows} 关注",
+            style: Theme.of(context).textTheme.titleSmall),
         const SizedBox(
           width: 15,
         ),
-        Text("${account.fans} 粉丝", style: Theme.of(context).textTheme.titleSmall),
+        Text("${account.fans} 粉丝",
+            style: Theme.of(context).textTheme.titleSmall),
         const SizedBox(
           width: 15,
         ),
-        Text("${account.gained} 获得", style: Theme.of(context).textTheme.titleSmall),
+        Text("${account.gained} 获得",
+            style: Theme.of(context).textTheme.titleSmall),
       ],
     );
   }
@@ -206,47 +209,75 @@ class AccountInfoPage extends StatelessWidget {
             height: 200,
           ),
           Expanded(
-            child: Container(
-              decoration: const BoxDecoration(
-                  color: defaultBgColor,
-                  borderRadius: BorderRadius.only(
-                      topLeft: Radius.circular(20), topRight: Radius.circular(20))),
-              child: Column(
-                children: [
-                  SizedBox(
-                      width: 100.1,
-                      height: 100.1,
-                      child: Align(
-                        alignment: const FractionalOffset(0.5, -500),
+            child: Stack(clipBehavior: Clip.none, children: [
+              Container(
+                decoration: const BoxDecoration(
+                    color: defaultBgColor,
+                    borderRadius: BorderRadius.only(
+                        topLeft: Radius.circular(20),
+                        topRight: Radius.circular(20))),
+                child: Column(
+                  children: [
+                    const SizedBox(height: 50),
+                    Text(
+                      account.nickname,
+                      style: Theme.of(context).textTheme.titleLarge,
+                    ),
+                    Text(
+                      account.signature,
+                      style: Theme.of(context).textTheme.bodyMedium,
+                    ),
+                    const SizedBox(height: 20),
+                    _buildFansInfoWidget(context),
+                    const SizedBox(height: 20),
+                    Expanded(child: _buildSongsListWidget()),
+                  ],
+                ),
+              ),
+              Positioned(
+                top: -50,
+                left: MediaQuery.of(context).size.width / 2 - 50,
+                child: Column(
+                  children: [
+                    SizedBox(
                         child: account.avatarUrl.isNotEmpty
                             ? SizedBox(
                                 height: 100,
                                 width: 100,
                                 child: CircleAvatar(
                                   radius: 50,
-                                  backgroundImage: NetworkImage(account.avatarUrl),
+                                  backgroundImage:
+                                      NetworkImage(account.avatarUrl),
                                 ),
                               )
                             : const Icon(
                                 Icons.account_circle_rounded,
                                 size: 100,
-                              ),
-                      )),
-                  Text(
-                    account.nickname,
-                    style: Theme.of(context).textTheme.titleLarge,
-                  ),
-                  Text(
-                    account.signature,
-                    style: Theme.of(context).textTheme.bodyMedium,
-                  ),
-                  const SizedBox(height: 20),
-                  _buildFansInfoWidget(context),
-                  const SizedBox(height: 20),
-                  Expanded(child: _buildSongsListWidget()),
-                ],
+                              )),
+                    const Column(
+                      children: [
+                        Text(
+                          "MGONE",
+                          style: TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        SizedBox(
+                          height: 10,
+                        ),
+                        Text(
+                          "爱听歌的好boy",
+                          style: TextStyle(
+                            fontSize: 16,
+                          ),
+                        )
+                      ],
+                    ),
+                  ],
+                ),
               ),
-            ),
+            ]),
           ),
         ],
       ),
