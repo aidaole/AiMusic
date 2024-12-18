@@ -16,16 +16,21 @@ class AppSettingsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 20.0),
-        child: Column(
-          children: [
-            const StatusBarPlaceHolder(),
-            _buildActionBar(context),
-            const Spacer(),
-            _buildLogoutBtn(),
-          ],
-        ),
+      body: Column(
+        children: [
+          const StatusBarPlaceHolder(),
+          _buildActionBar(context),
+          Expanded(
+              child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 10),
+            child: Column(
+              children: [
+                const Spacer(),
+                _buildLogoutBtn(),
+              ],
+            ),
+          )),
+        ],
       ),
     );
   }

@@ -143,38 +143,47 @@ class AccountInfoPage extends StatelessWidget {
   }
 
   _buildActionBar(BuildContext context) {
-    double iconSize = 30.0;
-    double padding = 10.0;
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.end,
-      children: [
-        Padding(
-          padding: EdgeInsets.all(padding),
-          child: Icon(
-            Icons.alarm,
-            size: iconSize,
-          ),
-        ),
-        Padding(
-          padding: EdgeInsets.all(padding),
-          child: Icon(
-            Icons.shopping_bag,
-            size: iconSize,
-          ),
-        ),
-        Padding(
-          padding: EdgeInsets.all(padding),
-          child: IconButton(
+    double iconSize = 25.0;
+    return SizedBox(
+      height: defaultActionBarHeight,
+      width: double.infinity,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.end,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          IconButtonWithBg(
+            text: "有新消息",
+            iconSize: iconSize,
+            icon: Icons.notifications,
             onPressed: () {
               RouteHelper.push(context, AppRoutes.appSettings);
             },
-            icon: Icon(
-              Icons.settings,
-              size: iconSize,
-            ),
           ),
-        )
-      ],
+          const SizedBox(
+            width: 10,
+          ),
+          IconButtonWithBg(
+            iconSize: iconSize,
+            icon: Icons.shopping_bag,
+            onPressed: () {
+              RouteHelper.push(context, AppRoutes.appSettings);
+            },
+          ),
+          const SizedBox(
+            width: 10,
+          ),
+          IconButtonWithBg(
+            iconSize: iconSize,
+            icon: Icons.settings,
+            onPressed: () {
+              RouteHelper.push(context, AppRoutes.appSettings);
+            },
+          ),
+          const SizedBox(
+            width: 10,
+          ),
+        ],
+      ),
     );
   }
 
@@ -261,6 +270,50 @@ class AccountInfoPage extends StatelessWidget {
             ]),
           ),
         ],
+      ),
+    );
+  }
+}
+
+class IconButtonWithBg extends StatelessWidget {
+  const IconButtonWithBg({
+    super.key,
+    required this.icon,
+    required this.iconSize,
+    required this.onPressed,
+    this.text = "",
+  });
+
+  final IconData icon;
+  final double iconSize;
+  final Function() onPressed;
+  final String text;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.black.withAlpha(60),
+        borderRadius: BorderRadius.circular(100),
+      ),
+      child: SizedBox(
+        height: 41,
+        child: Row(
+          children: [
+            IconButton(
+              onPressed: onPressed,
+              icon: Icon(
+                icon,
+                size: iconSize,
+              ),
+            ),
+            if (text.isNotEmpty)
+              Padding(
+                padding: const EdgeInsets.only(right: 15),
+                child: Text(text),
+              )
+          ],
+        ),
       ),
     );
   }
