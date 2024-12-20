@@ -1,12 +1,14 @@
 import 'dart:async';
+
 import 'package:ai_music/network/dio_utils.dart';
 import 'package:ai_music/routes/app_routes.dart';
 import 'package:ai_music/routes/route_helper.dart';
 import 'package:ai_music/themes/theme_color.dart';
 import 'package:ai_music/widgets/status_bar_playce_holder.dart';
 import 'package:flutter/material.dart';
-import 'package:qr_flutter/qr_flutter.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:qr_flutter/qr_flutter.dart';
+
 import '../../common/log_util.dart';
 import '../../common/widgets/common_circle_loading.dart';
 import '../../modules/account/bloc/account_bloc.dart';
@@ -122,7 +124,13 @@ class _QrLoginPageState extends State<QrLoginPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: defaultBgColor,
-      body: _buildBody(context),
+      body: Column(
+        children: [
+          const StatusBarPlaceHolder(),
+          _buildActionBar(context),
+          _buildBody(context),
+        ],
+      ),
     );
   }
 
@@ -132,8 +140,6 @@ class _QrLoginPageState extends State<QrLoginPage> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const StatusBarPlaceHolder(),
-          _buildActionBar(context),
           const SizedBox(height: 20),
           Text(
             "登录网易账号",

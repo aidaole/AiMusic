@@ -1,5 +1,5 @@
 import 'package:ai_music/themes/theme_color.dart';
-import 'package:ai_music/widgets/CommonSliverAppBarDelegate.dart';
+import 'package:ai_music/widgets/common_sliver_app_bar_deletate.dart';
 import 'package:ai_music/widgets/status_bar_playce_holder.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
