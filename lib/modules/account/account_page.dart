@@ -28,6 +28,11 @@ class _AccountPageState extends State<AccountPage> {
     return Scaffold(
       backgroundColor: defaultBgColor,
       body: BlocBuilder<AccountBloc, AccountState>(
+        buildWhen: (previous, current) {
+          return current is AccountSuccess ||
+              current is AccountError ||
+              current is AccountLoading;
+        },
         builder: (context, state) {
           if (state is AccountLoading) {
             return const Center(child: CommonCircleLoading());

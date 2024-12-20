@@ -122,7 +122,7 @@ class AccountInfoPage extends StatelessWidget {
     );
   }
 
-  Row _buildFansInfoWidget(BuildContext context) {
+  Row _buildFansInfoWidget(BuildContext context, AccountModel account) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
@@ -132,11 +132,6 @@ class AccountInfoPage extends StatelessWidget {
           width: 15,
         ),
         Text("${account.fans} 粉丝",
-            style: Theme.of(context).textTheme.titleSmall),
-        const SizedBox(
-          width: 15,
-        ),
-        Text("${account.gained} 获得",
             style: Theme.of(context).textTheme.titleSmall),
       ],
     );
@@ -238,7 +233,7 @@ class AccountInfoPage extends StatelessWidget {
                       style: Theme.of(context).textTheme.bodyMedium,
                     ),
                     const SizedBox(height: 20),
-                    _buildFansInfoWidget(context),
+                    _buildFansInfoWidget(context, account),
                     const SizedBox(height: 20),
                     Expanded(child: _buildSongsListWidget()),
                   ],

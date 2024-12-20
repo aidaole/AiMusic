@@ -23,6 +23,10 @@ class AccountBloc extends Bloc<AccountEvent, AccountState> {
     emit(AccountLoading());
     try {
       final account = await repository.getAccountInfo();
+      final accountDetail =
+          await repository.getAccountDetail(account.userId.toString());
+      account.fans = accountDetail.profile?.followeds ?? 0;
+      account.follows = accountDetail.profile?.follows ?? 0;
       emit(AccountSuccess(account));
     } catch (e) {
       emit(AccountError(e.toString()));

@@ -5,7 +5,7 @@ class CommonCircleLoading extends StatelessWidget {
   /// 加载控件大小
   final double size;
 
-  /// 加载控件颜色 
+  /// 加载控件颜色
   final Color? color;
 
   /// 线条宽度

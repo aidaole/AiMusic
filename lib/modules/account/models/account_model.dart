@@ -5,9 +5,8 @@ class AccountModel {
   final String nickname;
   final String avatarUrl;
   final String backgroundUrl;
-  final int follows;
-  final int fans;
-  final int gained;
+  int follows;
+  int fans;
 
   AccountModel({
     this.userId = 0,
@@ -18,7 +17,6 @@ class AccountModel {
     this.backgroundUrl = "",
     this.follows = 0,
     this.fans = 0,
-    this.gained = 0,
   });
 
   factory AccountModel.fromJson(Map<String, dynamic> json) {
@@ -33,7 +31,6 @@ class AccountModel {
       backgroundUrl: profile['backgroundUrl'] ?? "",
       follows: profile['follows'] ?? 0,
       fans: profile['fans'] ?? 0,
-      gained: profile['gained'] ?? 0,
     );
   }
 }

@@ -14,7 +14,8 @@ class MusicService {
   final AudioPlayer _audioPlayer = AudioPlayer();
   final String _tag = "MusicService";
 
-  Stream<bool> get playingStream => _audioPlayer.playerStateStream.map((state) => state.playing);
+  Stream<bool> get playingStream =>
+      _audioPlayer.playerStateStream.map((state) => state.playing);
   Stream<Duration> get positionStream => _audioPlayer.positionStream;
   Duration? get duration => _audioPlayer.duration;
   bool get isPlaying => _audioPlayer.playing;
@@ -31,7 +32,8 @@ class MusicService {
     _positionSubscription?.cancel();
     _positionSubscription = _audioPlayer.positionStream.listen((position) {
       if (_audioPlayer.playing) {
-        _progressCallback?.call(position, _audioPlayer.duration ?? Duration.zero);
+        _progressCallback?.call(
+            position, _audioPlayer.duration ?? Duration.zero);
       }
     });
   }

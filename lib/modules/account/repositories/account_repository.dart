@@ -1,7 +1,10 @@
-import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
+
+import 'package:shared_preferences/shared_preferences.dart';
+
 import '../../../common/log_util.dart';
 import '../../../network/dio_utils.dart';
+import '../models/account_detail/account_detail.dart';
 import '../models/account_model.dart';
 
 class AccountRepository {
@@ -60,5 +63,10 @@ class AccountRepository {
   Future<void> _clearCachedAccount() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove(_cacheKey);
+  }
+
+  Future<AccountDetail> getAccountDetail(String uid) async {
+    final resp = await DioUtils.get(path: "/user/detail?uid=$uid");
+    return AccountDetail.fromJson(resp);
   }
 }

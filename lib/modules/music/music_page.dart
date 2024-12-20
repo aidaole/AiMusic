@@ -253,7 +253,8 @@ class _MusicPageState extends State<MusicPage> {
               thumbColor: Colors.white,
               overlayColor: WidgetStateProperty.all(Colors.transparent),
               value: position.inSeconds.toDouble(),
-              secondaryTrackValue: min(duration.inSeconds.toDouble(), maxSeconds),
+              secondaryTrackValue:
+                  min(duration.inSeconds.toDouble(), maxSeconds),
               secondaryActiveColor: Colors.white.withOpacity(0.4),
               max: maxSeconds,
               onChanged: (value) {
