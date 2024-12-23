@@ -1,3 +1,4 @@
+import 'package:ai_music/modules/explore/models/account_play_history/account_play_history.dart';
 import 'package:ai_music/modules/explore/models/account_play_list/account_play_list.dart';
 
 import '../models/account_model.dart';
@@ -36,3 +37,10 @@ class GetAccountPlaylistsSuccess extends AccountState {
 }
 
 class GetAccountPlaylistsLoading extends AccountState {}
+
+class GetAccountHistoryPlayListSuccess extends AccountState {
+  final AccountPlayHistory historyPlayList;
+  GetAccountHistoryPlayListSuccess(this.historyPlayList);
+}
+
+class GetAccountHistoryPlayListLoading extends AccountState {}

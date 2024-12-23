@@ -18,6 +18,7 @@ class AccountBloc extends Bloc<AccountEvent, AccountState> {
     on<LogoutEvent>(_onLogout);
     on<GetSmsCodeEvent>(_onGetSmsCode);
     on<GetAccountPlaylistsEvent>(_onGetAccountPlaylists);
+    on<GetAccountHistoryPlayListEvent>(_onGetAccountHistoryPlayList);
   }
 
   Future<void> _onFetchAccountInfo(
@@ -67,5 +68,13 @@ class AccountBloc extends Bloc<AccountEvent, AccountState> {
     emit(GetAccountPlaylistsLoading());
     final playlists = await playListRepo.getAccountPlaylists(uid);
     emit(GetAccountPlaylistsSuccess(playlists));
+  }
+
+  FutureOr<void> _onGetAccountHistoryPlayList(
+      GetAccountHistoryPlayListEvent event, Emitter<AccountState> emit) async {
+    final uid = event.uid;
+    emit(GetAccountHistoryPlayListLoading());
+    final historyPlayList = await playListRepo.getAccountHistoryPlayList(uid);
+    emit(GetAccountHistoryPlayListSuccess(historyPlayList));
   }
 }

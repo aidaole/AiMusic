@@ -1,4 +1,5 @@
 import 'package:ai_music/common/log_util.dart';
+import 'package:ai_music/modules/explore/models/account_play_history/account_play_history.dart';
 
 import '../../../network/dio_utils.dart';
 import '../models/account_play_list/account_play_list.dart';
@@ -106,5 +107,18 @@ class PlayListRepo {
       return AccountPlayList.fromJson(resp);
     }
     return AccountPlayList(code: 0, playlist: []);
+  }
+
+  Future<AccountPlayHistory> getAccountHistoryPlayList(int uid) async {
+    logd("getAccountHistoryPlayList-> $uid", tag: _tag);
+
+    final resp = await DioUtils.get(
+        path: "/user/record?type=1", queryParameters: {"uid": uid});
+
+    logd("getAccountHistoryPlayList-> $resp", tag: _tag);
+    if (resp != null && resp['weekData'] != null) {
+      return AccountPlayHistory.fromJson(resp);
+    }
+    return AccountPlayHistory(code: 0, weekData: []);
   }
 }

@@ -15,3 +15,9 @@ class GetAccountPlaylistsEvent extends AccountEvent {
 
   GetAccountPlaylistsEvent({required this.uid});
 }
+
+class GetAccountHistoryPlayListEvent extends AccountEvent {
+  final int uid;
+
+  GetAccountHistoryPlayListEvent({required this.uid});
+}

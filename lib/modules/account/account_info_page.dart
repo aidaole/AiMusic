@@ -30,6 +30,9 @@ class _AccountInfoPageState extends State<AccountInfoPage> {
       context
           .read<AccountBloc>()
           .add(GetAccountPlaylistsEvent(uid: widget.account.userId));
+      context
+          .read<AccountBloc>()
+          .add(GetAccountHistoryPlayListEvent(uid: widget.account.userId));
     });
   }
 
@@ -74,8 +77,7 @@ class _AccountInfoPageState extends State<AccountInfoPage> {
             dividerColor: Colors.transparent, // 去掉分隔线
             tabs: [
               Tab(text: "歌单"),
-              Tab(text: "下载"),
-              Tab(text: "历史播放"),
+              Tab(text: "历史"),
             ],
           ),
           // Tab页面内容区域
@@ -93,83 +95,32 @@ class _AccountInfoPageState extends State<AccountInfoPage> {
                       return ListView.builder(
                         itemCount: state.playlists.playlist?.length ?? 0,
                         itemBuilder: (context, index) {
-                          return Padding(
-                              padding: const EdgeInsets.only(bottom: 20),
-                              child: Row(
-                                children: [
-                                  const SizedBox(
-                                    width: 20,
-                                  ),
-                                  RadiusContainer(
-                                    height: 80,
-                                    width: 80,
-                                    radius: 8,
-                                    child: Image.network(
-                                      state.playlists.playlist?[index]
-                                              .coverImgUrl ??
-                                          "",
-                                    ),
-                                  ),
-                                  const SizedBox(width: 20),
-                                  Expanded(
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Text(
-                                          state.playlists.playlist?[index]
-                                                  .name ??
-                                              "",
-                                          style: Theme.of(context)
-                                              .textTheme
-                                              .titleMedium,
-                                        ),
-                                        const SizedBox(
-                                          height: 20,
-                                        ),
-                                        Text(
-                                          "共 ${state.playlists.playlist?[index].trackCount} 首",
-                                          style: Theme.of(context)
-                                              .textTheme
-                                              .bodyMedium,
-                                        )
-                                      ],
-                                    ),
-                                  ),
-                                ],
-                              ));
+                          return _buildAccountPlaylistItem(
+                              state, index, context);
                         },
                       );
                     }
                     return const Center(child: CommonCircleLoading());
                   },
                 ),
-                // 下载页面
-                ListView.builder(
-                  itemCount: 10,
-                  itemBuilder: (context, index) {
-                    return ListTile(
-                      leading: const Icon(Icons.download_done),
-                      title: Text(
-                        "已下载歌曲 ${index + 1}",
-                        style: Theme.of(context).textTheme.bodyMedium,
-                      ),
-                    );
+                // 历史
+                BlocBuilder<AccountBloc, AccountState>(
+                  buildWhen: (previous, current) {
+                    return current is GetAccountHistoryPlayListSuccess ||
+                        current is GetAccountHistoryPlayListLoading;
                   },
-                ),
-                // 历史播放页面
-                ListView.builder(
-                  itemCount: 10,
-                  itemBuilder: (context, index) {
-                    return ListTile(
-                      leading: const Icon(Icons.history),
-                      title: Text(
-                        "最近播放 ${index + 1}",
-                        style: Theme.of(context).textTheme.bodyMedium,
-                      ),
-                    );
+                  builder: (context, state) {
+                    if (state is GetAccountHistoryPlayListSuccess) {
+                      return ListView.builder(
+                        itemCount: state.historyPlayList.weekData?.length ?? 0,
+                        itemBuilder: (BuildContext context, int index) {
+                          return _buildHistoryListItem(state, index, context);
+                        },
+                      );
+                    }
+                    return const Center(child: CommonCircleLoading());
                   },
-                ),
+                )
               ],
             ),
           ),
@@ -323,6 +274,86 @@ class _AccountInfoPageState extends State<AccountInfoPage> {
         ],
       ),
     );
+  }
+
+  Padding _buildAccountPlaylistItem(
+      GetAccountPlaylistsSuccess state, int index, BuildContext context) {
+    return Padding(
+        padding: const EdgeInsets.only(bottom: 20),
+        child: Row(
+          children: [
+            const SizedBox(
+              width: 20,
+            ),
+            RadiusContainer(
+              height: 80,
+              width: 80,
+              radius: 8,
+              child: Image.network(
+                state.playlists.playlist?[index].coverImgUrl ?? "",
+              ),
+            ),
+            const SizedBox(width: 20),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    state.playlists.playlist?[index].name ?? "",
+                    style: Theme.of(context).textTheme.titleMedium,
+                  ),
+                  const SizedBox(
+                    height: 20,
+                  ),
+                  Text(
+                    "共 ${state.playlists.playlist?[index].trackCount} 首",
+                    style: Theme.of(context).textTheme.bodyMedium,
+                  )
+                ],
+              ),
+            ),
+          ],
+        ));
+  }
+
+  _buildHistoryListItem(
+      GetAccountHistoryPlayListSuccess state, int index, BuildContext context) {
+    return Padding(
+        padding: const EdgeInsets.only(bottom: 20),
+        child: Row(
+          children: [
+            const SizedBox(
+              width: 20,
+            ),
+            RadiusContainer(
+              height: 80,
+              width: 80,
+              radius: 8,
+              child: Image.network(
+                state.historyPlayList.weekData?[index].song?.al?.picUrl ?? "",
+              ),
+            ),
+            const SizedBox(width: 20),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    state.historyPlayList.weekData?[index].song?.name ?? "",
+                    style: Theme.of(context).textTheme.titleMedium,
+                  ),
+                  const SizedBox(
+                    height: 20,
+                  ),
+                  Text(
+                    state.historyPlayList.weekData?[index].song?.al?.name ?? "",
+                    style: Theme.of(context).textTheme.bodyMedium,
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ));
   }
 }
 
