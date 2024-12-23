@@ -1,16 +1,37 @@
+import 'package:ai_music/common/widgets/common_circle_loading.dart';
 import 'package:ai_music/widgets/status_bar_playce_holder.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../routes/app_routes.dart';
 import '../../routes/route_helper.dart';
 import '../../themes/theme_color.dart';
 import '../../themes/theme_size.dart';
+import '../../widgets/radius_container.dart';
+import 'bloc/account_bloc.dart';
+import 'bloc/account_event.dart';
+import 'bloc/account_state.dart';
 import 'models/account_model.dart';
 
-class AccountInfoPage extends StatelessWidget {
+class AccountInfoPage extends StatefulWidget {
   final AccountModel account;
 
   const AccountInfoPage({super.key, required this.account});
+
+  @override
+  State<AccountInfoPage> createState() => _AccountInfoPageState();
+}
+
+class _AccountInfoPageState extends State<AccountInfoPage> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      context
+          .read<AccountBloc>()
+          .add(GetAccountPlaylistsEvent(uid: widget.account.userId));
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -55,7 +76,6 @@ class AccountInfoPage extends StatelessWidget {
               Tab(text: "歌单"),
               Tab(text: "下载"),
               Tab(text: "历史播放"),
-              Tab(text: "视频"),
             ],
           ),
           // Tab页面内容区域
@@ -63,16 +83,65 @@ class AccountInfoPage extends StatelessWidget {
             child: TabBarView(
               children: [
                 // 歌单页面
-                ListView.builder(
-                  itemCount: 10,
-                  itemBuilder: (context, index) {
-                    return ListTile(
-                      leading: const Icon(Icons.music_note),
-                      title: Text(
-                        "歌单 ${index + 1}",
-                        style: Theme.of(context).textTheme.bodyMedium,
-                      ),
-                    );
+                BlocBuilder<AccountBloc, AccountState>(
+                  buildWhen: (previous, current) {
+                    return current is GetAccountPlaylistsSuccess ||
+                        current is GetAccountPlaylistsLoading;
+                  },
+                  builder: (context, state) {
+                    if (state is GetAccountPlaylistsSuccess) {
+                      return ListView.builder(
+                        itemCount: state.playlists.playlist?.length ?? 0,
+                        itemBuilder: (context, index) {
+                          return Padding(
+                              padding: const EdgeInsets.only(bottom: 20),
+                              child: Row(
+                                children: [
+                                  const SizedBox(
+                                    width: 20,
+                                  ),
+                                  RadiusContainer(
+                                    height: 80,
+                                    width: 80,
+                                    radius: 8,
+                                    child: Image.network(
+                                      state.playlists.playlist?[index]
+                                              .coverImgUrl ??
+                                          "",
+                                    ),
+                                  ),
+                                  const SizedBox(width: 20),
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          state.playlists.playlist?[index]
+                                                  .name ??
+                                              "",
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .titleMedium,
+                                        ),
+                                        const SizedBox(
+                                          height: 20,
+                                        ),
+                                        Text(
+                                          "共 ${state.playlists.playlist?[index].trackCount} 首",
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .bodyMedium,
+                                        )
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ));
+                        },
+                      );
+                    }
+                    return const Center(child: CommonCircleLoading());
                   },
                 ),
                 // 下载页面
@@ -96,19 +165,6 @@ class AccountInfoPage extends StatelessWidget {
                       leading: const Icon(Icons.history),
                       title: Text(
                         "最近播放 ${index + 1}",
-                        style: Theme.of(context).textTheme.bodyMedium,
-                      ),
-                    );
-                  },
-                ),
-                // 视频页面
-                ListView.builder(
-                  itemCount: 10,
-                  itemBuilder: (context, index) {
-                    return ListTile(
-                      leading: const Icon(Icons.video_library),
-                      title: Text(
-                        "视频 ${index + 1}",
                         style: Theme.of(context).textTheme.bodyMedium,
                       ),
                     );
@@ -186,9 +242,9 @@ class AccountInfoPage extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(
         color: Colors.blue.withAlpha(20),
-        image: account.backgroundUrl.isNotEmpty
+        image: widget.account.backgroundUrl.isNotEmpty
             ? DecorationImage(
-                image: NetworkImage(account.avatarUrl),
+                image: NetworkImage(widget.account.avatarUrl),
                 fit: BoxFit.cover,
               )
             : null,
@@ -225,15 +281,15 @@ class AccountInfoPage extends StatelessWidget {
                   children: [
                     const SizedBox(height: 50),
                     Text(
-                      account.nickname,
+                      widget.account.nickname,
                       style: Theme.of(context).textTheme.titleLarge,
                     ),
                     Text(
-                      account.signature,
+                      widget.account.signature,
                       style: Theme.of(context).textTheme.bodyMedium,
                     ),
                     const SizedBox(height: 20),
-                    _buildFansInfoWidget(context, account),
+                    _buildFansInfoWidget(context, widget.account),
                     const SizedBox(height: 20),
                     Expanded(child: _buildSongsListWidget()),
                   ],
@@ -245,14 +301,14 @@ class AccountInfoPage extends StatelessWidget {
                 child: Column(
                   children: [
                     SizedBox(
-                        child: account.avatarUrl.isNotEmpty
+                        child: widget.account.avatarUrl.isNotEmpty
                             ? SizedBox(
                                 height: 100,
                                 width: 100,
                                 child: CircleAvatar(
                                   radius: 50,
                                   backgroundImage:
-                                      NetworkImage(account.avatarUrl),
+                                      NetworkImage(widget.account.avatarUrl),
                                 ),
                               )
                             : const Icon(

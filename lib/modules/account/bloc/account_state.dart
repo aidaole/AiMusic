@@ -1,3 +1,5 @@
+import 'package:ai_music/modules/explore/models/account_play_list/account_play_list.dart';
+
 import '../models/account_model.dart';
 
 abstract class AccountState {}
@@ -27,3 +29,10 @@ class GetSmsCodeSuccess extends AccountState {
 }
 
 class GetSmsCodeFailed extends AccountState {}
+
+class GetAccountPlaylistsSuccess extends AccountState {
+  final AccountPlayList playlists;
+  GetAccountPlaylistsSuccess(this.playlists);
+}
+
+class GetAccountPlaylistsLoading extends AccountState {}

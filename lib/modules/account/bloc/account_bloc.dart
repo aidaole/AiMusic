@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:ai_music/modules/explore/repos/play_list_repo.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../network/dio_utils.dart';
@@ -8,12 +9,15 @@ import 'account_event.dart';
 import 'account_state.dart';
 
 class AccountBloc extends Bloc<AccountEvent, AccountState> {
-  final AccountRepository repository;
+  final AccountRepository accountRepo;
+  final PlayListRepo playListRepo;
 
-  AccountBloc({required this.repository}) : super(AccountInitial()) {
+  AccountBloc({required this.accountRepo, required this.playListRepo})
+      : super(AccountInitial()) {
     on<FetchAccountInfo>(_onFetchAccountInfo);
     on<LogoutEvent>(_onLogout);
     on<GetSmsCodeEvent>(_onGetSmsCode);
+    on<GetAccountPlaylistsEvent>(_onGetAccountPlaylists);
   }
 
   Future<void> _onFetchAccountInfo(
@@ -22,9 +26,9 @@ class AccountBloc extends Bloc<AccountEvent, AccountState> {
   ) async {
     emit(AccountLoading());
     try {
-      final account = await repository.getAccountInfo();
+      final account = await accountRepo.getAccountInfo();
       final accountDetail =
-          await repository.getAccountDetail(account.userId.toString());
+          await accountRepo.getAccountDetail(account.userId.toString());
       account.fans = accountDetail.profile?.followeds ?? 0;
       account.follows = accountDetail.profile?.follows ?? 0;
       emit(AccountSuccess(account));
@@ -35,7 +39,7 @@ class AccountBloc extends Bloc<AccountEvent, AccountState> {
 
   FutureOr<void> _onLogout(
       LogoutEvent event, Emitter<AccountState> emit) async {
-    final succ = await repository.logout();
+    final succ = await accountRepo.logout();
     if (succ) {
       emit(LogoutSuccess());
     } else {
@@ -55,5 +59,13 @@ class AccountBloc extends Bloc<AccountEvent, AccountState> {
     } else {
       emit(GetSmsCodeFailed()); // 发送失败状态
     }
+  }
+
+  FutureOr<void> _onGetAccountPlaylists(
+      GetAccountPlaylistsEvent event, Emitter<AccountState> emit) async {
+    final uid = event.uid;
+    emit(GetAccountPlaylistsLoading());
+    final playlists = await playListRepo.getAccountPlaylists(uid);
+    emit(GetAccountPlaylistsSuccess(playlists));
   }
 }

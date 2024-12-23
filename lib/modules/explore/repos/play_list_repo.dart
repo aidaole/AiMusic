@@ -1,6 +1,7 @@
 import 'package:ai_music/common/log_util.dart';
 
 import '../../../network/dio_utils.dart';
+import '../models/account_play_list/account_play_list.dart';
 import '../models/artist_play_list.dart';
 import '../models/artist_detail.dart';
 import '../models/high_qulity_tags.dart';
@@ -94,5 +95,16 @@ class PlayListRepo {
       return ArtistPlayList.fromJson(resp);
     }
     return ArtistPlayList(songs: List.empty(), more: false, total: 0, code: 0);
+  }
+
+  Future<AccountPlayList> getAccountPlaylists(int uid) async {
+    final resp = await DioUtils.get(
+        path: "/user/playlist", queryParameters: {"uid": uid});
+    logd("getAccountPlaylists-> $resp", tag: _tag);
+
+    if (resp != null && resp['playlist'] != null) {
+      return AccountPlayList.fromJson(resp);
+    }
+    return AccountPlayList(code: 0, playlist: []);
   }
 }

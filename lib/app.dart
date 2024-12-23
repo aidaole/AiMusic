@@ -25,7 +25,8 @@ class App extends StatelessWidget {
         ),
         BlocProvider(
           create: (context) => AccountBloc(
-            repository: AccountRepository(),
+            accountRepo: AccountRepository(),
+            playListRepo: PlayListRepo(),
           ),
         ),
         BlocProvider(

@@ -9,3 +9,9 @@ class GetSmsCodeEvent extends AccountEvent {
 
   GetSmsCodeEvent({required this.phone});
 }
+
+class GetAccountPlaylistsEvent extends AccountEvent {
+  final int uid;
+
+  GetAccountPlaylistsEvent({required this.uid});
+}
