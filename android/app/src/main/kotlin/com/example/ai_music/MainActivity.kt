@@ -1,4 +1,4 @@
-package com.example.ai_music
+package com.aidaole.ai_music
 
 import io.flutter.embedding.android.FlutterActivity
 
