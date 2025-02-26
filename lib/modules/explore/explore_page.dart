@@ -68,6 +68,7 @@ class _ExplorePageState extends State<ExplorePage> {
           // 可滚动的内容部分
           Expanded(
             child: NestedScrollView(
+              // 使用默认的physics
               headerSliverBuilder:
                   (BuildContext context, bool innerBoxIsScrolled) {
                 return [

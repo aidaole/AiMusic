@@ -10,9 +10,35 @@ import '../bloc/play_list_event.dart';
 import '../bloc/play_list_state.dart';
 import '../models/high_qulity_tags.dart';
 
-class HighQulityTabsView extends StatelessWidget {
-  static const String _tag = "HighQulityTabsView";
+class HighQulityTabsView extends StatefulWidget {
   const HighQulityTabsView({super.key});
+
+  @override
+  State<HighQulityTabsView> createState() => _HighQulityTabsViewState();
+}
+
+class _HighQulityTabsViewState extends State<HighQulityTabsView> {
+  final String _tag = "HighQulityTabsView";
+
+  // 使用一个Set来记录已经触发加载更多的标签，避免重复加载
+  bool _isLoadingMore = false;
+
+  @override
+  void dispose() {
+    _isLoadingMore = false;
+    super.dispose();
+  }
+
+  // 加载更多数据
+  void _onLoadMore(String tagName) {
+    // 如果该标签正在加载更多，则不重复触发
+    if (_isLoadingMore) return;
+
+    _isLoadingMore = true;
+    context
+        .read<PlayListBloc>()
+        .add(RequestHighQualityPlayListLoadMoreEvent(cat: tagName));
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -114,7 +140,7 @@ class HighQulityTabsView extends StatelessWidget {
                 itemBuilder: (context, index) {
                   final tag = state.tags.tags?[index];
                   if (tag == null) return const SizedBox();
-                  return _buildHighQulityTabList(context, tag);
+                  return _buildTabContent(context, tag);
                 },
               ),
             ),
@@ -124,72 +150,122 @@ class HighQulityTabsView extends StatelessWidget {
     );
   }
 
-  Widget _buildHighQulityTabList(BuildContext context, Tag tag) {
+  Widget _buildTabContent(BuildContext context, Tag tag) {
+    final String tagName = tag.name ?? "";
+
     return BlocBuilder<PlayListBloc, PlayListState>(
-        buildWhen: (previous, current) =>
-            (current is RequestHighQualityPlayListSuccess &&
-                current.cat == tag.name) ||
-            (current is RequestHighQualityPlayListLoading &&
-                current.cat == tag.name) ||
-            (current is RequestHighQualityPlayListError &&
-                current.cat == tag.name),
-        builder: (context, state) {
-          LogUtil.i("${tag.name} state: $state", tag: _tag);
-          if (state is RequestHighQualityPlayListLoading) {
-            return const Center(child: CommonCircleLoading());
-          }
-          if (state is RequestHighQualityPlayListError) {
-            return Center(child: Text(state.error));
-          }
-          if (state is RequestHighQualityPlayListSuccess) {
-            LogUtil.i("${tag.name} state: ${state.playList.playlists?.length}",
-                tag: _tag);
-            return GridView.builder(
-              itemCount: state.playList.playlists?.length ?? 0,
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2,
-                mainAxisSpacing: 16,
-                crossAxisSpacing: 16,
-                childAspectRatio: 0.8,
-              ),
-              itemBuilder: (context, index) {
-                return GestureDetector(
-                  onTap: () {
-                    Navigator.pushNamed(context, AppRoutes.playListDetail,
-                        arguments: state.playList.playlists?[index].id);
-                  },
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Expanded(
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(12),
-                          child: AspectRatio(
-                            aspectRatio: 1.0,
-                            child: CommonNetworkImage(
-                              imageUrl:
-                                  '${state.playList.playlists?[index].coverImgUrl}',
+      buildWhen: (previous, current) =>
+          (current is RequestHighQualityPlayListSuccess &&
+              current.cat == tagName) ||
+          (current is RequestHighQualityPlayListLoading &&
+              current.cat == tagName) ||
+          (current is RequestHighQualityPlayListError &&
+              current.cat == tagName) ||
+          (current is RequestHighQualityPlayListLoadMoreSuccess &&
+              current.cat == tagName),
+      builder: (context, state) {
+        logd("${tagName} state: $state", tag: _tag);
+
+        if (state is RequestHighQualityPlayListLoading) {
+          return const Center(child: CommonCircleLoading());
+        }
+
+        if (state is RequestHighQualityPlayListError) {
+          return Center(child: Text(state.error));
+        }
+
+        List playlists = [];
+        bool isLoadingMore = false;
+
+        if (state is RequestHighQualityPlayListSuccess) {
+          playlists = state.playList.playlists ?? [];
+        } else if (state is RequestHighQualityPlayListLoadMoreSuccess) {
+          playlists = state.playList.playlists ?? [];
+          isLoadingMore = state.isLoadingMore;
+        }
+        _isLoadingMore = isLoadingMore;
+
+        return NotificationListener<ScrollNotification>(
+          onNotification: (ScrollNotification notification) {
+            // 当滚动到底部时加载更多
+            if (notification is ScrollUpdateNotification) {
+              if (notification.metrics.extentAfter < 200) {
+                _onLoadMore(tagName);
+              }
+            }
+            return false;
+          },
+          child: Column(
+            children: [
+              Expanded(
+                child: GridView.builder(
+                  // 不使用ScrollController，而是使用NotificationListener
+                  // 这样可以保持嵌套滑动的正常工作
+                  itemCount: playlists.length + (isLoadingMore ? 1 : 0),
+                  padding: const EdgeInsets.all(16),
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 2,
+                    mainAxisSpacing: 16,
+                    crossAxisSpacing: 16,
+                    childAspectRatio: 0.8,
+                  ),
+                  itemBuilder: (context, index) {
+                    // 显示加载更多的指示器
+                    if (index == playlists.length) {
+                      return const Center(
+                        child: Padding(
+                          padding: EdgeInsets.all(16.0),
+                          child: CommonCircleLoading(),
+                        ),
+                      );
+                    }
+
+                    final playlist = playlists[index];
+                    return GestureDetector(
+                      onTap: () {
+                        Navigator.pushNamed(
+                          context,
+                          AppRoutes.playListDetail,
+                          arguments: playlist.id,
+                        );
+                      },
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Expanded(
+                            child: ClipRRect(
                               borderRadius: BorderRadius.circular(12),
+                              child: AspectRatio(
+                                aspectRatio: 1.0,
+                                child: CommonNetworkImage(
+                                  imageUrl: '${playlist.coverImgUrl}',
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                              ),
                             ),
                           ),
-                        ),
+                          const SizedBox(height: 8),
+                          Text(
+                            '${playlist.name}',
+                            style: Theme.of(context)
+                                .textTheme
+                                .bodyMedium
+                                ?.copyWith(
+                                  color: Colors.white.withOpacity(0.9),
+                                ),
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ],
                       ),
-                      const SizedBox(height: 8),
-                      Text(
-                        '${state.playList.playlists?[index].name}',
-                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                              color: Colors.white.withOpacity(0.9),
-                            ),
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ],
-                  ),
-                );
-              },
-            );
-          }
-          return const Center(child: CommonCircleLoading());
-        });
+                    );
+                  },
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
   }
 }

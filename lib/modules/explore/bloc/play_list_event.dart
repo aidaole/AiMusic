@@ -26,3 +26,8 @@ class RequestPlayListDetailEvent extends PlayListEvent {
 
   RequestPlayListDetailEvent({required this.id});
 }
+
+class RequestHighQualityPlayListLoadMoreEvent extends PlayListEvent {
+  final String cat;
+  RequestHighQualityPlayListLoadMoreEvent({required this.cat});
+}

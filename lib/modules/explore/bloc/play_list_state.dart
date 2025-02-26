@@ -127,3 +127,15 @@ final class RequestArtiestDetailFailed extends ArtiestDetailState {
     required this.error,
   });
 }
+
+class RequestHighQualityPlayListLoadMoreSuccess extends PlayListState {
+  final PlayListHighQulity playList;
+  final String cat;
+  final bool isLoadingMore;
+
+  RequestHighQualityPlayListLoadMoreSuccess({
+    required this.playList,
+    required this.cat,
+    this.isLoadingMore = false,
+  });
+}

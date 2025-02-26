@@ -39,10 +39,10 @@ class PlayListRepo {
   }
 
   Future<PlayListHighQulity> requestHighQualityPlayList(
-      {String cat = "全部", int limit = 10}) async {
+      {String cat = "全部", int limit = 10, int before = 0}) async {
     final resp = await DioUtils.get(
         path: "/top/playlist/highquality",
-        queryParameters: {"cat": cat, "limit": limit});
+        queryParameters: {"cat": cat, "limit": limit, "before": before});
     if (resp != null) {
       final result = PlayListHighQulity.fromJson(resp);
       return result;

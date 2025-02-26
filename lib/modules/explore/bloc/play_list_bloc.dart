@@ -22,6 +22,8 @@ class PlayListBloc extends Bloc<PlayListEvent, PlayListState> {
     on<RequestTopArtistsEvent>(_onRequestTopArtistsEvent);
     on<RequestArtistsDetailEvent>(_onRequestArtistsPlayListEvent);
     on<RequestPlayListDetailEvent>(_onRequestPlayListDetailEvent);
+    on<RequestHighQualityPlayListLoadMoreEvent>(
+        _onRequestHighQualityPlayListLoadMoreEvent);
   }
 
   void _onRequestHotPlayListEvent(
@@ -134,6 +136,51 @@ class PlayListBloc extends Bloc<PlayListEvent, PlayListState> {
       emit(RequestArtiestDetailSuccess(artiestDetail: artiestDetail));
     } catch (e) {
       emit(RequestArtiestDetailFailed(error: e.toString()));
+    }
+  }
+
+  void _onRequestHighQualityPlayListLoadMoreEvent(
+      RequestHighQualityPlayListLoadMoreEvent event,
+      Emitter<PlayListState> emit) async {
+    try {
+      final before = _playListCache[event.cat]!.playlists?.last.updateTime ?? 0;
+      logd("before: $before", tag: _tag);
+      final result = await playListRepo.requestHighQualityPlayList(
+        cat: event.cat,
+        before: before, // 当前偏移量
+        limit: 20,
+      );
+
+      // 明确指定类型为 List<Playlist>
+      final List<Playlist> currentPlaylists =
+          _playListCache[event.cat]!.playlists ?? [];
+      final List<Playlist> newPlaylists = result.playlists ?? [];
+
+      logd("currentPlaylists: ${currentPlaylists.length}", tag: _tag);
+      logd("newPlaylists: ${newPlaylists.length}", tag: _tag);
+
+      // 合并新旧数据
+      final List<Playlist> updatedPlaylists = [
+        ...currentPlaylists,
+        ...newPlaylists
+      ];
+      logd("updatedPlaylists: ${updatedPlaylists.length}", tag: _tag);
+
+      final updatedPlayList = PlayListHighQulity(
+        playlists: updatedPlaylists,
+        code: result.code,
+      );
+
+      // 更新缓存
+      _playListCache[event.cat] = updatedPlayList;
+
+      emit(RequestHighQualityPlayListLoadMoreSuccess(
+        playList: updatedPlayList,
+        cat: event.cat,
+        isLoadingMore: false,
+      ));
+    } catch (e) {
+      emit(RequestHighQualityPlayListError(e.toString(), event.cat));
     }
   }
 }
