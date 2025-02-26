@@ -7,6 +7,7 @@ import '../../../common/widgets/common_network_image.dart';
 import '../../../routes/app_routes.dart';
 import '../../../routes/route_helper.dart';
 import '../bloc/play_list_bloc.dart';
+import '../bloc/play_list_event.dart';
 import '../bloc/play_list_state.dart';
 
 class TopArtiestListView extends StatefulWidget {
@@ -22,6 +23,16 @@ class _TopArtiestListViewState extends State<TopArtiestListView> {
   @override
   Widget build(BuildContext context) {
     return _buildTopArtistListBloc(context);
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        context.read<PlayListBloc>().add(RequestTopArtistsEvent());
+      }
+    });
   }
 
   _buildTopArtistListBloc(BuildContext context) {

@@ -29,6 +29,16 @@ class _HighQulityTabsViewState extends State<HighQulityTabsView> {
     super.dispose();
   }
 
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        context.read<PlayListBloc>().add(RequestHighQualityTagsEvent());
+      }
+    });
+  }
+
   // 加载更多数据
   void _onLoadMore(String tagName) {
     // 如果该标签正在加载更多，则不重复触发

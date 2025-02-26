@@ -6,6 +6,7 @@ import '../../../common/widgets/common_circle_loading.dart';
 import '../../../common/widgets/common_network_image.dart';
 import '../../../routes/app_routes.dart';
 import '../bloc/play_list_bloc.dart';
+import '../bloc/play_list_event.dart';
 import '../bloc/play_list_state.dart';
 
 class RecommendPlaylistView extends StatefulWidget {
@@ -21,6 +22,16 @@ class _RecommendPlaylistViewState extends State<RecommendPlaylistView> {
   @override
   Widget build(BuildContext context) {
     return _buildRecommendPlayListBloc(context);
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        context.read<PlayListBloc>().add(RequestPlayListRecommendEvent());
+      }
+    });
   }
 
   _buildRecommendPlayListBloc(BuildContext context) {

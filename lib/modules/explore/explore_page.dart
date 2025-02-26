@@ -1,12 +1,9 @@
 import 'package:ai_music/widgets/status_bar_playce_holder.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../common/log_util.dart';
 import '../../themes/theme_color.dart';
 import '../../themes/theme_size.dart';
-import 'bloc/play_list_bloc.dart';
-import 'bloc/play_list_event.dart';
 import 'views/high_quility_tabs_view.dart';
 import 'views/recommend_playlist_view.dart';
 import 'views/top_artiest_list_view.dart';
@@ -27,9 +24,6 @@ class _ExplorePageState extends State<ExplorePage> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted) {
         LogUtil.i("ExplorePage initState called", tag: _tag);
-        context.read<PlayListBloc>().add(RequestPlayListRecommendEvent());
-        context.read<PlayListBloc>().add(RequestTopArtistsEvent());
-        context.read<PlayListBloc>().add(RequestHighQualityTagsEvent());
       }
     });
   }
